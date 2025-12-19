@@ -1,8 +1,10 @@
-# Conductor Extension for Gemini CLI
+# Conductor
 
 **Measure twice, code once.**
 
-Conductor is a Gemini CLI extension that enables **Context-Driven Development**. It turns the Gemini CLI into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
+Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
+
+**Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills)
 
 Instead of just writing code, Conductor ensures a consistent, high-quality lifecycle for every task: **Context -> Spec & Plan -> Implement**.
 
@@ -19,13 +21,41 @@ The philosophy behind Conductor is simple: control your code. By treating contex
 
 ## Installation
 
-Install the Conductor extension by running the following command from your terminal:
+### Gemini CLI
 
 ```bash
 gemini extensions install https://github.com/gemini-cli-extensions/conductor --auto-update
 ```
 
-The `--auto-update` is optional: if specified, it will update to new versions as they are released.
+### Claude Code
+
+```bash
+# Add the marketplace
+/plugin marketplace add gemini-cli-extensions/conductor
+
+# Install the plugin
+/plugin install conductor
+```
+
+This installs 5 slash commands and a skill that auto-activates for conductor projects.
+
+### Agent Skills
+
+For CLIs supporting the [Agent Skills specification](https://agentskills.io), point to:
+
+```
+skills/conductor/
+├── SKILL.md
+└── references/
+    └── workflows.md
+```
+
+### Manual Installation
+
+Copy to any project for Claude Code support:
+```bash
+cp -r /path/to/conductor/.claude your-project/
+```
 
 ## Usage
 
@@ -104,17 +134,21 @@ During implementation, you can also:
 
 ## Commands Reference
 
-| Command | Description | Artifacts |
-| :--- | :--- | :--- |
-| `/conductor:setup` | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md` |
-| `/conductor:newTrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md` |
-| `/conductor:implement` | Executes the tasks defined in the current track's plan. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
-| `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
-| `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
+| Gemini CLI | Claude Code | Description | Artifacts Managed |
+| :--- | :--- | :--- | :--- |
+| `/conductor:setup` | `/conductor-setup` | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md` |
+| `/conductor:newTrack` | `/conductor-newtrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md` |
+| `/conductor:implement` | `/conductor-implement` | Executes the tasks defined in the current track's plan. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
+| `/conductor:status` | `/conductor-status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
+| `/conductor:revert` | `/conductor-revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
+
+Projects set up with either tool are fully interoperable.
 
 ## Resources
 
-- [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Documentation about using extensions in Gemini CLI
+- [Claude Code README](.claude/README.md): Detailed Claude Code installation and usage
+- [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Gemini CLI documentation
+- [Agent Skills specification](https://agentskills.io): Open standard for AI agent skills
 - [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
 
 ## Legal

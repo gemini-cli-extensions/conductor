@@ -1,0 +1,22 @@
+{
+  "name": "conductor",
+  "version": "0.1.0",
+  "description": "Context-driven development for Claude Code. Plan before you build with specs, tracks, and TDD workflows.",
+  "author": {
+    "name": "Gemini CLI Extensions",
+    "url": "https://github.com/gemini-cli-extensions"
+  },
+  "homepage": "https://github.com/gemini-cli-extensions/conductor",
+  "repository": "https://github.com/gemini-cli-extensions/conductor",
+  "license": "Apache-2.0",
+  "keywords": [
+    "conductor",
+    "context-driven-development",
+    "specs",
+    "plans",
+    "tracks",
+    "tdd",
+    "workflow",
+    "project-management"
+  ]
+}
