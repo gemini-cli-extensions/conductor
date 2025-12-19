@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "conductor",
-      "source": ".",
+      "source": "./",
       "description": "Context-driven development: specs, plans, tracks, and TDD workflows"
     }
   ]

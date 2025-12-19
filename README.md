@@ -32,22 +32,18 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 **From marketplace (recommended):**
 ```bash
 # Add the marketplace
-/plugin marketplace add gemini-cli-extensions/conductor
+/plugin marketplace add jasonkneen/conductor
 
 # Install the plugin
 /plugin install conductor
 ```
 
-> **Note:** Marketplace installation is pending PR approval. Use the local clone method below until then.
-
-**From local clone:**
+**Manual installation:**
 ```bash
-# Clone the repository
-git clone https://github.com/gemini-cli-extensions/conductor.git
-cd conductor
-
-# Install from local directory
-/plugin install .
+# Clone and copy commands/skills to your global config
+git clone https://github.com/jasonkneen/conductor.git
+cp -r conductor/.claude/commands/* ~/.claude/commands/
+cp -r conductor/.claude/skills/* ~/.claude/skills/
 ```
 
 This installs 5 slash commands and a skill that auto-activates for conductor projects.
@@ -63,9 +59,9 @@ skills/conductor/
     └── workflows.md
 ```
 
-### Manual Installation
+### Project-Local Installation
 
-Copy to any project for Claude Code support:
+Copy to any project for project-scoped Claude Code support:
 ```bash
 cp -r /path/to/conductor/.claude your-project/
 ```
