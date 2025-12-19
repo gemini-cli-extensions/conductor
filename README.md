@@ -29,12 +29,25 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 
 ### Claude Code
 
+**From marketplace (recommended):**
 ```bash
 # Add the marketplace
 /plugin marketplace add gemini-cli-extensions/conductor
 
 # Install the plugin
 /plugin install conductor
+```
+
+> **Note:** Marketplace installation is pending PR approval. Use the local clone method below until then.
+
+**From local clone:**
+```bash
+# Clone the repository
+git clone https://github.com/gemini-cli-extensions/conductor.git
+cd conductor
+
+# Install from local directory
+/plugin install .
 ```
 
 This installs 5 slash commands and a skill that auto-activates for conductor projects.
