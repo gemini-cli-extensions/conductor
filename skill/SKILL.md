@@ -1,6 +1,6 @@
 ---
 name: conductor
-description: Context-Driven Development (CDD) framework for AI-assisted software projects. Use this skill when the user wants to set up structured project management with specs, plans, and tracks, or when they mention "conductor", "track", "spec-driven development", or want help with project planning, feature implementation workflow, or task management in a software project.
+description: Use when the user wants to setup a new project, create a new feature, write a spec, plan a feature, fix a bug with a plan, start a new track, check project status, implement next task, or revert changes. Also use when user mentions "conductor", "track", or "spec-driven development". If conductor is not yet configured in the project, start with setup.
 ---
 
 # Conductor
