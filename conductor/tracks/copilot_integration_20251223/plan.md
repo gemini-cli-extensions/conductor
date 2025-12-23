@@ -23,5 +23,5 @@
 ## Phase 3: PoC Planning
 
 - [x] Task: Outline the scope and goals for a Proof-of-Concept (PoC). (eca6793)
-- [x] Task: Create a high-level task list for the PoC implementation. (d1e3f8c)
+- [x] Task: Create a high-level task list for the PoC implementation. (bf61855)
 - [ ] Task: Conductor - User Manual Verification 'PoC Planning' (Protocol in workflow.md)
