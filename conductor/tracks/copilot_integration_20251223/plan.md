@@ -2,9 +2,9 @@
 
 ## Phase 1: Research
 
-- [ ] Task: Investigate GitHub Copilot's extensibility model.
-  - [ ] Sub-task: Review official documentation for APIs, SDKs, and plugin systems.
-  - [ ] Sub-task: Search for existing third-party integrations to understand common patterns.
+- [x] Task: Investigate GitHub Copilot's extensibility model. (0877be8)
+  - [x] Sub-task: Review official documentation for APIs, SDKs, and plugin systems.
+  - [x] Sub-task: Search for existing third-party integrations to understand common patterns.
 - [ ] Task: Analyze Conductor's context artifacts.
   - [ ] Sub-task: Document the structure and format of `product.md`, `tech-stack.md`, `plan.md`, and other context files.
 - [ ] Task: Conductor - User Manual Verification 'Research' (Protocol in workflow.md)
