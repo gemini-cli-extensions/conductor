@@ -44,13 +44,19 @@ conductor/
 | **Status** | Show progress overview of all tracks |
 | **Revert** | Git-aware rollback of tracks, phases, or tasks |
 
-## Quick Start
+## Protocol References
 
-1. **To set up Conductor in a project**: Read `references/setup-protocol.md`
-2. **To create a new track**: Read `references/newtrack-protocol.md`
-3. **To implement tasks**: Read `references/implement-protocol.md`
-4. **To check status**: Read `references/status-protocol.md`
-5. **To revert work**: Read `references/revert-protocol.md`
+The detailed protocols are in TOML format. Read the `prompt` field from each file:
+
+| Action | Protocol File |
+|--------|---------------|
+| Setup project | `commands/conductor/setup.toml` |
+| Create new track | `commands/conductor/newTrack.toml` |
+| Implement tasks | `commands/conductor/implement.toml` |
+| Check status | `commands/conductor/status.toml` |
+| Revert changes | `commands/conductor/revert.toml` |
+
+**How to read**: Each `.toml` file has a `prompt` field containing the full protocol instructions.
 
 ## Task Status Markers
 
@@ -68,16 +74,16 @@ conductor/
 
 ## When to Use Each Protocol
 
-- **User says "set up conductor" or "initialize project"** -> `references/setup-protocol.md`
-- **User says "new feature", "new track", "plan a feature"** -> `references/newtrack-protocol.md`
-- **User says "implement", "start working", "next task"** -> `references/implement-protocol.md`
-- **User says "status", "progress", "where are we"** -> `references/status-protocol.md`
-- **User says "revert", "undo", "rollback"** -> `references/revert-protocol.md`
+- **"set up conductor" or "initialize project"** -> Read `commands/conductor/setup.toml`
+- **"new feature", "new track", "plan a feature"** -> Read `commands/conductor/newTrack.toml`
+- **"implement", "start working", "next task"** -> Read `commands/conductor/implement.toml`
+- **"status", "progress", "where are we"** -> Read `commands/conductor/status.toml`
+- **"revert", "undo", "rollback"** -> Read `commands/conductor/revert.toml`
 
 ## Assets
 
-- **Code Styleguides**: Available in `templates/code_styleguides/` for various languages (general, go, python, javascript, typescript, html-css)
-- **Workflow Template**: The default workflow is in `templates/workflow.md`
+- **Code Styleguides**: `templates/code_styleguides/` (general, go, python, javascript, typescript, html-css)
+- **Workflow Template**: `templates/workflow.md`
 
 ## Critical Rules
 

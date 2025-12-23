@@ -70,7 +70,7 @@ cd conductor
 # Run the install script
 ./skill/scripts/install.sh
 ```
-This installs the skill to `~/.claude/skills/conductor/` (or `~/.opencode/skill/conductor/`).
+The installer will ask where to install (OpenCode, Claude CLI, or both). The skill is installed with symlinks to this repository, so running `git pull` will automatically update the skill.
 
 ### Project-Local Installation
 

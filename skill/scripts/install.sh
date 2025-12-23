@@ -1,6 +1,9 @@
 #!/bin/bash
 # Install Conductor skill for Claude CLI / OpenCode
 # Usage: ./install.sh
+#
+# This script creates a skill directory with symlinks to the Conductor repository,
+# so updates to the repo are automatically reflected in the skill.
 
 set -e
 
@@ -10,6 +13,21 @@ CONDUCTOR_ROOT="$(dirname "$SKILL_DIR")"
 
 echo "Conductor Skill Installer"
 echo "========================="
+echo ""
+
+# Check if we're running from within a conductor repo
+if [ ! -f "$CONDUCTOR_ROOT/commands/conductor/setup.toml" ]; then
+    echo "Error: This script must be run from within the Conductor repository."
+    echo "Expected to find: $CONDUCTOR_ROOT/commands/conductor/setup.toml"
+    echo ""
+    echo "Please clone the repository first:"
+    echo "  git clone https://github.com/gemini-cli-extensions/conductor.git"
+    echo "  cd conductor"
+    echo "  ./skill/scripts/install.sh"
+    exit 1
+fi
+
+echo "Conductor repository found at: $CONDUCTOR_ROOT"
 echo ""
 echo "Where do you want to install the skill?"
 echo ""
@@ -39,28 +57,33 @@ for TARGET_DIR in "${TARGETS[@]}"; do
     echo ""
     echo "Installing to: $TARGET_DIR"
     
-    # Create parent directory if needed
-    mkdir -p "$(dirname "$TARGET_DIR")"
+    # Remove existing installation
+    rm -rf "$TARGET_DIR"
     
-    # Create skill directory structure
-    mkdir -p "$TARGET_DIR"/{references,assets/code_styleguides}
+    # Create skill directory
+    mkdir -p "$TARGET_DIR"
     
-    # Copy SKILL.md
+    # Copy SKILL.md (the only actual file)
     cp "$SKILL_DIR/SKILL.md" "$TARGET_DIR/"
     
-    # Copy references
-    cp "$SKILL_DIR/references/"*.md "$TARGET_DIR/references/"
+    # Create symlinks to conductor repo directories
+    ln -s "$CONDUCTOR_ROOT/commands" "$TARGET_DIR/commands"
+    ln -s "$CONDUCTOR_ROOT/templates" "$TARGET_DIR/templates"
     
-    # Copy assets from templates (code styleguides)
-    cp "$CONDUCTOR_ROOT/templates/code_styleguides/"*.md "$TARGET_DIR/assets/code_styleguides/"
-    
-    # Copy workflow template to references
-    cp "$CONDUCTOR_ROOT/templates/workflow.md" "$TARGET_DIR/references/workflow-template.md"
-    
-    echo "Done: $TARGET_DIR"
+    echo "  Created: $TARGET_DIR/SKILL.md"
+    echo "  Symlink: $TARGET_DIR/commands -> $CONDUCTOR_ROOT/commands"
+    echo "  Symlink: $TARGET_DIR/templates -> $CONDUCTOR_ROOT/templates"
 done
 
 echo ""
 echo "Conductor skill installed successfully!"
+echo ""
+echo "Structure:"
+for TARGET_DIR in "${TARGETS[@]}"; do
+    ls -la "$TARGET_DIR" 2>/dev/null || true
+done
+echo ""
+echo "The skill references the Conductor repo at: $CONDUCTOR_ROOT"
+echo "Updates to the repo (git pull) will be reflected automatically."
 echo ""
 echo "Restart your AI CLI to load the skill."
