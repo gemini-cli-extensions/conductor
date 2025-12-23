@@ -32,7 +32,7 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 **From marketplace (recommended):**
 ```bash
 # Add the marketplace
-/plugin marketplace add jasonkneen/conductor
+/plugin marketplace add gemini-cli-extensions/conductor
 
 # Install the plugin
 /plugin install conductor
@@ -41,7 +41,7 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 **Manual installation:**
 ```bash
 # Clone and copy commands/skills to your global config
-git clone https://github.com/jasonkneen/conductor.git
+git clone https://github.com/gemini-cli-extensions/conductor.git
 cp -r conductor/.claude/commands/* ~/.claude/commands/
 cp -r conductor/.claude/skills/* ~/.claude/skills/
 ```
@@ -50,14 +50,27 @@ This installs 5 slash commands and a skill that auto-activates for conductor pro
 
 ### Agent Skills
 
-For CLIs supporting the [Agent Skills specification](https://agentskills.io), point to:
+For CLIs supporting the [Agent Skills specification](https://agentskills.io) (Claude CLI / OpenCode / Codex), you can install Conductor as a portable skill.
 
+**Option 1: Point to local folder**
+Point your CLI to:
 ```
 skills/conductor/
 ├── SKILL.md
 └── references/
     └── workflows.md
 ```
+
+**Option 2: Use install script**
+```bash
+# Clone the repository
+git clone https://github.com/gemini-cli-extensions/conductor.git
+cd conductor
+
+# Run the install script
+./skill/scripts/install.sh
+```
+This installs the skill to `~/.claude/skills/conductor/` (or `~/.opencode/skill/conductor/`).
 
 ### Project-Local Installation
 
@@ -157,7 +170,7 @@ Projects set up with either tool are fully interoperable.
 
 - [Claude Code README](.claude/README.md): Detailed Claude Code installation and usage
 - [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Gemini CLI documentation
-- [Agent Skills specification](https://agentskills.io): Open standard for AI agent skills
+- [Agent Skills specification](https://agentskills.io)
 - [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
 
 ## Legal
