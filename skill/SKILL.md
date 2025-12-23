@@ -91,3 +91,4 @@ The detailed protocols are in TOML format. Read the `prompt` field from each fil
 2. **Sequential questions** - Ask one question at a time, wait for response
 3. **User confirmation required** - Before writing files or making changes
 4. **Check setup first** - Verify `conductor/` exists before any operation
+5. **Agnostic language** - Do not suggest slash commands like `/conductor:xxx`. Instead, tell the user to ask you directly (e.g., "to start implementing, just ask me" instead of "run /conductor:implement")
