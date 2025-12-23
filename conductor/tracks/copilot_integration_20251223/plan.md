@@ -17,7 +17,7 @@
 - [x] Task: Outline potential user workflows. (377be8c)
   - [x] Sub-task: Describe how a user would initiate a Conductor-powered Copilot session.
   - [x] Sub-task: Detail how context would be used during code generation.
-- [ ] Task: Identify risks and mitigation strategies.
+- [x] Task: Identify risks and mitigation strategies. (c778d47)
 - [ ] Task: Conductor - User Manual Verification 'Strategy Definition' (Protocol in workflow.md)
 
 ## Phase 3: PoC Planning
