@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: Research and define initial integration strategy for GitHub Copilot
+## [~] Track: Research and define initial integration strategy for GitHub Copilot
 *Link: [./conductor/tracks/copilot_integration_20251223/](./conductor/tracks/copilot_integration_20251223/)*

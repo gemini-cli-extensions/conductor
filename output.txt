@@ -1,0 +1,1 @@
+The 'Strategy Definition' phase is complete, and a checkpoint has been created with a detailed verification report attached as a git note.

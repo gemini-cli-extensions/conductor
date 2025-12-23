@@ -8,10 +8,10 @@ The following diagram illustrates the proposed architecture:
 
 ```mermaid
 graph TD
-    subgraph User's IDE (e.g., VS Code)
+    subgraph User IDE
         A[Developer] -- Interacts with --> B(GitHub Copilot)
         B -- Requests context --> C{Conductor Copilot Extension}
-        C -- Reads context from --> D[/conductor/ directory]
+        C -- Reads context from --> D{/conductor/ directory}
     end
 
     subgraph GitHub Repository
