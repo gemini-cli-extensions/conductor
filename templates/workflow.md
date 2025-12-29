@@ -134,6 +134,21 @@ All tasks follow a strict lifecycle:
 
 10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
 
+### Track Completion and Archiving Protocol
+
+**Trigger:** This protocol is executed once all phases in a track's `plan.md` are marked as complete.
+
+1.  **Move Track to Archive:**
+    -   Move the track directory from `conductor/tracks/<track_id>/` to `conductor/archive/<track_id>/`.
+
+2.  **Update Project Tracks File:**
+    -   Modify `conductor/tracks.md` to update the link for the completed track to point to its new location in the `archive/` directory.
+    -   Ensure the track remains visible in `conductor/tracks.md` and is marked as closed/archived (using the `[x]` status).
+
+3.  **Commit Archival:**
+    -   Stage the moved folder and the updated `conductor/tracks.md`.
+    -   Commit with a message like `chore(conductor): Archive track '<track_name>'`.
+
 ### Quality Gates
 
 Before marking any task complete, verify:
