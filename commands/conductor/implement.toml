@@ -16,7 +16,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   `conductor/product.md`
 
 2.  **Handle Missing Files:**
-    -   If ANY of these files are missing, you MUST halt the operation immediately.
+    -   IF ANY of these files are missing, you MUST halt the operation immediately.
     -   Announce: "Conductor is not set up. Please run `/conductor:setup` to set up the environment."
     -   Do NOT proceed to Track Selection.
 

@@ -26,11 +26,11 @@
 - [~] Task: Implement Feature: Prompt Export/Validation utility in Core <!-- id: 21 -->
 - [x] Task: Conductor - Automated Verification 'Phase 3: Prompt Abstraction' <!-- id: 22 -->
 
-## Phase 4: Platform Wrapper Validation
-- [ ] Task: Verify Gemini CLI TOMLs match Core Templates
-- [ ] Task: Verify Claude Code MDs match Core Templates
-- [ ] Task: Ensure 95% test coverage for Core template rendering
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Platform Wrapper Validation' (Protocol in workflow.md)
+## Phase 4: Platform Wrapper Validation [checkpoint: Automated]
+- [x] Task: Verify Gemini CLI TOMLs match Core Templates <!-- id: 23 -->
+- [x] Task: Verify Claude Code MDs match Core Templates <!-- id: 24 -->
+- [x] Task: Ensure 95% test coverage for Core template rendering <!-- id: 25 -->
+- [x] Task: Conductor - Automated Verification 'Phase 4: Platform Wrapper Validation' <!-- id: 26 -->
 
 ## Phase 5: Release Engineering & Deployment
 - [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging
