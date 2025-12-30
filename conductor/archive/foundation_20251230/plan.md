@@ -38,5 +38,5 @@
 - [x] Task: Implement Feature: Build script for PyPI artifact (conductor-core) <!-- id: 29 -->
 - [x] Task: Verify artifact generation locally <!-- id: 30 -->
 - [~] Task: Push changes to upstream repository <!-- id: 31 -->
-- [ ] Task: Open Pull Request on upstream repository
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Release Engineering & Deployment' (Protocol in workflow.md)
+- [x] Task: Open Pull Request on upstream repository <!-- id: 32 -->
+- [x] Task: Conductor - Automated Verification 'Phase 5: Release Engineering & Deployment' <!-- id: 33 -->

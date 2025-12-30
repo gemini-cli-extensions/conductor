@@ -24,6 +24,9 @@ class ProjectManager:
 
     def create_track(self, description: str) -> str:
         """Initializes a new track directory and metadata."""
+        if not self.conductor_path.exists():
+            self.conductor_path.mkdir(parents=True)
+            
         tracks_file = self.conductor_path / "tracks.md"
         if not tracks_file.exists():
             tracks_file.write_text("# Project Tracks\n\n")

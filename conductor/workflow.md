@@ -134,6 +134,20 @@ All tasks follow a strict lifecycle:
 
 10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
 
+### Track Completion Protocol
+
+**Trigger:** This protocol is executed when all tasks in a track's `plan.md` are marked as complete.
+
+1.  **Verify Track Completion:** Ensure all phases and tasks are checked off `[x]`.
+2.  **Final Test Run:** Execute the full project test suite one last time to ensure no regressions.
+3.  **Push Changes:**
+    -   Command: `git push origin <feature-branch>`
+    -   *Note:* Ensure the remote is correctly configured.
+4.  **Open Pull Request:**
+    -   Use the GitHub CLI (`gh`) if available, or generate a link for the user.
+    -   Command: `gh pr create --title "<Track Description>" --body "This PR implements track <Track ID>. See conductor/tracks/<Track ID>/spec.md for details."`
+5.  **Announce Success:** Inform the user that the track is complete and the PR is open.
+
 ### Quality Gates
 
 Before marking any task complete, verify:

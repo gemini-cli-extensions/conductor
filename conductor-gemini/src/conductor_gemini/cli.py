@@ -37,8 +37,6 @@ def new_track(ctx, description):
         track_id = ctx.manager.create_track(description)
         click.echo(f"Created track {track_id}: {description}")
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         click.echo(f"Error creating track: {e}", err=True)
         sys.exit(1)
 

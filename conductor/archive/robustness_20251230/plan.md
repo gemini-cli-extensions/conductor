@@ -32,8 +32,8 @@
 - [ ] Task: Open Pull Request on upstream repository
 - [x] Task: Conductor - Automated Verification 'Phase 4: Release Engineering & Deployment' <!-- id: 56 -->
 
-## Phase 5: Maturity Enhancements
-- [ ] Task: Documentation Overhaul: Create ADRs and update root README for Monorepo
-- [ ] Task: LSP Feasibility Study: Prototype simple LSP using `pygls`
-- [ ] Task: Implement Feature: End-to-End Smoke Test script (`CLI -> Core -> Git`)
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Maturity Enhancements' (Protocol in workflow.md)
+## Phase 5: Maturity Enhancements [checkpoint: Automated]
+- [x] Task: Documentation Overhaul: Create ADRs and update root README for Monorepo <!-- id: 57 -->
+- [x] Task: LSP Feasibility Study: Prototype simple LSP using `pygls` <!-- id: 58 -->
+- [x] Task: Implement Feature: End-to-End Smoke Test script (`CLI -> Core -> Git`) <!-- id: 59 -->
+- [x] Task: Conductor - Automated Verification 'Phase 5: Maturity Enhancements' <!-- id: 60 -->
