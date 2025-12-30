@@ -34,9 +34,9 @@
 
 ## Phase 5: Release Engineering & Deployment
 - [x] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging <!-- id: 27 -->
-- [ ] Task: Implement Feature: Build script for VSIX artifact
-- [ ] Task: Implement Feature: Build script for PyPI artifact (conductor-core)
-- [ ] Task: Verify artifact generation locally
-- [ ] Task: Push changes to upstream repository
+- [x] Task: Implement Feature: Build script for VSIX artifact <!-- id: 28 -->
+- [x] Task: Implement Feature: Build script for PyPI artifact (conductor-core) <!-- id: 29 -->
+- [x] Task: Verify artifact generation locally <!-- id: 30 -->
+- [~] Task: Push changes to upstream repository <!-- id: 31 -->
 - [ ] Task: Open Pull Request on upstream repository
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Release Engineering & Deployment' (Protocol in workflow.md)
