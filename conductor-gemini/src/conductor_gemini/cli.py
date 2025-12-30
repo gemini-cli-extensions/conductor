@@ -1,15 +1,13 @@
 import click
-import json
-import os
 import sys
+import os
 from pathlib import Path
-from datetime import datetime
+from conductor_core.project_manager import ProjectManager
 
-# We will inject the context in a way that is test-friendly
 class Context:
     def __init__(self, base_path=None):
-        self.base_path = Path(base_path or os.getcwd())
-        self.conductor_path = self.base_path / "conductor"
+        self.base_path = base_path or os.getcwd()
+        self.manager = ProjectManager(self.base_path)
 
 @click.group()
 @click.option('--base-path', type=click.Path(exists=True), help='Base path for the project')
@@ -23,26 +21,36 @@ def main(ctx, base_path):
 @click.pass_obj
 def setup(ctx, goal):
     """Initialize a new Conductor project"""
-    if not ctx.conductor_path.exists():
-        ctx.conductor_path.mkdir(parents=True)
-    
-    state_file = ctx.conductor_path / "setup_state.json"
-    if not state_file.exists():
-        state_file.write_text(json.dumps({"last_successful_step": ""}))
-    
-    product_file = ctx.conductor_path / "product.md"
-    if not product_file.exists():
-        product_file.write_text(f"# Product Context\n\n## Initial Concept\n{goal}\n")
-    
-    click.echo(f"Initialized Conductor project in {ctx.conductor_path}")
+    try:
+        ctx.manager.initialize_project(goal)
+        click.echo(f"Initialized Conductor project in {ctx.manager.conductor_path}")
+    except Exception as e:
+        click.echo(f"Error during setup: {e}", err=True)
+        sys.exit(1)
 
 @main.command()
 @click.argument('description')
 @click.pass_obj
 def new_track(ctx, description):
     """Initialize a new track"""
-    track_id = f"track_{{datetime.now().strftime('%Y%m%d_%H%M%S')}}"
-    click.echo(f"Creating track {track_id}: {description}")
+    try:
+        track_id = ctx.manager.create_track(description)
+        click.echo(f"Created track {track_id}: {description}")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        click.echo(f"Error creating track: {e}", err=True)
+        sys.exit(1)
+
+@main.command()
+@click.pass_obj
+def status(ctx):
+    """Display project status"""
+    tracks_file = ctx.manager.conductor_path / "tracks.md"
+    if not tracks_file.exists():
+        click.echo("Error: Project not set up.", err=True)
+        sys.exit(1)
+    click.echo(tracks_file.read_text())
 
 @main.command()
 @click.pass_obj
