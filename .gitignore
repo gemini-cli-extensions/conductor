@@ -209,3 +209,4 @@ __marimo__/
 tmp/
 
 /.gemini/tmp/
+\n*.vsix
