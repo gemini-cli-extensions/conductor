@@ -18,7 +18,7 @@
 
 ## Phase 3: Platform Adapter Refactoring
 - [~] Task: Refactor `conductor-gemini` to use `conductor-core` for all logic <!-- id: 12 -->
-- [ ] Task: Write Tests: Verify CLI slash command routing to core library
+- [x] Task: Write Tests: Verify CLI slash command routing to core library <!-- id: 13 -->
 - [ ] Task: Implement Feature: Gemini CLI Adapter implementation
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Platform Adapter Refactoring' (Protocol in workflow.md)
 
