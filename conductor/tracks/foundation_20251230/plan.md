@@ -8,8 +8,8 @@
 
 ## Phase 2: Core Library Extraction
 - [x] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout) <!-- id: 4 -->
-- [ ] Task: Write Tests: Define schema for Tracks and Plans using Pydantic
-- [ ] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase)
+- [x] Task: Write Tests: Define schema for Tracks and Plans using Pydantic <!-- id: 5 -->
+- [x] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase) <!-- id: 6 -->
 - [ ] Task: Write Tests: Prompt rendering logic with Jinja2
 - [ ] Task: Implement Feature: Abstract Prompt Provider
 - [ ] Task: Write Tests: Git abstraction layer (GitPython)
