@@ -12,8 +12,8 @@
 - [x] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase) <!-- id: 6 -->
 - [x] Task: Write Tests: Prompt rendering logic with Jinja2 <!-- id: 7 -->
 - [x] Task: Implement Feature: Abstract Prompt Provider <!-- id: 8 -->
-- [ ] Task: Write Tests: Git abstraction layer (GitPython)
-- [ ] Task: Implement Feature: Git Service Provider
+- [x] Task: Write Tests: Git abstraction layer (GitPython) <!-- id: 9 -->
+- [x] Task: Implement Feature: Git Service Provider <!-- id: 10 -->
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md)
 
 ## Phase 3: Platform Adapter Refactoring
