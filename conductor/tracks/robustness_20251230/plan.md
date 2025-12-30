@@ -9,8 +9,8 @@
 - [x] Task: Conductor - Automated Verification 'Phase 1: Codebase Audit & Gap Analysis' <!-- id: 39 -->
 
 ## Phase 2: Refactoring for Robustness
-- [ ] Task: Implement Feature: `TaskStatus` and `TrackStatus` Enums in `conductor-core` models
-- [ ] Task: Implement Feature: `ProjectManager` service in `conductor-core` to centralize Setup/Track logic
+- [x] Task: Implement Feature: `TaskStatus` and `TrackStatus` Enums in `conductor-core` models <!-- id: 40 -->
+- [~] Task: Implement Feature: `ProjectManager` service in `conductor-core` to centralize Setup/Track logic <!-- id: 41 -->
 - [ ] Task: Write Tests: Improve test coverage for GitService (edge cases)
 - [ ] Task: Implement Feature: Add robust error handling to PromptProvider
 - [ ] Task: Refactor `conductor-gemini` to delegate all logic to `ProjectManager`
