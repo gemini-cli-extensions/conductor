@@ -10,8 +10,8 @@
 - [x] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout) <!-- id: 4 -->
 - [x] Task: Write Tests: Define schema for Tracks and Plans using Pydantic <!-- id: 5 -->
 - [x] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase) <!-- id: 6 -->
-- [ ] Task: Write Tests: Prompt rendering logic with Jinja2
-- [ ] Task: Implement Feature: Abstract Prompt Provider
+- [x] Task: Write Tests: Prompt rendering logic with Jinja2 <!-- id: 7 -->
+- [x] Task: Implement Feature: Abstract Prompt Provider <!-- id: 8 -->
 - [ ] Task: Write Tests: Git abstraction layer (GitPython)
 - [ ] Task: Implement Feature: Git Service Provider
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md)
