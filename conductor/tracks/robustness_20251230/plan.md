@@ -8,21 +8,21 @@
 - [x] Task: Identify missing tests and abstraction gaps <!-- id: 38 -->
 - [x] Task: Conductor - Automated Verification 'Phase 1: Codebase Audit & Gap Analysis' <!-- id: 39 -->
 
-## Phase 2: Refactoring for Robustness
+## Phase 2: Refactoring for Robustness [checkpoint: Automated]
 - [x] Task: Implement Feature: `TaskStatus` and `TrackStatus` Enums in `conductor-core` models <!-- id: 40 -->
-- [~] Task: Implement Feature: `ProjectManager` service in `conductor-core` to centralize Setup/Track logic <!-- id: 41 -->
-- [ ] Task: Write Tests: Improve test coverage for GitService (edge cases)
-- [ ] Task: Implement Feature: Add robust error handling to PromptProvider
-- [ ] Task: Refactor `conductor-gemini` to delegate all logic to `ProjectManager`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Refactoring for Robustness' (Protocol in workflow.md)
+- [x] Task: Implement Feature: `ProjectManager` service in `conductor-core` to centralize Setup/Track logic <!-- id: 41 -->
+- [x] Task: Write Tests: Improve test coverage for GitService (edge cases) <!-- id: 42 -->
+- [x] Task: Implement Feature: Add robust error handling to PromptProvider <!-- id: 43 -->
+- [x] Task: Refactor `conductor-gemini` to delegate all logic to `ProjectManager` <!-- id: 44 -->
+- [x] Task: Conductor - Automated Verification 'Phase 2: Refactoring for Robustness' <!-- id: 45 -->
 
-## Phase 3: Integration Robustness & Compatibility
-- [ ] Task: Ensure prompt consistency across Gemini and Claude wrappers
-- [ ] Task: Develop automated checks for prompt template synchronization
-- [ ] Task: Implement Feature: Create `qwen-extension.json` (mirror of gemini-extension.json)
-- [ ] Task: Configure `conductor-vscode` `extensionKind` for Remote/Antigravity support
-- [ ] Task: Update documentation for extending the core library
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration Robustness & Compatibility' (Protocol in workflow.md)
+## Phase 3: Integration Robustness & Compatibility [checkpoint: Automated]
+- [x] Task: Ensure prompt consistency across Gemini and Claude wrappers <!-- id: 48 -->
+- [x] Task: Develop automated checks for prompt template synchronization <!-- id: 49 -->
+- [x] Task: Implement Feature: Create `qwen-extension.json` (mirror of gemini-extension.json) <!-- id: 46 -->
+- [x] Task: Configure `conductor-vscode` `extensionKind` for Remote/Antigravity support <!-- id: 47 -->
+- [x] Task: Update documentation for extending the core library <!-- id: 50 -->
+- [x] Task: Conductor - Automated Verification 'Phase 3: Integration Robustness & Compatibility' <!-- id: 51 -->
 
 ## Phase 4: Release Engineering & Deployment
 - [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` for core library
