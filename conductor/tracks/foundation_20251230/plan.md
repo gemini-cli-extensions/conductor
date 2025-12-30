@@ -33,7 +33,7 @@
 - [x] Task: Conductor - Automated Verification 'Phase 4: Platform Wrapper Validation' <!-- id: 26 -->
 
 ## Phase 5: Release Engineering & Deployment
-- [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging
+- [x] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging <!-- id: 27 -->
 - [ ] Task: Implement Feature: Build script for VSIX artifact
 - [ ] Task: Implement Feature: Build script for PyPI artifact (conductor-core)
 - [ ] Task: Verify artifact generation locally
