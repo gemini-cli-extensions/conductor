@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md) <!-- id: 3 -->
 
 ## Phase 2: Core Library Extraction
-- [ ] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout)
+- [x] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout) <!-- id: 4 -->
 - [ ] Task: Write Tests: Define schema for Tracks and Plans using Pydantic
 - [ ] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase)
 - [ ] Task: Write Tests: Prompt rendering logic with Jinja2
