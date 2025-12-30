@@ -16,15 +16,21 @@
 - [x] Task: Implement Feature: Git Service Provider <!-- id: 10 -->
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md) <!-- id: 11 -->
 
-## Phase 3: Platform Adapter Refactoring
-- [x] Task: Refactor `conductor-gemini` to use `conductor-core` for all logic <!-- id: 12 -->
-- [x] Task: Implement Feature: Gemini CLI Adapter implementation <!-- id: 14 -->
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Platform Adapter Refactoring' (Protocol in workflow.md)
+## Phase 3: Prompt Abstraction & Platform Source of Truth
+- [x] Task: Initialize `conductor-core` template directory <!-- id: 15 -->
+- [x] Task: Extract `setup` protocol into `setup.j2` <!-- id: 16 -->
+- [x] Task: Extract `newTrack` protocol into `new_track.j2` <!-- id: 17 -->
+- [x] Task: Extract `implement` protocol into `implement.j2` <!-- id: 18 -->
+- [x] Task: Extract `status` protocol into `status.j2` <!-- id: 19 -->
+- [x] Task: Extract `revert` protocol into `revert.j2` <!-- id: 20 -->
+- [~] Task: Implement Feature: Prompt Export/Validation utility in Core <!-- id: 21 -->
+- [x] Task: Conductor - Automated Verification 'Phase 3: Prompt Abstraction' <!-- id: 22 -->
 
-## Phase 4: Final Validation & Coverage
-- [ ] Task: Ensure 95% test coverage for `conductor-core`
-- [ ] Task: Verify multi-platform support (mocking a qwen-cli environment)
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Validation & Coverage' (Protocol in workflow.md)
+## Phase 4: Platform Wrapper Validation
+- [ ] Task: Verify Gemini CLI TOMLs match Core Templates
+- [ ] Task: Verify Claude Code MDs match Core Templates
+- [ ] Task: Ensure 95% test coverage for Core template rendering
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Platform Wrapper Validation' (Protocol in workflow.md)
 
 ## Phase 5: Release Engineering & Deployment
 - [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging
