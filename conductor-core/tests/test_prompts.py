@@ -18,3 +18,22 @@ def test_prompt_from_file(tmp_path):
     provider = PromptProvider(template_dir=str(d))
     rendered = provider.render("test.j2", project_name="Conductor")
     assert rendered == "Context: Conductor"
+
+def test_get_template_text(tmp_path):
+    d = tmp_path / "templates"
+    d.mkdir()
+    p = d / "test.j2"
+    p.write_text("Raw Template Content")
+    
+    provider = PromptProvider(template_dir=str(d))
+    assert provider.get_template_text("test.j2") == "Raw Template Content"
+
+def test_render_missing_template():
+    provider = PromptProvider(template_dir="non_existent")
+    with pytest.raises(RuntimeError):
+        provider.render("missing.j2")
+
+def test_get_template_text_missing():
+    provider = PromptProvider(template_dir="non_existent")
+    with pytest.raises(FileNotFoundError):
+        provider.get_template_text("missing.j2")
