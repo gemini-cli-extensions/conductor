@@ -8,10 +8,14 @@
     -   `conductor-gemini/`: The existing `gemini-cli` extension wrapper.
     -   `conductor-vscode/`: The new VS Code extension wrapper (likely TypeScript/Python bridge).
 
-## Strategy: Refactoring and Integration
--   **PR Consolidation:** Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) into the repository.
--   **Evolutionary Path:** Use the merged code as a baseline to identify common patterns, then refactor them into a platform-agnostic `conductor-core` library.
--   **Issue-Driven Development:** Prioritize resolving open [GitHub Issues](https://github.com/gemini-cli-extensions/conductor/issues) during the refactoring process to ensure the new architecture solves existing pain points.
+## Architecture Status
+-   **Completed:** Extracted platform-agnostic core library into `conductor-core/`.
+-   **Completed:** Aligned Gemini CLI and Claude Code prompt protocols via Jinja2 templates in Core.
+-   **In Progress:** Development of VS Code adapter (`conductor-vscode`).
+
+## Strategy: Refactoring and Integration (Completed)
+-   **PR Consolidation:** Merged [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25).
+-   **Unified Core:** Successfully refactored shared logic into `conductor-core`.
 
 ## Dependencies
 -   **Core Library:**

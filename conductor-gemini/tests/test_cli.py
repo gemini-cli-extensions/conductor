@@ -14,9 +14,6 @@ def test_cli_setup(tmp_path):
 def test_cli_new_track(tmp_path):
     runner = CliRunner()
     result = runner.invoke(main, ['--base-path', str(tmp_path), 'new-track', 'Add a feature'])
-    if result.exit_code != 0:
-        print(result.output)
-        print(result.stderr)
     assert result.exit_code == 0
     assert "Created track" in result.output
     assert "Add a feature" in result.output

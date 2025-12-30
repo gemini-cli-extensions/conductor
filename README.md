@@ -4,62 +4,51 @@
 
 Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
 
-**Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills)
+**Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills) | [VS Code](#vs-code)
 
-Instead of just writing code, Conductor ensures a consistent, high-quality lifecycle for every task: **Context -> Spec & Plan -> Implement**.
+## Architecture
 
-The philosophy behind Conductor is simple: control your code. By treating context as a managed artifact alongside your code, you transform your repository into a single source of truth that drives every agent interaction with deep, persistent project awareness.
+Conductor is organized as a modular monorepo:
+
+-   **`conductor-core`**: The platform-agnostic core library (Python). Contains the protocol logic, Pydantic models, and prompt templates.
+-   **`conductor-gemini`**: The Gemini CLI adapter.
+-   **`conductor-vscode`**: The VS Code extension (TypeScript).
+-   **`conductor-claude`**: (Integration) Portable skills for Claude Code.
+
+## Multi-Platform Support
+
+Conductor is designed to provide a consistent experience across different tools:
+
+-   **Gemini CLI**: Fully supported.
+-   **Qwen Code**: Fully supported via `qwen-extension.json`.
+-   **VS Code / Antigravity**: Supported via VSIX (supports Remote Development).
+-   **Claude Code**: Supported via portable skills.
 
 ## Features
 
-- **Plan before you build**: Create specs and plans that guide the agent for new and existing codebases.
-- **Maintain context**: Ensure AI follows style guides, tech stack choices, and product goals.
-- **Iterate safely**: Review plans before code is written, keeping you firmly in the loop.
-- **Work as a team**: Set project-level context for your product, tech stack, and workflow preferences that become a shared foundation for your team.
-- **Build on existing projects**: Intelligent initialization for both new (Greenfield) and existing (Brownfield) projects.
-- **Smart revert**: A git-aware revert command that understands logical units of work (tracks, phases, tasks) rather than just commit hashes.
+-   **Platform Source of Truth**: All protocol prompts are centralized in the core library and synchronized to adapters.
+-   **Plan before you build**: Create specs and plans that guide the agent.
+-   **Smart revert**: Git-aware revert command that understands logical units of work.
+-   **High Quality Bar**: 95% test coverage requirement enforced for core modules.
 
 ## Installation
 
-### Gemini CLI
+### Gemini CLI / Qwen Code
 
 ```bash
 gemini extensions install https://github.com/gemini-cli-extensions/conductor --auto-update
 ```
 
-### Claude Code
+### VS Code
 
-**From marketplace (recommended):**
-```bash
-# Add the marketplace
-/plugin marketplace add gemini-cli-extensions/conductor
+Download the `conductor.vsix` from the [Releases](https://github.com/gemini-cli-extensions/conductor/releases) page and install it in VS Code.
 
-# Install the plugin
-/plugin install conductor
-```
+### Agent Skills (Claude CLI / OpenCode / Codex)
 
-**Manual installation:**
-```bash
-# Clone and copy commands/skills to your global config
-git clone https://github.com/gemini-cli-extensions/conductor.git
-cp -r conductor/.claude/commands/* ~/.claude/commands/
-cp -r conductor/.claude/skills/* ~/.claude/skills/
-```
-
-This installs 5 slash commands and a skill that auto-activates for conductor projects.
-
-### Agent Skills
-
-For CLIs supporting the [Agent Skills specification](https://agentskills.io) (Claude CLI / OpenCode / Codex), you can install Conductor as a portable skill.
+For CLIs supporting the [Agent Skills specification](https://agentskills.io), you can install Conductor as a portable skill.
 
 **Option 1: Point to local folder**
-Point your CLI to:
-```
-skills/conductor/
-├── SKILL.md
-└── references/
-    └── workflows.md
-```
+Point your CLI to the `skills/conductor/` directory in this repository.
 
 **Option 2: Use install script**
 ```bash
@@ -72,35 +61,18 @@ cd conductor
 ```
 The installer will ask where to install (OpenCode, Claude CLI, or both). The skill is installed with symlinks to this repository, so running `git pull` will automatically update the skill.
 
-### Project-Local Installation
-
-Copy to any project for project-scoped Claude Code support:
-```bash
-cp -r /path/to/conductor/.claude your-project/
-```
-
 ## Usage
 
 Conductor is designed to manage the entire lifecycle of your development tasks.
 
-**Note on Token Consumption:** Conductor's context-driven approach involves reading and analyzing your project's context, specifications, and plans. This can lead to increased token consumption, especially in larger projects or during extensive planning and implementation phases. You can check the token consumption in the current session by running `/stats model`.
+**Note on Token Consumption:** Conductor's context-driven approach involves reading and analyzing your project's context, specifications, and plans. This can lead to increased token consumption.
 
 ### 1. Set Up the Project (Run Once)
 
-When you run `/conductor:setup`, Conductor helps you define the core components of your project context. This context is then used for building new components or features by you or anyone on your team.
-
-- **Product**: Define project context (e.g. users, product goals, high-level features).
-- **Product guidelines**: Define standards (e.g. prose style, brand messaging, visual identity).
-- **Tech stack**: Configure technical preferences (e.g. language, database, frameworks).
-- **Workflow**: Set team preferences (e.g. TDD, commit strategy). Uses [workflow.md](templates/workflow.md) as a customizable template.
+When you run `/conductor:setup`, Conductor helps you define the core components of your project context.
 
 **Generated Artifacts:**
-- `conductor/product.md`
-- `conductor/product-guidelines.md`
-- `conductor/tech-stack.md`
-- `conductor/workflow.md`
-- `conductor/code_styleguides/`
-- `conductor/tracks.md`
+- `conductor/product.md`, `tech-stack.md`, `workflow.md`, `tracks.md`
 
 ```bash
 /conductor:setup
@@ -108,71 +80,53 @@ When you run `/conductor:setup`, Conductor helps you define the core components 
 
 ### 2. Start a New Track (Feature or Bug)
 
-When you’re ready to take on a new feature or bug fix, run `/conductor:newTrack`. This initializes a **track** — a high-level unit of work. Conductor helps you generate two critical artifacts:
-
-- **Specs**: The detailed requirements for the specific job. What are we building and why?
-- **Plan**: An actionable to-do list containing phases, tasks, and sub-tasks.
-
-**Generated Artifacts:**
-- `conductor/tracks/<track_id>/spec.md`
-- `conductor/tracks/<track_id>/plan.md`
-- `conductor/tracks/<track_id>/metadata.json`
+Run `/conductor:newTrack` to initialize a **track** — a high-level unit of work.
 
 ```bash
-/conductor:newTrack
-# OR with a description
-/conductor:newTrack "Add a dark mode toggle to the settings page"
+/conductor:newTrack "Add a dark mode toggle"
 ```
 
 ### 3. Implement the Track
 
-Once you approve the plan, run `/conductor:implement`. Your coding agent then works through the `plan.md` file, checking off tasks as it completes them.
-
-**Updated Artifacts:**
-- `conductor/tracks.md` (Status updates)
-- `conductor/tracks/<track_id>/plan.md` (Status updates)
-- Project context files (Synchronized on completion)
+Run `/conductor:implement`. Your coding agent then works through the `plan.md` file.
 
 ```bash
 /conductor:implement
 ```
 
-Conductor will:
-1.  Select the next pending task.
-2.  Follow the defined workflow (e.g., TDD: Write Test -> Fail -> Implement -> Pass).
-3.  Update the status in the plan as it progresses.
-4.  **Verify Progress**: Guide you through a manual verification step at the end of each phase to ensure everything works as expected.
-
-During implementation, you can also:
-
-- **Check status**: Get a high-level overview of your project's progress.
-  ```bash
-  /conductor:status
-  ```
-- **Revert work**: Undo a feature or a specific task if needed.
-  ```bash
-  /conductor:revert
-  ```
-
 ## Commands Reference
 
-| Gemini CLI | Claude Code | Description | Artifacts Managed |
-| :--- | :--- | :--- | :--- |
-| `/conductor:setup` | `/conductor-setup` | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md` |
-| `/conductor:newTrack` | `/conductor-newtrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md` |
-| `/conductor:implement` | `/conductor-implement` | Executes the tasks defined in the current track's plan. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
-| `/conductor:status` | `/conductor-status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
-| `/conductor:revert` | `/conductor-revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
+| Gemini CLI | Claude Code | Description |
+| :--- | :--- | :--- |
+| `/conductor:setup` | `/conductor-setup` | Initialize project context |
+| `/conductor:newTrack` | `/conductor-newtrack` | Create new feature/bug track |
+| `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan |
+| `/conductor:status` | `/conductor-status` | Display progress overview |
+| `/conductor:revert` | `/conductor-revert` | Git-aware revert of tracks, phases, or tasks |
 
-Projects set up with either tool are fully interoperable.
+## Development
 
-## Resources
+### Prerequisites
+-   Python 3.9+
+-   Node.js 16+ (for VS Code extension)
 
-- [Claude Code README](.claude/README.md): Detailed Claude Code installation and usage
-- [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Gemini CLI documentation
-- [Agent Skills specification](https://agentskills.io)
-- [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
+### Building Artifacts
+```bash
+# Build conductor-core
+./scripts/build_core.sh
 
-## Legal
+# Build VS Code extension
+./scripts/build_vsix.sh
+```
 
+### Running Tests
+```bash
+# Core tests
+cd conductor-core && PYTHONPATH=src pytest
+
+# Gemini adapter tests
+cd conductor-gemini && PYTHONPATH=src:../conductor-core/src pytest
+```
+
+## License
 - License: [Apache License 2.0](LICENSE)
