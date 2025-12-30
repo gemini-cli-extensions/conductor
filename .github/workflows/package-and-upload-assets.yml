@@ -1,0 +1,61 @@
+name: Package and Upload Release Assets
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'The tag of the release to upload assets to'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # 1. Build conductor-core (PyPI)
+      - name: Build conductor-core
+        run: |
+          cd conductor-core
+          python -m pip install --upgrade build
+          python -m build
+
+      # 2. Build VS Code Extension (VSIX)
+      - name: Build VSIX
+        run: |
+          cd conductor-vscode
+          npm install
+          npx vsce package -o ../conductor.vsix
+
+      # 3. Create Legacy TAR archive
+      - name: Create TAR archive
+        run: tar -czvf conductor-release.tar.gz --exclude='.git' --exclude='.github' .
+
+      # 4. Upload all assets
+      - name: Upload assets to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ github.event.release.tag_name || inputs.tag_name }}
+          gh release upload $TAG \
+            conductor-release.tar.gz \
+            conductor.vsix \
+            conductor-core/dist/*.tar.gz \
+            conductor-core/dist/*.whl

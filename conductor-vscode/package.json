@@ -1,0 +1,36 @@
+{
+  "name": "conductor",
+  "displayName": "Conductor",
+  "description": "Context-Driven Development for VS Code",
+  "version": "0.1.0",
+  "publisher": "gemini-cli-extensions",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "conductor.newTrack",
+        "title": "Conductor: New Track"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.5",
+    "@vscode/vsce": "^2.15.0"
+  }
+}
