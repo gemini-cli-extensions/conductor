@@ -1,10 +1,10 @@
 # Track Plan: Project Foundation
 
-## Phase 1: Preparation & PR Integration
+## Phase 1: Preparation & PR Integration [checkpoint: 4c57b04]
 - [x] Task: Create a new development branch `feature/foundation-core` <!-- id: 0 -->
 - [x] Task: Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and resolve any conflicts <!-- id: 1 -->
 - [x] Task: Merge [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) and resolve any conflicts <!-- id: 2 -->
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md) <!-- id: 3 -->
 
 ## Phase 2: Core Library Extraction
 - [ ] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout)
