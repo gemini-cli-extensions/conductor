@@ -4,6 +4,10 @@
   "description": "Context-Driven Development for VS Code",
   "version": "0.1.0",
   "publisher": "gemini-cli-extensions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gemini-cli-extensions/conductor"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
