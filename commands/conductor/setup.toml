@@ -48,10 +48,10 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 ## 2.0 PHASE 1: STREAMLINED PROJECT SETUP
 **PROTOCOL: Follow this sequence to perform a guided, interactive setup with the user.**
 
+
 ### 2.0 Project Inception
-1.  **Initialize via CLI:** Execute `conductor-gemini setup --goal "Inferred from environment"`.
-2.  **Detect Project Maturity:**
-    -   **Classify Project:** ...
+1.  **Detect Project Maturity:**
+    -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
         -   Check for existence of version control directories: `.git`, `.svn`, or `.hg`.
         -   If a `.git` directory exists, execute `git status --porcelain`. If the output is not empty, classify as "Brownfield" (dirty repository).

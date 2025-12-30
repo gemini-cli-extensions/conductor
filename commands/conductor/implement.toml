@@ -15,8 +15,10 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **Tech Stack**
     -   **Workflow**
 
-2.  **Handle Failure:** If ANY of these are missing (or their resolved paths do not exist), Announce: "Conductor is not set up. Please run `/conductor:setup`." and HALT.
-
+2.  **Handle Failure:**
+    -   IF ANY of these files are missing (or their resolved paths do not exist), you MUST halt the operation immediately.
+    -   Announce: "Conductor is not set up. Please run `/conductor:setup` to set up the environment."
+    -   Do NOT proceed to Track Selection.
 
 ---
 
@@ -68,7 +70,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 4.  **Execute Tasks and Update Track Plan:**
     a. **Announce:** State that you will now execute the tasks from the track's **Implementation Plan** by following the procedures in the **Workflow**.
-    b. **Iterate Through Tasks:** You MUST now loop through each task in the track's **Implementation Plan** one by one.
+    b. **Iterate Through Tasks:** You MUST now loop through each task in the track's **Implementation Plan one by one.
     c. **For Each Task, You MUST:**
         i. **Defer to Workflow:** The **Workflow** file is the **single source of truth** for the entire task lifecycle. You MUST now read and execute the procedures defined in the "Task Workflow" section of the **Workflow** file you have in your context. Follow its steps for implementation, testing, and committing precisely.
 
