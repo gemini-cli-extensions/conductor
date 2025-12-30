@@ -55,3 +55,8 @@ def test_git_service_checkout_and_merge(temp_repo):
     service.checkout(default_branch) 
     service.merge("feature")
     assert os.path.exists(os.path.join(temp_repo, "feat.txt"))
+
+def test_git_service_missing_repo(tmp_path):
+    # Pass a path that is not a git repo
+    with pytest.raises(Exception): # git.exc.InvalidGitRepositoryError
+        GitService(repo_path=str(tmp_path))
