@@ -1,7 +1,7 @@
 # Track Plan: Project Foundation
 
 ## Phase 1: Preparation & PR Integration
-- [ ] Task: Create a new development branch `feature/foundation-core`
+- [x] Task: Create a new development branch `feature/foundation-core` <!-- id: 0 -->
 - [ ] Task: Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and resolve any conflicts
 - [ ] Task: Merge [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) and resolve any conflicts
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md)
@@ -26,3 +26,12 @@
 - [ ] Task: Ensure 95% test coverage for `conductor-core`
 - [ ] Task: Verify multi-platform support (mocking a qwen-cli environment)
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Validation & Coverage' (Protocol in workflow.md)
+
+## Phase 5: Release Engineering & Deployment
+- [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` to support VSIX and PyPI packaging
+- [ ] Task: Implement Feature: Build script for VSIX artifact
+- [ ] Task: Implement Feature: Build script for PyPI artifact (conductor-core)
+- [ ] Task: Verify artifact generation locally
+- [ ] Task: Push changes to upstream repository
+- [ ] Task: Open Pull Request on upstream repository
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Release Engineering & Deployment' (Protocol in workflow.md)
