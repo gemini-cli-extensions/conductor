@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conductor-gemini"
+version = "0.1.0"
+description = "Gemini CLI adapter for Conductor"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "conductor-core",
+    "click>=8.0.0",
+]
+
+[project.scripts]
+conductor-gemini = "conductor_gemini.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
