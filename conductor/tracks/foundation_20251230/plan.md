@@ -6,7 +6,7 @@
 - [x] Task: Merge [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) and resolve any conflicts <!-- id: 2 -->
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md) <!-- id: 3 -->
 
-## Phase 2: Core Library Extraction
+## Phase 2: Core Library Extraction [checkpoint: 2017ec5]
 - [x] Task: Initialize `conductor-core` package structure (pyproject.toml, src/ layout) <!-- id: 4 -->
 - [x] Task: Write Tests: Define schema for Tracks and Plans using Pydantic <!-- id: 5 -->
 - [x] Task: Implement Feature: Core Data Models (Track, Plan, Task, Phase) <!-- id: 6 -->
@@ -14,7 +14,7 @@
 - [x] Task: Implement Feature: Abstract Prompt Provider <!-- id: 8 -->
 - [x] Task: Write Tests: Git abstraction layer (GitPython) <!-- id: 9 -->
 - [x] Task: Implement Feature: Git Service Provider <!-- id: 10 -->
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md) <!-- id: 11 -->
 
 ## Phase 3: Platform Adapter Refactoring
 - [ ] Task: Refactor `conductor-gemini` to use `conductor-core` for all logic
