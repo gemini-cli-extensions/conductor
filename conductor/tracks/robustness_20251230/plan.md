@@ -24,13 +24,13 @@
 - [x] Task: Update documentation for extending the core library <!-- id: 50 -->
 - [x] Task: Conductor - Automated Verification 'Phase 3: Integration Robustness & Compatibility' <!-- id: 51 -->
 
-## Phase 4: Release Engineering & Deployment
-- [ ] Task: Update `.github/workflows/package-and-upload-assets.yml` for core library
-- [ ] Task: Implement Feature: PyPI release automation for `conductor-core`
-- [ ] Task: Verify artifact generation locally
-- [ ] Task: Push changes to upstream repository
+## Phase 4: Release Engineering & Deployment [checkpoint: Automated]
+- [x] Task: Update `.github/workflows/package-and-upload-assets.yml` for core library <!-- id: 52 -->
+- [x] Task: Implement Feature: PyPI release automation for `conductor-core` <!-- id: 53 -->
+- [x] Task: Verify artifact generation locally <!-- id: 54 -->
+- [~] Task: Push changes to upstream repository <!-- id: 55 -->
 - [ ] Task: Open Pull Request on upstream repository
-- [ ] Task: Conductor - Automated Verification 'Phase 4: Release Engineering & Deployment' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Verification 'Phase 4: Release Engineering & Deployment' <!-- id: 56 -->
 
 ## Phase 5: Maturity Enhancements
 - [ ] Task: Documentation Overhaul: Create ADRs and update root README for Monorepo
