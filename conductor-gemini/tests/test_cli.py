@@ -1,18 +1,25 @@
 import pytest
 from click.testing import CliRunner
 from conductor_gemini.cli import main
+import os
 
-def test_cli_setup():
+def test_cli_setup(tmp_path):
     runner = CliRunner()
-    result = runner.invoke(main, ['setup', '--project-goal', 'Build a tool'])
+    # Pass base-path to avoid git issues in test environment
+    result = runner.invoke(main, ['--base-path', str(tmp_path), 'setup', '--goal', 'Build a tool'])
     assert result.exit_code == 0
-    assert "Setting up project with goal: Build a tool" in result.output
+    assert "Initialized Conductor project" in result.output
+    assert os.path.exists(tmp_path / "conductor" / "product.md")
 
-def test_cli_new_track():
+def test_cli_new_track(tmp_path):
     runner = CliRunner()
-    result = runner.invoke(main, ['new-track', 'Add a feature'])
+    result = runner.invoke(main, ['--base-path', str(tmp_path), 'new-track', 'Add a feature'])
+    if result.exit_code != 0:
+        print(result.output)
+        print(result.stderr)
     assert result.exit_code == 0
-    assert "Creating new track: Add a feature" in result.output
+    assert "Created track" in result.output
+    assert "Add a feature" in result.output
 
 def test_cli_implement():
     runner = CliRunner()
