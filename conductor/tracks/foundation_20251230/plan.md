@@ -2,7 +2,7 @@
 
 ## Phase 1: Preparation & PR Integration
 - [x] Task: Create a new development branch `feature/foundation-core` <!-- id: 0 -->
-- [ ] Task: Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and resolve any conflicts
+- [x] Task: Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and resolve any conflicts <!-- id: 1 -->
 - [ ] Task: Merge [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) and resolve any conflicts
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & PR Integration' (Protocol in workflow.md)
 
