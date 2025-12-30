@@ -17,7 +17,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Library Extraction' (Protocol in workflow.md) <!-- id: 11 -->
 
 ## Phase 3: Platform Adapter Refactoring
-- [ ] Task: Refactor `conductor-gemini` to use `conductor-core` for all logic
+- [~] Task: Refactor `conductor-gemini` to use `conductor-core` for all logic <!-- id: 12 -->
 - [ ] Task: Write Tests: Verify CLI slash command routing to core library
 - [ ] Task: Implement Feature: Gemini CLI Adapter implementation
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Platform Adapter Refactoring' (Protocol in workflow.md)
