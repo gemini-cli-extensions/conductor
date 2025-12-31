@@ -6,10 +6,10 @@
 - [x] Task: Implement `implement` command in `conductor-gemini` using `TaskRunner` [31929a4]
 - [x] Task: Conductor - Automated Verification 'Phase 1: Gemini Adapter Completion' (Protocol in workflow.md) [31929a4]
 
-## Phase 2: VS Code Extension Completion
-- [ ] Task: Add `setup`, `implement`, `status`, `revert` commands to `conductor-vscode/package.json`
-- [ ] Task: Implement command handlers in `extension.ts` (calling Python CLI or Core)
-- [ ] Task: Conductor - Automated Verification 'Phase 2: VS Code Extension Completion' (Protocol in workflow.md)
+## Phase 2: VS Code Extension Completion [checkpoint: bacb9bc]
+- [x] Task: Add `setup`, `implement`, `status`, `revert` commands to `conductor-vscode/package.json` [bacb9bc]
+- [x] Task: Implement command handlers in `extension.ts` (calling Python CLI or Core) [bacb9bc]
+- [x] Task: Conductor - Automated Verification 'Phase 2: VS Code Extension Completion' (Protocol in workflow.md) [bacb9bc]
 
 ## Phase 3: Core Logic Refinement
 - [ ] Task: Implement robust ID generator in `ProjectManager` (e.g., hash-based or human-readable)
