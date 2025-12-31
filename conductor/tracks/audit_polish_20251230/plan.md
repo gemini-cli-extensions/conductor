@@ -11,10 +11,10 @@
 - [x] Task: Implement command handlers in `extension.ts` (calling Python CLI or Core) [bacb9bc]
 - [x] Task: Conductor - Automated Verification 'Phase 2: VS Code Extension Completion' (Protocol in workflow.md) [bacb9bc]
 
-## Phase 3: Core Logic Refinement
-- [ ] Task: Implement robust ID generator in `ProjectManager` (e.g., hash-based or human-readable)
-- [ ] Task: Ensure `TaskRunner` handles the full TDD loop defined in `workflow.md`
-- [ ] Task: Conductor - Automated Verification 'Phase 3: Core Logic Refinement' (Protocol in workflow.md)
+## Phase 3: Core Logic Refinement [checkpoint: 227fb3a]
+- [x] Task: Implement robust ID generator in `ProjectManager` (e.g., hash-based or human-readable) [227fb3a]
+- [x] Task: Ensure `TaskRunner` handles the full TDD loop defined in `workflow.md` [227fb3a]
+- [x] Task: Conductor - Automated Verification 'Phase 3: Core Logic Refinement' (Protocol in workflow.md) [227fb3a]
 
 ## Phase 4: Final Release Prep
 - [ ] Task: Bump versions in all `package.json` and `pyproject.toml` files to `0.2.0`
