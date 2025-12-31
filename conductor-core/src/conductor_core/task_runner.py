@@ -42,13 +42,59 @@ class TaskRunner:
         escaped_id = re.escape(track_id)
         # Match from ## [ ] Track: ... until the link with track_id
         # We use a non-greedy match for the track description
-        pattern = rf"(##\s*\[)[ xX~]?(\]\s*Track:.*?\r?\n\*Link:\s*\[.*?/tracks/{escaped_id}/\]\(.*?\)\*)"
+        pattern = rf"(##\s*\[)[ xX~]?(\]\s*Track:.*?\r?\n\*Link:\s*\[.*?/tracks/{escaped_id}/\].*?\*)"
         
         new_content, count = re.subn(pattern, rf"\1{status}\2", content, flags=re.MULTILINE)
         if count == 0:
             raise ValueError(f"Could not find track {track_id} in tracks.md to update status")
             
         tracks_file.write_text(new_content)
+
+    def update_task_status(self, track_id: str, task_description: str, status: str, commit_sha: Optional[str] = None):
+        """Updates a specific task's status in the track's plan.md."""
+        plan_file = self.pm.conductor_path / "tracks" / track_id / "plan.md"
+        if not plan_file.exists():
+            raise FileNotFoundError(f"plan.md not found for track {track_id}")
+            
+        content = plan_file.read_text()
+        import re
+        
+        # Escape description for regex
+        escaped_desc = re.escape(task_description)
+        # Match - [ ] Task description ...
+        pattern = rf"(^\s*-\s*\[)[ xX~]?(\]\s*(?:Task:\s*)?{escaped_desc}.*?)(?:\s*\[[0-9a-f]{{7,}}\])?$"
+        
+        replacement = rf"\1{status}\2"
+        if commit_sha:
+            short_sha = commit_sha[:7]
+            replacement += f" [{short_sha}]"
+            
+        new_content, count = re.subn(pattern, replacement, content, flags=re.MULTILINE)
+        if count == 0:
+            raise ValueError(f"Could not find task '{task_description}' in plan.md")
+            
+        plan_file.write_text(new_content)
+
+    def checkpoint_phase(self, track_id: str, phase_name: str, commit_sha: str):
+        """Updates a phase with a checkpoint SHA in plan.md."""
+        plan_file = self.pm.conductor_path / "tracks" / track_id / "plan.md"
+        if not plan_file.exists():
+            raise FileNotFoundError(f"plan.md not found for track {track_id}")
+            
+        content = plan_file.read_text()
+        import re
+        
+        escaped_phase = re.escape(phase_name)
+        short_sha = commit_sha[:7]
+        # Match ## Phase X: Phase Name ...
+        pattern = rf"(##\s*(?:Phase\s*\d+:\s*)?{escaped_phase})(?:\s*\[checkpoint:\s*[0-9a-f]+\])?"
+        replacement = rf"\1 [checkpoint: {short_sha}]"
+        
+        new_content, count = re.subn(pattern, replacement, content, flags=re.IGNORECASE | re.MULTILINE)
+        if count == 0:
+            raise ValueError(f"Could not find phase '{phase_name}' in plan.md")
+            
+        plan_file.write_text(new_content)
 
     def archive_track(self, track_id: str):
         """Moves a track from tracks/ to archive/ and removes it from tracks.md."""
@@ -70,15 +116,13 @@ class TaskRunner:
         tracks_file = self.pm.conductor_path / "tracks.md"
         content = tracks_file.read_text()
         
-        # Pattern to match the track section (starting with --- if present, or just the heading)
-        # Note: This is a bit simplified, might need refinement for exact matching
         import re
-        pattern = rf"(?m)^---\n\n##\s*\[.*?]\s*Track:.*?\n\*Link:\s*\[.*?/tracks/{track_id}/].*?\n?"
+        pattern = rf"(?m)^---\n\n##\s*(\[.*?]\s*Track:.*?\n\*Link:\s*\[.*?/tracks/{track_id}/\].*?)\n?"
         new_content, count = re.subn(pattern, "", content)
         
         if count == 0:
             # Try without the separator
-            pattern = rf"(?m)^##\s*\[.*?]\s*Track:.*?\n\*Link:\s*\[.*?/tracks/{track_id}/].*?\n?"
+            pattern = rf"(?m)^##\s*(\[.*?]\s*Track:.*?\n\*Link:\s*\[.*?/tracks/{track_id}/\].*?)\n?"
             new_content, count = re.subn(pattern, "", content)
 
         tracks_file.write_text(new_content)

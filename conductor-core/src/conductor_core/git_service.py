@@ -18,6 +18,14 @@ class GitService:
         commit = self.repo.index.commit(message)
         return commit.hexsha
 
+    def add_note(self, commit_sha: str, note: str, namespace: str = "commits"):
+        """Adds a git note to a specific commit."""
+        self.repo.git.notes('--ref', namespace, 'add', '-m', note, commit_sha)
+
+    def get_log(self, n=5):
+        """Returns recent commit log."""
+        return self.repo.git.log(n=n, oneline=True)
+
     def get_head_sha(self) -> str:
         return self.repo.head.commit.hexsha
 
