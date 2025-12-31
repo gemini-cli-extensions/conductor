@@ -28,8 +28,8 @@
 - [x] Task: Update `.github/workflows/package-and-upload-assets.yml` for core library <!-- id: 52 -->
 - [x] Task: Implement Feature: PyPI release automation for `conductor-core` <!-- id: 53 -->
 - [x] Task: Verify artifact generation locally <!-- id: 54 -->
-- [~] Task: Push changes to upstream repository <!-- id: 55 -->
-- [ ] Task: Open Pull Request on upstream repository
+- [x] Task: Push changes to upstream repository <!-- id: 55 -->
+- [x] Task: Open Pull Request on upstream repository
 - [x] Task: Conductor - Automated Verification 'Phase 4: Release Engineering & Deployment' <!-- id: 56 -->
 
 ## Phase 5: Maturity Enhancements [checkpoint: Automated]
