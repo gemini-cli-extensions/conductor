@@ -2,24 +2,51 @@ import pytest
 from click.testing import CliRunner
 from conductor_gemini.cli import main
 import os
+from git import Repo
 
-def test_cli_setup(tmp_path):
+@pytest.fixture
+def base_path(tmp_path):
+    # Initialize a git repo in the temporary directory
+    Repo.init(tmp_path)
+    return tmp_path
+
+def test_cli_setup(base_path):
     runner = CliRunner()
-    # Pass base-path to avoid git issues in test environment
-    result = runner.invoke(main, ['--base-path', str(tmp_path), 'setup', '--goal', 'Build a tool'])
+    result = runner.invoke(main, ['--base-path', str(base_path), 'setup', '--goal', 'Build a tool'])
     assert result.exit_code == 0
     assert "Initialized Conductor project" in result.output
-    assert os.path.exists(tmp_path / "conductor" / "product.md")
+    assert os.path.exists(base_path / "conductor" / "product.md")
 
-def test_cli_new_track(tmp_path):
+def test_cli_new_track(base_path):
     runner = CliRunner()
-    result = runner.invoke(main, ['--base-path', str(tmp_path), 'new-track', 'Add a feature'])
+    result = runner.invoke(main, ['--base-path', str(base_path), 'new-track', 'Add a feature'])
     assert result.exit_code == 0
     assert "Created track" in result.output
     assert "Add a feature" in result.output
 
-def test_cli_implement():
+def test_cli_implement(base_path):
     runner = CliRunner()
-    result = runner.invoke(main, ['implement'])
+    # Need to setup and create track first
+    runner.invoke(main, ['--base-path', str(base_path), 'setup', '--goal', 'Test'])
+    runner.invoke(main, ['--base-path', str(base_path), 'new-track', 'Test Track'])
+    # Mocking files for implement
+    track_dir = base_path / "conductor" / "tracks"
+    track_id = os.listdir(track_dir)[0]
+    (track_dir / track_id / "plan.md").write_text("- [ ] Task 1")
+    (track_dir / track_id / "spec.md").write_text("# Spec")
+    base_path.joinpath("conductor/workflow.md").write_text("# Workflow")
+
+    result = runner.invoke(main, ['--base-path', str(base_path), 'implement'])
+    if result.exit_code != 0:
+        print(result.output)
     assert result.exit_code == 0
-    assert "Implementing current track..." in result.output
+    assert "Selecting track: Test Track" in result.output
+
+def test_cli_status(base_path):
+    runner = CliRunner()
+    # Setup first
+    runner.invoke(main, ['--base-path', str(base_path), 'setup', '--goal', 'Test'])
+    # Check status
+    result = runner.invoke(main, ['--base-path', str(base_path), 'status'])
+    assert result.exit_code == 0
+    assert "Project Status Report" in result.output
