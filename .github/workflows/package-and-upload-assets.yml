@@ -28,7 +28,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       # 1. Build conductor-core (PyPI)
       - name: Build conductor-core
@@ -41,7 +41,7 @@ jobs:
       - name: Build VSIX
         run: |
           cd conductor-vscode
-          npm install
+          npm ci
           npx vsce package -o ../conductor.vsix
 
       # 3. Create Legacy TAR archive
