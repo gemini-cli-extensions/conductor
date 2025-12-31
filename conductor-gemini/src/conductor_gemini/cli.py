@@ -86,10 +86,17 @@ def implement(ctx, track_description):
         sys.exit(1)
 
 @main.command()
+@click.argument('track_id')
+@click.argument('task_description')
 @click.pass_obj
-def revert(ctx):
-    """Revert a task or phase (Not yet implemented)"""
-    click.echo("Revert command is not yet fully implemented in the CLI adapter.")
+def revert(ctx, track_id, task_description):
+    """Revert a specific task to pending status"""
+    try:
+        ctx.runner.revert_task(track_id, task_description)
+        click.echo(f"Task '{task_description}' in track {track_id} has been reset to pending.")
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
 
 @main.command()
 @click.argument('track_id')
