@@ -1,6 +1,6 @@
 {
   "name": "conductor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Context-driven development for Claude Code. Plan before you build with specs, tracks, and TDD workflows.",
   "author": {
     "name": "Gemini CLI Extensions",
