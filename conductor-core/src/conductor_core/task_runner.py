@@ -96,6 +96,10 @@ class TaskRunner:
             
         plan_file.write_text(new_content)
 
+    def revert_task(self, track_id: str, task_description: str):
+        """Resets a task status to pending in plan.md."""
+        self.update_task_status(track_id, task_description, " ")
+
     def archive_track(self, track_id: str):
         """Moves a track from tracks/ to archive/ and removes it from tracks.md."""
         track_dir = self.pm.conductor_path / "tracks" / track_id

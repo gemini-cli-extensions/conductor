@@ -46,7 +46,7 @@ def run_smoke_test():
     # 4. Run Status
     print("\n--- Testing Status ---")
     output = run_command("python -m conductor_gemini.cli status", cwd=test_workspace)
-    assert "Project Tracks" in output
+    assert "Project Status Report" in output
     
     print("\nSmoke test passed successfully!")
 
