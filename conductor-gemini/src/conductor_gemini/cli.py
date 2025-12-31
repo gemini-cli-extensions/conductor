@@ -86,6 +86,12 @@ def implement(ctx, track_description):
         sys.exit(1)
 
 @main.command()
+@click.pass_obj
+def revert(ctx):
+    """Revert a task or phase (Not yet implemented)"""
+    click.echo("Revert command is not yet fully implemented in the CLI adapter.")
+
+@main.command()
 @click.argument('track_id')
 @click.pass_obj
 def archive(ctx, track_id):

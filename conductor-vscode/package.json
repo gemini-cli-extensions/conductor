@@ -23,8 +23,24 @@
   "contributes": {
     "commands": [
       {
+        "command": "conductor.setup",
+        "title": "Conductor: Setup"
+      },
+      {
         "command": "conductor.newTrack",
         "title": "Conductor: New Track"
+      },
+      {
+        "command": "conductor.status",
+        "title": "Conductor: Status"
+      },
+      {
+        "command": "conductor.implement",
+        "title": "Conductor: Implement"
+      },
+      {
+        "command": "conductor.revert",
+        "title": "Conductor: Revert"
       }
     ]
   },
