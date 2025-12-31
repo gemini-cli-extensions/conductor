@@ -40,12 +40,17 @@ class ProjectManager:
             
         tracks_file = self.conductor_path / "tracks.md"
         if not tracks_file.exists():
-            tracks_file.write_text("# Project Tracks\n\n")
+            tracks_file.write_text("# Project Tracks\n\nThis file tracks all major tracks for the project.\n")
         
+        # Robust ID generation: sanitized description + short hash of desc and timestamp
+        import hashlib
+        import re
+        sanitized = re.sub(r'[^a-z0-9]', '_', description.lower())[:30].strip('_')
         timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
-        # Simple ID generation for now
-        short_name = description.lower().replace(" ", "_")[:20]
-        track_id = f"{short_name}_{timestamp}"
+        hash_input = f"{description}{timestamp}".encode()
+        short_hash = hashlib.md5(hash_input).hexdigest()[:8]
+        
+        track_id = f"{sanitized}_{short_hash}"
         
         track_dir = self.conductor_path / "tracks" / track_id
         track_dir.mkdir(parents=True, exist_ok=True)
