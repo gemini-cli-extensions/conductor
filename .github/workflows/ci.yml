@@ -25,8 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd conductor-core && pip install -e .
+          cd conductor-core && pip install -e ".[test]"
           cd ../conductor-gemini && pip install -e .
+          pip install pytest pytest-cov # Ensure pytest is in PATH
           cd ../conductor-vscode && npm install
 
       - name: Run Core Tests
