@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ feature/foundation-core ]
+  pull_request:
+    branches: [ feature/foundation-core ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          cd conductor-core && pip install -e .
+          cd ../conductor-gemini && pip install -e .
+          cd ../conductor-vscode && npm install
+
+      - name: Run Core Tests
+        run: |
+          cd conductor-core && pytest
+
+      - name: Run Gemini Tests
+        run: |
+          cd conductor-gemini && pytest
+
+      - name: Run Smoke Test
+        run: |
+          python scripts/smoke_test.py
+
+      - name: Run Platform Validation
+        run: |
+          python scripts/validate_platforms.py
+
+      - name: Build Core
+        run: |
+          ./scripts/build_core.sh
+
+      - name: Build VS Code Extension
+        run: |
+          ./scripts/build_vsix.sh
