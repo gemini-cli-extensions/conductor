@@ -33,9 +33,10 @@ echo "Where do you want to install the skill?"
 echo ""
 echo "  1) OpenCode global    (~/.opencode/skill/conductor/)"
 echo "  2) Claude CLI global  (~/.claude/skills/conductor/)"
-echo "  3) Both"
+echo "  3) Codex global       (~/.codex/skills/conductor/)"
+echo "  4) All of the above"
 echo ""
-read -p "Choose [1/2/3]: " choice
+read -p "Choose [1/2/3/4]: " choice
 
 case "$choice" in
     1)
@@ -45,7 +46,10 @@ case "$choice" in
         TARGETS=("$HOME/.claude/skills/conductor")
         ;;
     3)
-        TARGETS=("$HOME/.opencode/skill/conductor" "$HOME/.claude/skills/conductor")
+        TARGETS=("$HOME/.codex/skills/conductor")
+        ;;
+    4)
+        TARGETS=("$HOME/.opencode/skill/conductor" "$HOME/.claude/skills/conductor" "$HOME/.codex/skills/conductor")
         ;;
     *)
         echo "Invalid choice. Exiting."
