@@ -21,14 +21,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
           cd conductor-core && pip install -e ".[test]"
           cd ../conductor-gemini && pip install -e .
-          pip install pytest pytest-cov # Ensure pytest is in PATH
-          cd ../conductor-vscode && npm install
+          pip install pytest pytest-cov
+          cd ../conductor-vscode && npm ci
 
       - name: Run Core Tests
         run: |
