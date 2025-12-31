@@ -16,8 +16,8 @@
 - [x] Task: Ensure `TaskRunner` handles the full TDD loop defined in `workflow.md` [227fb3a]
 - [x] Task: Conductor - Automated Verification 'Phase 3: Core Logic Refinement' (Protocol in workflow.md) [227fb3a]
 
-## Phase 4: Final Release Prep
-- [ ] Task: Bump versions in all `package.json` and `pyproject.toml` files to `0.2.0`
-- [ ] Task: Update `CHANGELOG.md`
-- [ ] Task: Push final changes and open PR
-- [ ] Task: Conductor - Automated Verification 'Phase 4: Final Release Prep' (Protocol in workflow.md)
+## Phase 4: Final Release Prep [checkpoint: 66cab67]
+- [x] Task: Bump versions in all `package.json` and `pyproject.toml` files to `0.2.0` [66cab67]
+- [x] Task: Update `CHANGELOG.md` [66cab67]
+- [x] Task: Push final changes and open PR [66cab67]
+- [x] Task: Conductor - Automated Verification 'Phase 4: Final Release Prep' (Protocol in workflow.md) [66cab67]
