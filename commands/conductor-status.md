@@ -8,7 +8,7 @@ Show the current status of this Conductor project.
 
 ## 1. Check Setup
 
-If `conductor/tracks.md` doesn't exist, tell user to run `/conductor-setup` first.
+If `conductor/tracks.md` doesn't exist, tell user to run `/conductor:setup` first.
 
 ## 2. Read State
 
@@ -53,6 +53,6 @@ Format the output like this:
 ## 5. Suggestions
 
 Based on status:
-- If no tracks: "Run `/conductor-newtrack` to create your first track"
-- If track in progress: "Run `/conductor-implement` to continue"
-- If all complete: "All tracks complete! Run `/conductor-newtrack` for new work"
+- If no tracks: "Run `/conductor:newtrack` to create your first track"
+- If track in progress: "Run `/conductor:implement` to continue"
+- If all complete: "All tracks complete! Run `/conductor:newtrack` for new work"
