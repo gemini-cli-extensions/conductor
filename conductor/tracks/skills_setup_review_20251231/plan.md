@@ -14,10 +14,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
 
 ## Phase 2: Manifest and Design
-- [~] Task: Define a skills manifest schema as the single source of truth
-  - [ ] Sub-task: Include skill metadata fields and tool visibility flags
-  - [ ] Sub-task: Include command syntax mapping per tool
-  - [ ] Sub-task: Define a JSON Schema (or equivalent) for validation
+- [x] Task: Define a skills manifest schema as the single source of truth [a8186ef]
+  - [x] Sub-task: Include skill metadata fields and tool visibility flags
+  - [x] Sub-task: Include command syntax mapping per tool
+  - [x] Sub-task: Define a JSON Schema (or equivalent) for validation
 - [ ] Task: Design generation targets and outputs
   - [ ] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
   - [ ] Sub-task: Define outputs for Gemini/Qwen extension manifests
