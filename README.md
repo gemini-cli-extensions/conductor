@@ -24,6 +24,10 @@ Conductor is designed to provide a consistent experience across different tools:
 -   **VS Code / Antigravity**: Supported via VSIX (supports Remote Development).
 -   **Claude Code**: Supported via portable skills.
 
+## Command Syntax by Tool
+
+See `docs/skill-command-syntax.md` for tool-native command syntax and the artifacts each tool consumes.
+
 ## Features
 
 -   **Platform Source of Truth**: All protocol prompts are centralized in the core library and synchronized to adapters.
@@ -59,7 +63,12 @@ cd conductor
 # Run the install script
 ./skill/scripts/install.sh
 ```
-The installer will ask where to install (OpenCode, Claude CLI, or both). The skill is installed with symlinks to this repository, so running `git pull` will automatically update the skill.
+The installer will ask where to install (OpenCode, Claude CLI, Codex, or all). You can also use flags:
+```bash
+./skill/scripts/install.sh --target codex
+./skill/scripts/install.sh --list
+```
+The skill is installed with symlinks to this repository, so running `git pull` will automatically update the skill.
 
 ## Usage
 

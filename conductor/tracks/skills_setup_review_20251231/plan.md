@@ -55,7 +55,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md)
 
 ## Phase 5: Documentation and Sync Checks
-- [ ] Task: Update docs with tool-native command syntax and setup steps
+- [~] Task: Update docs with tool-native command syntax and setup steps
   - [ ] Sub-task: Add table of tools -> command syntax (/, $, @)
   - [ ] Sub-task: Clarify which artifacts each tool consumes
   - [ ] Sub-task: Publish the command syntax matrix artifact
