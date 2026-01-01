@@ -21,10 +21,10 @@
 - [x] Task: Design generation targets and outputs [081f1f1]
   - [x] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
   - [x] Sub-task: Define outputs for Gemini/Qwen extension manifests
-- [~] Task: Design validation and sync check strategy
-  - [ ] Sub-task: Define validation scope and failure messaging
-  - [ ] Sub-task: Plan CI/local check integration
-  - [ ] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
+- [x] Task: Design validation and sync check strategy [5ba0b4a]
+  - [x] Sub-task: Define validation scope and failure messaging
+  - [x] Sub-task: Plan CI/local check integration
+  - [x] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md)
 
 ## Phase 3: Automation and Generation
