@@ -112,8 +112,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ### 2.4 Create Track Artifacts and Update Main Plan
 
-1.  **Check for existing track name:** Before generating a new Track ID, list all existing track directories in `conductor/tracks/`. Extract the short names from these track IDs (e.g., ``shortname_YYYYMMDD`` -> `shortname`). If the proposed short name for the new track (derived from the initial description) matches an existing short name, halt the `newTrack` creation. Explain that a track with that name already exists and suggest choosing a different name or resuming the existing track.
-2.  **Generate Track ID:** Create a unique Track ID (e.g., ``shortname_YYYYMMDD``).
+1.  **Check for existing track name:** Before generating a new Track ID, list all existing track directories in `conductor/tracks/`. Extract the short names from these track IDs (e.g., ``shortname_8charhash`` -> `shortname`). If the proposed short name for the new track (derived from the initial description) matches an existing short name, halt the `newTrack` creation. Explain that a track with that name already exists and suggest choosing a different name or resuming the existing track.
+2.  **Generate Track ID:** Create a unique Track ID (e.g., ``shortname_8charhash``).
 3.  **Create Directory:** Create a new directory: `conductor/tracks/<track_id>/`
 4.  **Create `metadata.json`:** Create a metadata file at `conductor/tracks/<track_id>/metadata.json` with content like:
     ```json
