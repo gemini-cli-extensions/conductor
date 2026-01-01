@@ -4,7 +4,7 @@
 - [x] Task: Inventory current skill templates and generated outputs [2e1d688]
   - [x] Sub-task: Map source templates to generated artifacts (`skills/`, `.antigravity/`, CLI manifests)
   - [x] Sub-task: Identify manual vs generated artifacts and drift risks
-- [ ] Task: Document tool command syntax and artifact types
+- [~] Task: Document tool command syntax and artifact types
   - [ ] Sub-task: Capture native command syntax per tool (slash /, $, @)
   - [ ] Sub-task: Document required artifact types per tool
   - [ ] Sub-task: Draft a command syntax matrix artifact (tool -> syntax + example)
