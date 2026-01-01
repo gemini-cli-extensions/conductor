@@ -21,7 +21,7 @@
 - [x] Task: Design generation targets and outputs [081f1f1]
   - [x] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
   - [x] Sub-task: Define outputs for Gemini/Qwen extension manifests
-- [ ] Task: Design validation and sync check strategy
+- [~] Task: Design validation and sync check strategy
   - [ ] Sub-task: Define validation scope and failure messaging
   - [ ] Sub-task: Plan CI/local check integration
   - [ ] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
