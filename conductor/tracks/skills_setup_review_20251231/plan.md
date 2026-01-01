@@ -11,7 +11,7 @@
 - [x] Task: Summarize gaps and improvement opportunities [eab13cc]
   - [x] Sub-task: List duplication or manual steps to remove
   - [x] Sub-task: Identify missing validations or CI checks
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md) [02ac280]
 
 ## Phase 2: Manifest and Design [checkpoint: 95d8dbb]
 - [x] Task: Define a skills manifest schema as the single source of truth [a8186ef]
@@ -25,7 +25,7 @@
   - [x] Sub-task: Define validation scope and failure messaging
   - [x] Sub-task: Plan CI/local check integration
   - [x] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md) [02ac280]
 
 ## Phase 3: Automation and Generation [checkpoint: ca3043d]
 - [x] Task: Write failing tests for manifest loading and generated outputs (TDD Phase) [5a8c4f9]
@@ -38,7 +38,7 @@
   - [x] Sub-task: Update `gemini-extension.json` and `qwen-extension.json` from manifest
   - [x] Sub-task: Ensure correct command syntax entries where applicable
 - [x] Task: Implement the "no protocol changes" guard in generation or validation [4e8eda3]
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md) [02ac280]
 
 ## Phase 4: Install UX and Validation [checkpoint: e824ff8]
 - [x] Task: Write failing tests for installer flags and validation script (TDD Phase) [8ec6e38]
@@ -52,7 +52,7 @@
   - [x] Sub-task: Validate generated `SKILL.md` frontmatter vs manifest
   - [x] Sub-task: Validate tool-specific command syntax mapping
   - [x] Sub-task: Validate manifest against schema
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md) [02ac280]
 
 ## Phase 5: Documentation and Sync Checks [checkpoint: 8c1fba9]
 - [x] Task: Update docs with tool-native command syntax and setup steps [5b48ca4]
@@ -62,4 +62,4 @@
 - [x] Task: Add a sync check command or CI hook [fc09aa9]
   - [x] Sub-task: Provide a `scripts/check_skills_sync.py` (or equivalent)
   - [x] Sub-task: Document how to run the sync check locally
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation and Sync Checks' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Documentation and Sync Checks' (Protocol in workflow.md) [02ac280]
