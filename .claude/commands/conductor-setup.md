@@ -22,7 +22,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - If `STEP` is "2.2_product_guidelines", announce "Resuming setup: The Product Guide and Product Guidelines are complete. Next, we will define the Technology Stack." and proceed to **Section 2.3**.
     - If `STEP` is "2.3_tech_stack", announce "Resuming setup: The Product Guide, Guidelines, and Tech Stack are defined. Next, we will select Code Styleguides." and proceed to **Section 2.4**.
     - If `STEP` is "2.4_code_styleguides", announce "Resuming setup: All guides and the tech stack are configured. Next, we will define the project workflow." and proceed to **Section 2.5**.
-    - If `STEP` is "2.5_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Phase 2 (3.0)**.
+    - If `STEP` is "2.5_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Section 3.0**.
     - If `STEP` is "3.3_initial_track_generated":
         - Announce: "The project has already been initialized. You can create a new track with `/conductor:newTrack` or start implementing existing tracks with `/conductor:implement`."
         - Halt the `setup` process.
@@ -47,7 +47,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 **PROTOCOL: Follow this sequence to perform a guided, interactive setup with the user.**
 
 
-### 2.0 Project Inception
+### 2.0.1 Project Inception
 1.  **Detect Project Maturity:**
     -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
@@ -81,7 +81,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
             -   **2.1 File Size and Relevance Triage:**
                 1.  **Respect Ignore Files:** Before scanning any files, you MUST check for the existence of `.geminiignore` and `.gitignore` files. If either or both exist, you MUST use their combined patterns to exclude files and directories from your analysis. The patterns in `.geminiignore` should take precedence over `.gitignore` if there are conflicts. This is the primary mechanism for avoiding token-heavy, irrelevant files like `node_modules`.
-                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co | xargs -n 1 dirname | sort -u` which lists all relevant directories (tracked by Git, plus other non-ignored files) without listing every single file. If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
+                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co` which lists all relevant files (tracked by Git, plus other non-ignored files). If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
                 3.  **Fallback to Manual Ignores:** ONLY if neither `.geminiignore` nor `.gitignore` exist, you should fall back to manually ignoring common directories. Example command: `ls -lR -I 'node_modules' -I '.m2' -I 'build' -I 'dist' -I 'bin' -I 'target' -I '.git' -I '.idea' -I '.vscode'`.
                 4.  **Prioritize Key Files:** From the filtered list of files, focus your analysis on high-value, low-size files first, such as `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, and other configuration or manifest files.
                 5.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail`) to infer its purpose.
@@ -109,7 +109,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Execute `mkdir -p conductor`.
         -   **Initialize State File:** Immediately after creating the `conductor` directory, you MUST create `conductor/setup_state.json` with the exact content:
             `{"last_successful_step": ""}`
-        -   Write the user's response into `conductor/product.md` under a header named `# Initial Concept`.
+        -   **Seed the Product Guide:** Write the user's response into `conductor/product.md` under a header named `# Initial Concept`.
 
 5.  **Continue:** Immediately proceed to the next section.
 
@@ -265,6 +265,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     > You can always edit the generated file with the Gemini CLI built-in option "Modify with external editor" (if present), or with your favorite external editor after this step.
     > Please respond with A or B."
     - **Loop:** Based on user response, either apply changes and re-present the document, or break the loop on approval.
+5.  **Confirm Final Content:** Proceed only after the user explicitly approves the draft.
 6.  **Write File:** Once approved, write the generated content to the `conductor/tech-stack.md` file.
 7.  **Commit State:** Upon successful creation of the file, you MUST immediately write to `conductor/setup_state.json` with the exact content:
     `{"last_successful_step": "2.3_tech_stack"}`
@@ -314,8 +315,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             -   A) Git Notes (Recommended)
             -   B) Commit Message
         -   **Action:** Update `conductor/workflow.md` based on the user's responses.
-        -   **Commit State:** After the `workflow.md` file is successfully written or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
-            `{"last_successful_step": "2.5_workflow"}`
+    -   **Commit State:** After the `workflow.md` file is successfully copied or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
+        `{"last_successful_step": "2.5_workflow"}`
 
 ### 2.6 Finalization
 1.  **Summarize Actions:** Present a summary of all actions taken during Phase 1, including:
@@ -400,14 +401,14 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - ```json
             {
             "track_id": "<track_id>",
-            "type": "feature", // or "bug"
-            "status": "new", // or in_progress, completed, cancelled
+            "type": "feature",
+            "status": "new",
             "created_at": "YYYY-MM-DDTHH:MM:SSZ",
             "updated_at": "YYYY-MM-DDTHH:MM:SSZ",
             "description": "<Initial user description>"
             }
             ```
-        Populate fields with actual values. Use the current timestamp.
+        Populate fields with actual values. Use the current timestamp. Valid values for `type`: "feature" or "bug". Valid values for `status`: "new", "in_progress", "completed", or "cancelled".
         iv. **Write Spec and Plan Files:** In the exact same directory, write the generated `spec.md` and `plan.md` files.
 
     d. **Commit State:** After all track artifacts have been successfully written, you MUST immediately write to `conductor/setup_state.json` with the exact content:

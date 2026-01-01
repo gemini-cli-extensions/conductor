@@ -153,7 +153,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     > A.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
     > B.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
     > C.  **Skip:** Do nothing and leave it in the tracks file.
-    > Please enter the number of your choice (A, B, or C)."
+    > Please enter the letter of your choice (A, B, or C)."
 
 3.  **Handle User Response:**
     *   **If user chooses "A" (Archive):**
