@@ -37,7 +37,7 @@
  - [x] Task: Extend generator to emit CLI extension manifests [9173dcf]
   - [x] Sub-task: Update `gemini-extension.json` and `qwen-extension.json` from manifest
   - [x] Sub-task: Ensure correct command syntax entries where applicable
-- [ ] Task: Implement the "no protocol changes" guard in generation or validation
+- [~] Task: Implement the "no protocol changes" guard in generation or validation
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md)
 
 ## Phase 4: Install UX and Validation
