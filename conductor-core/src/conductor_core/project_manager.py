@@ -142,11 +142,11 @@ class ProjectManager:
             if d.is_dir():
                 metadata_file = d / "metadata.json"
                 if metadata_file.exists():
+                    import json
                     try:
-                        import json
                         meta = json.loads(metadata_file.read_text())
                         archived.append((d.name, meta.get("description", d.name)))
-                    except:
+                    except json.JSONDecodeError:
                         archived.append((d.name, d.name))
         return archived
 

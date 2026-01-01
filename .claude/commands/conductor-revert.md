@@ -60,8 +60,8 @@ Your workflow MUST anticipate and handle common non-linear Git histories, such a
                 >
                 > 4) A different Track, Task, or Phase."
         3.  **Process User's Choice:**
-            *   If the user's response is **A** or **B**, set this as the `target_intent` and proceed directly to Phase 2.
-            *   If the user's response is **C** or another value that does not match A or B, you must engage in a dialogue to find the correct target. Ask clarifying questions like:
+            *   If the user's response matches a numbered item that corresponds to a Track, Phase, or Task, set this as the `target_intent` and proceed directly to Phase 2.
+            *   If the user's response matches the "A different Track, Task, or Phase" option, or is any other value that does not correspond to a listed item, you must engage in a dialogue to find the correct target. Ask clarifying questions like:
                 * "What is the name or ID of the track you are looking for?"
                 * "Can you describe the task you want to revert?"
                 * Once a target is identified, loop back to Path A for final confirmation.
