@@ -28,7 +28,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md)
 
 ## Phase 3: Automation and Generation
-- [ ] Task: Write failing tests for manifest loading and generated outputs (TDD Phase)
+- [~] Task: Write failing tests for manifest loading and generated outputs (TDD Phase)
   - [ ] Sub-task: Add fixture manifest and expected outputs
   - [ ] Sub-task: Add golden-file snapshot tests for generated artifacts
 - [ ] Task: Implement manifest-driven generation in `scripts/sync_skills.py`
