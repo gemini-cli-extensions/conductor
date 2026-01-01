@@ -59,7 +59,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 3.  **Load Track Context:**
     a. **Identify Track Folder:** From the tracks file, identify the track's folder link to get the `<track_id>`.
-    b. **Read Files:** You MUST read the content of the following files into your context using their full, absolute paths:
+    b. **Read Files:** You MUST read the content of the following files into your context using full paths relative to the repository root:
         - `conductor/tracks/<track_id>/plan.md`
         - `conductor/tracks/<track_id>/spec.md`
         - `conductor/workflow.md`
@@ -78,7 +78,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ---
 
-## 6.0 SYNCHRONIZE PROJECT DOCUMENTATION
+## 4.0 SYNCHRONIZE PROJECT DOCUMENTATION
 **PROTOCOL: Update project-level documentation based on the completed track.**
 
 1.  **Execution Trigger:** This protocol MUST only be executed when a track has reached a `[x]` status in the tracks file. DO NOT execute this protocol for any other track status changes.
@@ -135,7 +135,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ---
 
-## 7.0 TRACK CLEANUP
+## 5.0 TRACK CLEANUP
 **PROTOCOL: Offer to archive or delete the completed track.**
 
 1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
@@ -145,7 +145,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     > A.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
     > B.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
     > C.  **Skip:** Do nothing and leave it in the tracks file.
-    > Please enter the number of your choice (A, B, or C)."
+    > Please enter the letter of your choice (A, B, or C)."
 
 3.  **Handle User Response:**
     *   **If user chooses "A" (Archive):**

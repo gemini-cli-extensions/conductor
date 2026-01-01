@@ -112,14 +112,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     ```json
     {
       "track_id": "<track_id>",
-      "type": "feature", // or "bug", "chore", etc.
-      "status": "new", // or in_progress, completed, cancelled
+      "type": "<feature|bug|chore>",
+      "status": "<new|in_progress|completed|cancelled>",
       "created_at": "YYYY-MM-DDTHH:MM:SSZ",
       "updated_at": "YYYY-MM-DDTHH:MM:SSZ",
       "description": "<Initial user description>"
     }
     ```
-    *   Populate fields with actual values. Use the current timestamp.
+    *   Populate fields with actual values. Use the current timestamp. Valid `type` values: "feature", "bug", "chore". Valid `status` values: "new", "in_progress", "completed", "cancelled".
 5.  **Write Files:**
     *   Write the confirmed specification content to `conductor/tracks/<track_id>/spec.md`.
     *   Write the confirmed plan content to `conductor/tracks/<track_id>/plan.md`.
