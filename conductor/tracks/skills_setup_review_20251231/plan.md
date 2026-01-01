@@ -31,9 +31,9 @@
 - [x] Task: Write failing tests for manifest loading and generated outputs (TDD Phase) [5a8c4f9]
   - [x] Sub-task: Add fixture manifest and expected outputs
   - [x] Sub-task: Add golden-file snapshot tests for generated artifacts
- - [~] Task: Implement manifest-driven generation in `scripts/sync_skills.py`
-  - [ ] Sub-task: Load manifest and replace hardcoded metadata
-  - [ ] Sub-task: Generate Agent Skills directories and `.antigravity/skills`
+ - [x] Task: Implement manifest-driven generation in `scripts/sync_skills.py` [47c4349]
+  - [x] Sub-task: Load manifest and replace hardcoded metadata
+  - [x] Sub-task: Generate Agent Skills directories and `.antigravity/skills`
 - [ ] Task: Extend generator to emit CLI extension manifests
   - [ ] Sub-task: Update `gemini-extension.json` and `qwen-extension.json` from manifest
   - [ ] Sub-task: Ensure correct command syntax entries where applicable
