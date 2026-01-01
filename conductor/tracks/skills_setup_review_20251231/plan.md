@@ -1,0 +1,65 @@
+# Track Implementation Plan: Skills Abstraction & Tool Setup Review
+
+## Phase 1: Audit and Baseline
+- [~] Task: Inventory current skill templates and generated outputs
+  - [ ] Sub-task: Map source templates to generated artifacts (`skills/`, `.antigravity/`, CLI manifests)
+  - [ ] Sub-task: Identify manual vs generated artifacts and drift risks
+- [ ] Task: Document tool command syntax and artifact types
+  - [ ] Sub-task: Capture native command syntax per tool (slash /, $, @)
+  - [ ] Sub-task: Document required artifact types per tool
+  - [ ] Sub-task: Draft a command syntax matrix artifact (tool -> syntax + example)
+- [ ] Task: Summarize gaps and improvement opportunities
+  - [ ] Sub-task: List duplication or manual steps to remove
+  - [ ] Sub-task: Identify missing validations or CI checks
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
+
+## Phase 2: Manifest and Design
+- [ ] Task: Define a skills manifest schema as the single source of truth
+  - [ ] Sub-task: Include skill metadata fields and tool visibility flags
+  - [ ] Sub-task: Include command syntax mapping per tool
+  - [ ] Sub-task: Define a JSON Schema (or equivalent) for validation
+- [ ] Task: Design generation targets and outputs
+  - [ ] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
+  - [ ] Sub-task: Define outputs for Gemini/Qwen extension manifests
+- [ ] Task: Design validation and sync check strategy
+  - [ ] Sub-task: Define validation scope and failure messaging
+  - [ ] Sub-task: Plan CI/local check integration
+  - [ ] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md)
+
+## Phase 3: Automation and Generation
+- [ ] Task: Write failing tests for manifest loading and generated outputs (TDD Phase)
+  - [ ] Sub-task: Add fixture manifest and expected outputs
+  - [ ] Sub-task: Add golden-file snapshot tests for generated artifacts
+- [ ] Task: Implement manifest-driven generation in `scripts/sync_skills.py`
+  - [ ] Sub-task: Load manifest and replace hardcoded metadata
+  - [ ] Sub-task: Generate Agent Skills directories and `.antigravity/skills`
+- [ ] Task: Extend generator to emit CLI extension manifests
+  - [ ] Sub-task: Update `gemini-extension.json` and `qwen-extension.json` from manifest
+  - [ ] Sub-task: Ensure correct command syntax entries where applicable
+- [ ] Task: Implement the "no protocol changes" guard in generation or validation
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md)
+
+## Phase 4: Install UX and Validation
+- [ ] Task: Write failing tests for installer flags and validation script (TDD Phase)
+  - [ ] Sub-task: Add tests for non-interactive targets and dry-run output
+  - [ ] Sub-task: Add tests for `--link/--copy` behavior
+  - [ ] Sub-task: Add tests for validation failures on missing outputs
+- [ ] Task: Improve `skill/scripts/install.sh` UX
+  - [ ] Sub-task: Add flags (`--target`, `--force`, `--dry-run`, `--list`, `--link`, `--copy`)
+  - [ ] Sub-task: Improve error messages and tool-specific guidance
+- [ ] Task: Add validation script for tool-specific requirements
+  - [ ] Sub-task: Validate generated `SKILL.md` frontmatter vs manifest
+  - [ ] Sub-task: Validate tool-specific command syntax mapping
+  - [ ] Sub-task: Validate manifest against schema
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md)
+
+## Phase 5: Documentation and Sync Checks
+- [ ] Task: Update docs with tool-native command syntax and setup steps
+  - [ ] Sub-task: Add table of tools -> command syntax (/, $, @)
+  - [ ] Sub-task: Clarify which artifacts each tool consumes
+  - [ ] Sub-task: Publish the command syntax matrix artifact
+- [ ] Task: Add a sync check command or CI hook
+  - [ ] Sub-task: Provide a `scripts/check_skills_sync.py` (or equivalent)
+  - [ ] Sub-task: Document how to run the sync check locally
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation and Sync Checks' (Protocol in workflow.md)
