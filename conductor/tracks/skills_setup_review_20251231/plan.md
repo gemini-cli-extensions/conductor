@@ -18,9 +18,9 @@
   - [x] Sub-task: Include skill metadata fields and tool visibility flags
   - [x] Sub-task: Include command syntax mapping per tool
   - [x] Sub-task: Define a JSON Schema (or equivalent) for validation
-- [~] Task: Design generation targets and outputs
-  - [ ] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
-  - [ ] Sub-task: Define outputs for Gemini/Qwen extension manifests
+- [x] Task: Design generation targets and outputs [081f1f1]
+  - [x] Sub-task: Define outputs for Agent Skills directories and `.antigravity/skills`
+  - [x] Sub-task: Define outputs for Gemini/Qwen extension manifests
 - [ ] Task: Design validation and sync check strategy
   - [ ] Sub-task: Define validation scope and failure messaging
   - [ ] Sub-task: Plan CI/local check integration
