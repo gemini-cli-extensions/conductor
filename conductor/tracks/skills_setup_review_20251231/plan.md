@@ -48,10 +48,10 @@
 - [x] Task: Improve `skill/scripts/install.sh` UX [95ecee2]
   - [x] Sub-task: Add flags (`--target`, `--force`, `--dry-run`, `--list`, `--link`, `--copy`)
   - [x] Sub-task: Improve error messages and tool-specific guidance
-- [~] Task: Add validation script for tool-specific requirements
-  - [ ] Sub-task: Validate generated `SKILL.md` frontmatter vs manifest
-  - [ ] Sub-task: Validate tool-specific command syntax mapping
-  - [ ] Sub-task: Validate manifest against schema
+- [x] Task: Add validation script for tool-specific requirements [f8016ca]
+  - [x] Sub-task: Validate generated `SKILL.md` frontmatter vs manifest
+  - [x] Sub-task: Validate tool-specific command syntax mapping
+  - [x] Sub-task: Validate manifest against schema
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md)
 
 ## Phase 5: Documentation and Sync Checks
