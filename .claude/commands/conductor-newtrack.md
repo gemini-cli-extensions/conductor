@@ -56,7 +56,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *   **3. Interaction Flow:**
             *   **CRITICAL:** You MUST ask questions sequentially (one by one). Do not ask multiple questions in a single turn. Wait for the user's response after each question.
             *   The last option for every multiple-choice question MUST be "Type your own answer".
-            *   Confirm your understanding by summarizing before moving on to the next question or section..
+            *   Confirm your understanding by summarizing before moving on to the next question or section.
 
     *   **If FEATURE:**
         *   **Ask 3-5 relevant questions** to clarify the feature request.

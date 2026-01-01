@@ -415,7 +415,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     b. **Generate Track-Specific Spec & Plan:**
         i. Automatically generate a detailed `spec.md` for this track.
         ii. Automatically generate a `plan.md` for this track.
-            - **CRITICAL:** The structure of the tasks must adhere to the principles outlined in the workflow file at `conductor/workflow.md`. For example, if the workflow specificies Test-Driven Development, each feature task must be broken down into a "Write Tests" sub-task followed by an "Implement Feature" sub-task.
+            - **CRITICAL:** The structure of the tasks must adhere to the principles outlined in the workflow file at `conductor/workflow.md`. For example, if the workflow specifies Test-Driven Development, each feature task must be broken down into a "Write Tests" sub-task followed by an "Implement Feature" sub-task.
             - **CRITICAL:** Include status markers `[ ]` for **EVERY** task and sub-task. The format must be:
                 - Parent Task: `- [ ] Task: ...`
                 - Sub-task: `    - [ ] ...`
