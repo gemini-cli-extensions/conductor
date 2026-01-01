@@ -1,12 +1,15 @@
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Dict, List
 
-from scripts.skills_manifest import iter_skills, load_manifest, render_skill_content
-from scripts.skills_validator import validate_manifest
-
 ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
+
+from scripts.skills_manifest import iter_skills, load_manifest, render_skill_content  # noqa: E402
+from scripts.skills_validator import validate_manifest  # noqa: E402
+
 TEMPLATES_DIR = ROOT / "conductor-core" / "src" / "conductor_core" / "templates"
 MANIFEST_PATH = ROOT / "skills" / "manifest.json"
 SCHEMA_PATH = ROOT / "skills" / "manifest.schema.json"
@@ -27,6 +30,9 @@ def _check_skill_dir(
     skills: List[Dict], templates_dir: Path, target_dir: Path, fix: bool
 ) -> List[str]:
     mismatches = []
+    if not target_dir.exists():
+        return [f"Missing directory: {target_dir}"]
+
     for skill in skills:
         expected = render_skill_content(skill, templates_dir)
         skill_file = target_dir / skill["name"] / "SKILL.md"

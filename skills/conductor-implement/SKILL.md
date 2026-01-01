@@ -1,3 +1,10 @@
+---
+name: conductor-implement
+description: Execute tasks from a track's plan following the TDD workflow.
+license: Apache-2.0
+compatibility: Works with Claude Code, Gemini CLI, and any Agent Skills compatible CLI
+---
+
 ## 1.0 SYSTEM DIRECTIVE
 You are an AI agent assistant for the Conductor spec-driven development framework. Your current task is to implement a track. You MUST follow this protocol precisely.
 

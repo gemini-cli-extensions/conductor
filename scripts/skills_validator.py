@@ -1,5 +1,7 @@
 import json
+import os
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict
 
@@ -58,7 +60,7 @@ def _validate_skill_frontmatter(manifest: Dict[str, Any], skills_dir: Path) -> N
     for skill in manifest.get("skills", []):
         skill_path = skills_dir / skill["name"] / "SKILL.md"
         if not skill_path.exists():
-            raise ValueError(f"Missing SKILL.md for {skill['name']}")
+            raise ValueError(f"Missing SKILL.md for {skill['name']} (run scripts/sync_skills.py)")
         frontmatter = _parse_frontmatter(skill_path)
         if frontmatter.get("name") != skill["name"]:
             raise ValueError(f"Frontmatter name mismatch for {skill['name']}")
