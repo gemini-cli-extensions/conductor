@@ -45,9 +45,9 @@
   - [x] Sub-task: Add tests for non-interactive targets and dry-run output
   - [x] Sub-task: Add tests for `--link/--copy` behavior
   - [x] Sub-task: Add tests for validation failures on missing outputs
-- [~] Task: Improve `skill/scripts/install.sh` UX
-  - [ ] Sub-task: Add flags (`--target`, `--force`, `--dry-run`, `--list`, `--link`, `--copy`)
-  - [ ] Sub-task: Improve error messages and tool-specific guidance
+- [x] Task: Improve `skill/scripts/install.sh` UX [95ecee2]
+  - [x] Sub-task: Add flags (`--target`, `--force`, `--dry-run`, `--list`, `--link`, `--copy`)
+  - [x] Sub-task: Improve error messages and tool-specific guidance
 - [ ] Task: Add validation script for tool-specific requirements
   - [ ] Sub-task: Validate generated `SKILL.md` frontmatter vs manifest
   - [ ] Sub-task: Validate tool-specific command syntax mapping
