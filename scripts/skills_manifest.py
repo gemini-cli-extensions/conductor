@@ -47,4 +47,15 @@ def render_skill_content(skill: Dict, templates_dir: Path) -> str:
         template_content,
     ]
 
-    return "\n".join(content)
+    rendered = "\n".join(content)
+    _assert_rendered_matches_template(skill["name"], rendered, template_content)
+    return rendered
+
+
+def _assert_rendered_matches_template(
+    skill_name: str, rendered: str, template_content: str
+) -> None:
+    if not template_content.strip():
+        raise ValueError(f"Template content is empty for {skill_name}")
+    if not rendered.endswith(template_content):
+        raise ValueError(f"Rendered content diverged from template for {skill_name}")
