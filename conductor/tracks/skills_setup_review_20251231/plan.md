@@ -40,7 +40,7 @@
 - [x] Task: Implement the "no protocol changes" guard in generation or validation [4e8eda3]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md)
 
-## Phase 4: Install UX and Validation
+## Phase 4: Install UX and Validation [checkpoint: e824ff8]
 - [x] Task: Write failing tests for installer flags and validation script (TDD Phase) [8ec6e38]
   - [x] Sub-task: Add tests for non-interactive targets and dry-run output
   - [x] Sub-task: Add tests for `--link/--copy` behavior
