@@ -137,5 +137,13 @@ cd conductor-core && PYTHONPATH=src pytest
 cd conductor-gemini && PYTHONPATH=src:../conductor-core/src pytest
 ```
 
+### Skill Sync Checks
+
+Verify generated skill artifacts match the manifest and templates:
+
+```bash
+python3 scripts/check_skills_sync.py
+```
+
 ## License
 - License: [Apache License 2.0](LICENSE)
