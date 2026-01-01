@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 
 MANIFEST_SCHEMA_VERSION = 1
 
@@ -15,6 +15,10 @@ def load_manifest(manifest_path: Path) -> Dict:
 
 def iter_skills(manifest: Dict) -> Iterable[Dict]:
     return manifest.get("skills", [])
+
+
+def get_extension(manifest: Dict, tool_name: str) -> Optional[Dict]:
+    return manifest.get("extensions", {}).get(tool_name)
 
 
 def render_skill(manifest_path: Path, templates_dir: Path, skill_id: str) -> str:

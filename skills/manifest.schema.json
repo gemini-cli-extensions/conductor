@@ -18,6 +18,19 @@
         "additionalProperties": false
       }
     },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "version", "contextFileName"],
+        "properties": {
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "contextFileName": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
     "skills": {
       "type": "array",
       "items": {

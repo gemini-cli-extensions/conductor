@@ -50,6 +50,18 @@
       "needs_confirmation": true
     }
   },
+  "extensions": {
+    "gemini": {
+      "name": "conductor",
+      "version": "0.2.0",
+      "contextFileName": "GEMINI.md"
+    },
+    "qwen": {
+      "name": "conductor",
+      "version": "0.2.0",
+      "contextFileName": "GEMINI.md"
+    }
+  },
   "skills": [
     {
       "id": "setup",
