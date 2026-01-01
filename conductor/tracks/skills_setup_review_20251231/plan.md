@@ -54,7 +54,7 @@
   - [x] Sub-task: Validate manifest against schema
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Install UX and Validation' (Protocol in workflow.md)
 
-## Phase 5: Documentation and Sync Checks
+## Phase 5: Documentation and Sync Checks [checkpoint: 8c1fba9]
 - [x] Task: Update docs with tool-native command syntax and setup steps [5b48ca4]
   - [x] Sub-task: Add table of tools -> command syntax (/, $, @)
   - [x] Sub-task: Clarify which artifacts each tool consumes
