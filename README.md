@@ -22,6 +22,10 @@ Conductor is designed to provide a consistent experience across different tools:
 -   **VS Code / Antigravity**: Supported via VSIX (supports Remote Development).
 -   **Claude Code**: Supported via portable skills.
 
+## Command Syntax by Tool
+
+See `docs/skill-command-syntax.md` for tool-native command syntax and the artifacts each tool consumes.
+
 ## Features
 
 -   **Platform Source of Truth**: All protocol prompts are centralized in the core library and synchronized to adapters.
@@ -40,6 +44,15 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 ### VS Code
 
 Download the `conductor.vsix` from the [Releases](https://github.com/gemini-cli-extensions/conductor/releases) page and install it in VS Code.
+
+### Agent Skills (Codex / Claude / OpenCode)
+
+Use the installer to place the skill in your tool's global directory:
+
+```bash
+./skill/scripts/install.sh --list
+./skill/scripts/install.sh --target codex --dry-run
+```
 
 ## Development
 
