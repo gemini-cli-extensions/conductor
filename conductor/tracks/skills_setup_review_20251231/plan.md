@@ -8,7 +8,7 @@
   - [x] Sub-task: Capture native command syntax per tool (slash /, $, @)
   - [x] Sub-task: Document required artifact types per tool
   - [x] Sub-task: Draft a command syntax matrix artifact (tool -> syntax + example)
-- [ ] Task: Summarize gaps and improvement opportunities
+- [~] Task: Summarize gaps and improvement opportunities
   - [ ] Sub-task: List duplication or manual steps to remove
   - [ ] Sub-task: Identify missing validations or CI checks
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
