@@ -1,6 +1,6 @@
 # Track Implementation Plan: Skills Abstraction & Tool Setup Review
 
-## Phase 1: Audit and Baseline
+## Phase 1: Audit and Baseline [checkpoint: 5de5e94]
 - [x] Task: Inventory current skill templates and generated outputs [2e1d688]
   - [x] Sub-task: Map source templates to generated artifacts (`skills/`, `.antigravity/`, CLI manifests)
   - [x] Sub-task: Identify manual vs generated artifacts and drift risks
