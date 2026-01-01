@@ -13,7 +13,7 @@
   - [x] Sub-task: Identify missing validations or CI checks
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
 
-## Phase 2: Manifest and Design
+## Phase 2: Manifest and Design [checkpoint: 95d8dbb]
 - [x] Task: Define a skills manifest schema as the single source of truth [a8186ef]
   - [x] Sub-task: Include skill metadata fields and tool visibility flags
   - [x] Sub-task: Include command syntax mapping per tool
