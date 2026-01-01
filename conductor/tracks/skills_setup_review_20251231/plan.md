@@ -59,7 +59,7 @@
   - [x] Sub-task: Add table of tools -> command syntax (/, $, @)
   - [x] Sub-task: Clarify which artifacts each tool consumes
   - [x] Sub-task: Publish the command syntax matrix artifact
-- [ ] Task: Add a sync check command or CI hook
+- [~] Task: Add a sync check command or CI hook
   - [ ] Sub-task: Provide a `scripts/check_skills_sync.py` (or equivalent)
   - [ ] Sub-task: Document how to run the sync check locally
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation and Sync Checks' (Protocol in workflow.md)
