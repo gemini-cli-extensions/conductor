@@ -1,6 +1,12 @@
+import json
 from pathlib import Path
 
-from scripts.skills_manifest import iter_skills, load_manifest, render_skill_content
+from scripts.skills_manifest import (
+    get_extension,
+    iter_skills,
+    load_manifest,
+    render_skill_content,
+)
 
 ROOT = Path(__file__).parent.parent
 TEMPLATES_DIR = ROOT / "conductor-core" / "src" / "conductor_core" / "templates"
@@ -13,6 +19,8 @@ CLAUDE_DIR = Path.home() / ".claude" / "skills"
 OPENCODE_DIR = Path.home() / ".opencode" / "skill"
 COPILOT_DIR = Path.home() / ".config" / "github-copilot"
 VSCODE_SKILLS_DIR = ROOT / "conductor-vscode" / "skills"
+GEMINI_EXTENSION_PATH = ROOT / "gemini-extension.json"
+QWEN_EXTENSION_PATH = ROOT / "qwen-extension.json"
 
 def _perform_sync(target_base_dir, skills, flat=False):
     for skill in skills:
@@ -81,6 +89,20 @@ def sync_skills():
     with open(consolidated_file, "w", encoding="utf-8") as handle:
         handle.write("\n".join(all_instructions))
     print(f"Synced consolidated Copilot rules: {consolidated_file}")
+
+    # Sync Gemini/Qwen extension manifests (repo-local)
+    for tool_name, target_path in (
+        ("gemini", GEMINI_EXTENSION_PATH),
+        ("qwen", QWEN_EXTENSION_PATH),
+    ):
+        extension = get_extension(manifest, tool_name)
+        if not extension:
+            print(f"Warning: No extension metadata for {tool_name}. Skipping.")
+            continue
+        with open(target_path, "w", encoding="utf-8") as handle:
+            json.dump(extension, handle, indent=2)
+            handle.write("\n")
+        print(f"Synced extension manifest: {tool_name} -> {target_path}")
 
 if __name__ == "__main__":
     sync_skills()

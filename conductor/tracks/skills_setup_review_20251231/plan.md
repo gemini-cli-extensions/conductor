@@ -34,7 +34,7 @@
  - [x] Task: Implement manifest-driven generation in `scripts/sync_skills.py` [47c4349]
   - [x] Sub-task: Load manifest and replace hardcoded metadata
   - [x] Sub-task: Generate Agent Skills directories and `.antigravity/skills`
-- [ ] Task: Extend generator to emit CLI extension manifests
+ - [~] Task: Extend generator to emit CLI extension manifests
   - [ ] Sub-task: Update `gemini-extension.json` and `qwen-extension.json` from manifest
   - [ ] Sub-task: Ensure correct command syntax entries where applicable
 - [ ] Task: Implement the "no protocol changes" guard in generation or validation
