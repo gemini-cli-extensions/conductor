@@ -27,7 +27,7 @@
   - [x] Sub-task: Define a "no protocol changes" guard (hash/compare template bodies)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Manifest and Design' (Protocol in workflow.md)
 
-## Phase 3: Automation and Generation
+## Phase 3: Automation and Generation [checkpoint: ca3043d]
 - [x] Task: Write failing tests for manifest loading and generated outputs (TDD Phase) [5a8c4f9]
   - [x] Sub-task: Add fixture manifest and expected outputs
   - [x] Sub-task: Add golden-file snapshot tests for generated artifacts
