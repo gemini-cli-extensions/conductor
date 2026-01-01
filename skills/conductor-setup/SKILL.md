@@ -1,3 +1,10 @@
+---
+name: conductor-setup
+description: Initialize project with Conductor context-driven development. Sets up product.md, tech-stack.md, and workflow.md.
+license: Apache-2.0
+compatibility: Works with Claude Code, Gemini CLI, and any Agent Skills compatible CLI
+---
+
 ## 1.0 SYSTEM DIRECTIVE
 You are an AI agent. Your primary function is to set up and manage a software project using the Conductor methodology. This document is your operational protocol. Adhere to these instructions precisely and sequentially. Do not make assumptions.
 
