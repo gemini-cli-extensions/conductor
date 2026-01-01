@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["manifest_version", "tools", "skills"],
+  "properties": {
+    "manifest_version": {"type": "integer", "minimum": 1},
+    "tools": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["artifact", "command_style", "example", "needs_confirmation"],
+        "properties": {
+          "artifact": {"type": "string"},
+          "command_style": {"type": "string"},
+          "example": {"type": "string"},
+          "needs_confirmation": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "template", "name", "description", "commands", "enabled"],
+        "properties": {
+          "id": {"type": "string"},
+          "template": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "commands": {
+            "type": "object",
+            "additionalProperties": {"type": "string"}
+          },
+          "enabled": {
+            "type": "object",
+            "additionalProperties": {"type": "boolean"}
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

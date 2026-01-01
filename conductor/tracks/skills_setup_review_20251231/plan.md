@@ -14,7 +14,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Baseline' (Protocol in workflow.md)
 
 ## Phase 2: Manifest and Design
-- [ ] Task: Define a skills manifest schema as the single source of truth
+- [~] Task: Define a skills manifest schema as the single source of truth
   - [ ] Sub-task: Include skill metadata fields and tool visibility flags
   - [ ] Sub-task: Include command syntax mapping per tool
   - [ ] Sub-task: Define a JSON Schema (or equivalent) for validation
