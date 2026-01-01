@@ -41,10 +41,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Automation and Generation' (Protocol in workflow.md)
 
 ## Phase 4: Install UX and Validation
-- [~] Task: Write failing tests for installer flags and validation script (TDD Phase)
-  - [ ] Sub-task: Add tests for non-interactive targets and dry-run output
-  - [ ] Sub-task: Add tests for `--link/--copy` behavior
-  - [ ] Sub-task: Add tests for validation failures on missing outputs
+- [x] Task: Write failing tests for installer flags and validation script (TDD Phase) [8ec6e38]
+  - [x] Sub-task: Add tests for non-interactive targets and dry-run output
+  - [x] Sub-task: Add tests for `--link/--copy` behavior
+  - [x] Sub-task: Add tests for validation failures on missing outputs
 - [ ] Task: Improve `skill/scripts/install.sh` UX
   - [ ] Sub-task: Add flags (`--target`, `--force`, `--dry-run`, `--list`, `--link`, `--copy`)
   - [ ] Sub-task: Improve error messages and tool-specific guidance
