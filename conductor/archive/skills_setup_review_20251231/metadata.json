@@ -1,0 +1,8 @@
+{
+  "track_id": "skills_setup_review_20251231",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2025-12-31T06:45:31Z",
+  "updated_at": "2025-12-31T06:45:31Z",
+  "description": "Review skills abstraction/setup across tools, ensure correct command syntax per tool, improve automation, install UX, docs, validation; keep skill content unchanged."
+}
