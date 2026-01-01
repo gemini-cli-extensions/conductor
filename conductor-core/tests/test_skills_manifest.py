@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -9,6 +10,7 @@ def _repo_root() -> Path:
 
 def test_load_manifest_has_expected_skills():
     repo_root = _repo_root()
+    sys.path.insert(0, str(repo_root))
     from scripts.skills_manifest import load_manifest
 
     manifest = load_manifest(repo_root / "skills" / "manifest.json")
@@ -20,6 +22,7 @@ def test_load_manifest_has_expected_skills():
 
 def test_rendered_skill_matches_repo_output():
     repo_root = _repo_root()
+    sys.path.insert(0, str(repo_root))
     from scripts.skills_manifest import render_skill
 
     manifest_path = repo_root / "skills" / "manifest.json"
