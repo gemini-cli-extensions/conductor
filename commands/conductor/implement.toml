@@ -126,21 +126,27 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         iv. **Action:** Only after receiving explicit user confirmation, perform the file edits. Keep a record of whether this file was changed.
 
 6.  **Final Report:** Announce the completion of the synchronization process and provide a summary of the actions taken.
-    - **Construct the Message:** Based on the records of which files were changed, construct a summary message.
-    - **Example (if product.md was changed, but others were not):**
+    -   **Construct Message:** Based on the records of which files were changed, construct a summary message.
+    -   **Example (if product.md was changed, but others were not):**
         > "Documentation synchronization is complete.
         > - **Changes made to `product.md`:** The user-facing description of the product was updated to include the new feature.
         > - **No changes needed for `tech-stack.md`:** The technology stack was not affected.
         > - **No changes needed for `product-guidelines.md`:** Core product guidelines remain unchanged."
-    - **Example (if no files were changed):**
+    -   **Example (if no files were changed):**
         > "Documentation synchronization is complete. No updates were necessary for `product.md`, `tech-stack.md`, or `product-guidelines.md` based on the completed track."
+
+7.  **Commit Documentation Updates:** After finalizing documentation synchronization, you MUST commit any changes to the project-level documentation files.
+    -   **Check for Changes:** Verify if any files in the `conductor/` directory were modified during synchronization (specifically `product.md`, `tech-stack.md`, or `product-guidelines.md`).
+    -   **Commit if Changed:** If changes were made, you MUST commit them using git with the message format: `conductor(doc-sync): Update documentation for '<track_description>'`.
+        -   Example: `git add conductor/product.md conductor/tech-stack.md conductor/product-guidelines.md && git commit -m "conductor(doc-sync): Update documentation for 'Add User Authentication'"`
+    -   **Skip if No Changes:** If no changes were made, skip this commit step and proceed directly to track cleanup.
 
 ---
 
-## 7.0 TRACK CLEANUP
-**PROTOCOL: Offer to archive or delete the completed track.**
+## 8.0 TRACK CLEANUP
+**PROTOCOL: Offer to archive or delete completed track.**
 
-1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
+1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented, the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete, and documentation updates have been committed.
 
 2.  **Ask for User Choice:** You MUST prompt the user with the available options for the completed track.
     > "Track '<track_description>' is now complete. What would you like to do?
