@@ -27,6 +27,16 @@ gemini extensions install https://github.com/gemini-cli-extensions/conductor --a
 
 The `--auto-update` is optional: if specified, it will update to new versions as they are released.
 
+### Troubleshooting Installation
+
+If you encounter a 401 error during installation (e.g., "Error downloading github release... Request failed with status code 401"), you may be experiencing GitHub API rate limiting. This is a known issue with the gemini CLI installer and can be resolved by:
+
+1. **Using git clone method**: When prompted with "Would you like to attempt to install via 'git clone' instead?", type `Y` to continue with the alternative installation method.
+
+2. **Authenticating with GitHub**: If you have a GitHub personal access token, you can configure the gemini CLI to use it to avoid rate limits. Check the gemini CLI documentation for authentication options.
+
+3. **Using --auto-update flag**: The `--auto-update` flag can help ensure you're using the latest version and may bypass certain caching issues.
+
 ## Usage
 
 Conductor is designed to manage the entire lifecycle of your development tasks.
