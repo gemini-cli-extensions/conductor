@@ -76,11 +76,12 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 5.  **Finalize Track:**
     -   After all tasks in the track's local `plan.md` are completed, you MUST update the track's status in the tracks file.
     -   This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
+    -   **Commit Changes:** Stage `conductor/tracks.md` and commit with the message `conductor(track): Mark track '<track_description>' as complete`.
     -   Announce that the track is fully complete and the tracks file has been updated.
 
 ---
 
-## 6.0 SYNCHRONIZE PROJECT DOCUMENTATION
+## 4.0 SYNCHRONIZE PROJECT DOCUMENTATION
 **PROTOCOL: Update project-level documentation based on the completed track.**
 
 1.  **Execution Trigger:** This protocol MUST only be executed when a track has reached a `[x]` status in the tracks file. DO NOT execute this protocol for any other track status changes.
@@ -127,6 +128,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 6.  **Final Report:** Announce the completion of the synchronization process and provide a summary of the actions taken.
     - **Construct the Message:** Based on the records of which files were changed, construct a summary message.
+    - **Commit Changes:**
+        - If any files were changed (`product.md`, `tech-stack.md`, or `product-guidelines.md`), you MUST stage them and commit them.
+        - **Commit Message:** `conductor(docs): Synchronize docs for track '<track_description>'`
     - **Example (if product.md was changed, but others were not):**
         > "Documentation synchronization is complete.
         > - **Changes made to `product.md`:** The user-facing description of the product was updated to include the new feature.
@@ -137,7 +141,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ---
 
-## 7.0 TRACK CLEANUP
+## 5.0 TRACK CLEANUP
 **PROTOCOL: Offer to archive or delete the completed track.**
 
 1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
@@ -154,7 +158,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         i.   **Create Archive Directory:** Check for the existence of `conductor/archive/`. If it does not exist, create it.
         ii.  **Archive Track Folder:** Move the track's folder from `conductor/tracks/<track_id>` to `conductor/archive/<track_id>`.
         iii. **Remove from Tracks File:** Read the content of `conductor/tracks.md`, remove the entire section for the completed track (the part that starts with `---` and contains the track description), and write the modified content back to the file.
-        iv.  **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
+        iv.  **Commit Changes:** Stage `conductor/tracks.md` and `conductor/archive/`. Commit with the message `conductor(track): Archive track '<track_description>'`.
+        v.   **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
     *   **If user chooses "B" (Delete):**
         i. **CRITICAL WARNING:** Before proceeding, you MUST ask for a final confirmation due to the irreversible nature of the action.
             > "WARNING: This will permanently delete the track folder and all its contents. This action cannot be undone. Are you sure you want to proceed? (yes/no)"
@@ -162,7 +167,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             - **If 'yes'**:
                 a. **Delete Track Folder:** Permanently delete the track's folder from `conductor/tracks/<track_id>`.
                 b. **Remove from Tracks File:** Read the content of `conductor/tracks.md`, remove the entire section for the completed track, and write the modified content back to the file.
-                c. **Announce Success:** Announce: "Track '<track_description>' has been permanently deleted."
+                c. **Commit Changes:** Stage `conductor/tracks.md` and the deletion of `conductor/tracks/<track_id>`. Commit with the message `conductor(track): Delete track '<track_description>'`.
+                d. **Announce Success:** Announce: "Track '<track_description>' has been permanently deleted."
             - **If 'no' (or anything else)**:
                 a. **Announce Cancellation:** Announce: "Deletion cancelled. The track has not been changed."
     *   **If user chooses "C" (Skip) or provides any other input:**
