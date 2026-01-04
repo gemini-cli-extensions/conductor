@@ -3,8 +3,6 @@ name: Package and Upload Release Assets
 on:
   release:
     types: [created]
-
-  # This allows you to run the workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       tag_name:
@@ -13,26 +11,51 @@ on:
         type: string
 
 permissions:
-  # This permission is required for the action to create a GitHub Release
   contents: write
 
 jobs:
-  package-and-upload:
+  build-and-upload:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checks out your repository's code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Create TAR archive
-      - name: Create TAR archive
-        run: tar -czvf ../conductor-release.tar.gz --exclude='.git' --exclude='.github' . && mv ../conductor-release.tar.gz .
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
 
-      # 3. Upload the TAR archive as a release asset
-      - name: Upload archive to GitHub Release
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 1. Build conductor-core (PyPI)
+      - name: Build conductor-core
+        run: |
+          cd conductor-core
+          python -m pip install --upgrade build
+          python -m build
+
+      # 2. Build VS Code Extension (VSIX)
+      - name: Build VSIX
+        run: |
+          cd conductor-vscode
+          npm ci
+          npx vsce package -o ../conductor.vsix
+
+      # 3. Create Legacy TAR archive
+      - name: Create TAR archive
+        run: tar -czvf conductor-release.tar.gz --exclude='.git' --exclude='.github' .
+
+      # 4. Upload all assets
+      - name: Upload assets to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload \
-            ${{ github.event.release.tag_name || inputs.tag_name }} \
-            conductor-release.tar.gz
+          TAG=${{ github.event.release.tag_name || inputs.tag_name }}
+          gh release upload $TAG \
+            conductor-release.tar.gz \
+            conductor.vsix \
+            conductor-core/dist/*.tar.gz \
+            conductor-core/dist/*.whl
