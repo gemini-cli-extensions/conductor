@@ -122,6 +122,18 @@ During implementation, you can also:
 | `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
 | `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 
+## Copilot Agent & Homedir Setup
+
+This repository provides a per-project GitHub Copilot agent scaffold in `copilot-agent/` that exposes the repository's `conductor` commands as Copilot actions and a set of adapters to invoke them.
+
+Quick start:
+
+1. Run validation: `./copilot-agent/validate.sh`
+2. Install homedir helpers for your user: `./copilot-agent/scripts/homedir-setup.sh`
+3. After installing the skill (`./skill/scripts/install.sh`), ask Copilot or your AI CLI to run setup, create a new track, or check status. See `copilot-agent/examples/prompts.md` for sample prompts.
+
+> Tip: The agent adapters prefer a `conductor` CLI if installed; otherwise they will point you to the TOML command definitions in `commands/conductor/` or use the repository invoker `skill/scripts/run-conductor.sh`.
+
 ## Resources
 
 - [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Documentation about using extensions in Gemini CLI

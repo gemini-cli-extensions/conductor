@@ -1,0 +1,16 @@
+{
+  "name": "conductor-agent",
+  "version": "0.1.0",
+  "description": "Per-project GitHub Copilot agent that exposes `conductor` operations as Copilot actions.",
+  "entry_points": {
+    "conductor.newTrack": "adapter/newTrack.sh",
+    "conductor.setup": "adapter/setup.sh",
+    "conductor.status": "adapter/status.sh",
+    "conductor.revert": "adapter/revert.sh",
+    "conductor.implement": "adapter/implement.sh"
+  },
+  "examples": [
+    "Run `conductor.setup` to initialize project scaffolding",
+    "Ask Copilot to 'create a new track' to run `conductor.newTrack`"
+  ]
+}

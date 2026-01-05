@@ -80,6 +80,12 @@ The detailed protocols are in TOML format. Read the `prompt` field from each fil
 - **"status", "progress", "where are we"** -> Read `commands/conductor/status.toml`
 - **"revert", "undo", "rollback"** -> Read `commands/conductor/revert.toml`
 
+## Integration: Copilot Agent & Homedir Setup
+
+This repository includes a per-project Copilot agent scaffold in `copilot-agent/` that exposes Conductor commands as Copilot actions (see `copilot-agent/agent-manifest.json`). It also provides an idempotent homedir installer `copilot-agent/scripts/homedir-setup.sh` which installs a `conductor-agent` wrapper to `~/.local/bin` and uses `skill/scripts/run-conductor.sh` as a fallback invoker when the `conductor` CLI is not available.
+
+Add example prompts in `copilot-agent/examples/prompts.md` to guide users and AI agents on how to invoke the conductor actions.
+
 ## Assets
 
 - **Code Styleguides**: `templates/code_styleguides/` (general, go, python, javascript, typescript, html-css)
