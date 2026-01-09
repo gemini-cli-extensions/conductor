@@ -323,7 +323,10 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Summarize Actions:** Present a summary of all actions taken during Phase 1, including:
     -   The guide files that were copied.
     -   The workflow file that was copied.
-2.  **Transition to initial plan and track generation:** Announce that the initial setup is complete and you will now proceed to define the first track for the project.
+2.  **Semantic Indexing (AIC):**
+    -   **Announce Action:** Inform the user: "Finally, I will perform a semantic indexing of your project using AIC (AI Compiler). This creates a lightweight dependency graph to help me understand your code better."
+    -   **Action:** Execute `python3 -m aic.cli index`.
+3.  **Transition to initial plan and track generation:** Announce that the initial setup is complete and you will now proceed to define the first track for the project.
 
 ---
 
