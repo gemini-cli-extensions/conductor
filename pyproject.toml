@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "conductor-aic"
+version = "0.1.1"
+description = "Conductor Extension for Gemini CLI with AI Compiler (AIC)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "Apache-2.0"
+authors = [
+    { name = "Google DeepMind" },
+]
+dependencies = []
+
+[project.scripts]
+aic = "aic.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["aic"]
