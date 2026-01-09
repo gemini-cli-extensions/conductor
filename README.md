@@ -15,6 +15,7 @@ The philosophy behind Conductor is simple: control your code. By treating contex
 - **Iterate safely**: Review plans before code is written, keeping you firmly in the loop.
 - **Work as a team**: Set project-level context for your product, tech stack, and workflow preferences that become a shared foundation for your team.
 - **Build on existing projects**: Intelligent initialization for both new (Greenfield) and existing (Brownfield) projects.
+- **Semantic Awareness (AIC)**: Automatically indexes your codebase into "Rich Skeletons" using the AI Compiler (AIC). This provides the agent with deep context about your API contracts and dependencies with minimal token overhead.
 - **Smart revert**: A git-aware revert command that understands logical units of work (tracks, phases, tasks) rather than just commit hashes.
 
 ## Installation
@@ -114,6 +115,7 @@ During implementation, you can also:
 
 ## Resources
 
+- [AI Compiler Patent](https://www.tdcommons.org/dpubs_series/8241/): Semantic Dependency Graph for AI Agents
 - [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Documentation about using extensions in Gemini CLI
 - [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
 
