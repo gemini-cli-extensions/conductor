@@ -73,7 +73,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *   Tailor the questions to the specific request.
 
 4.  **Semantic Context (Optional):**
-    -   **Recommendation:** If the track involves complex interactions with existing code, suggest that you can run `python3 -m aic.cli context <file_path>` for relevant files to better understand the API contracts and dependencies. This will help you generate a more accurate specification and plan.
+    -   **Recommendation:** If the track involves complex interactions with existing code, you SHOULD call the `aic_get_file_context` tool for relevant files to better understand the API contracts and dependencies. This will help you generate a more accurate specification and plan.
 
 3.  **Draft `spec.md`:** Once sufficient information is gathered, draft the content for the track's `spec.md` file, including sections like Overview, Functional Requirements, Non-Functional Requirements (if any), Acceptance Criteria, and Out of Scope.
 
