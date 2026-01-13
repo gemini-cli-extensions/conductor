@@ -325,7 +325,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     -   The workflow file that was copied.
 2.  **Semantic Indexing (AIC):**
     -   **Announce Action:** Inform the user: "Finally, I will perform a semantic indexing of your project using AIC (AI Compiler). This creates a lightweight dependency graph to help me understand your code better."
-    -   **Action:** Execute `python3 -m aic.cli index`.
+    -   **Action:** Call the `aic_index` tool to index the repository.
 3.  **Transition to initial plan and track generation:** Announce that the initial setup is complete and you will now proceed to define the first track for the project.
 
 ---

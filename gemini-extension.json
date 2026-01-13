@@ -1,5 +1,15 @@
 {
   "name": "conductor",
-  "version": "0.1.1",
-  "contextFileName": "GEMINI.md"
+  "version": "0.1.3",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "aic": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "aic.server"
+      ],
+      "cwd": "${extensionPath}"
+    }
+  }
 }

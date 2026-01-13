@@ -68,7 +68,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     c. **Error Handling:** If you fail to read any of these files, you MUST stop and inform the user of the error.
 
 4.  **Semantic Dependency Awareness (AIC):**
-    -   **Protocol:** During the implementation of any task, if you encounter imported internal modules or functions whose names are not fully self-describing or whose implementation is not directly in your current context, you SHOULD run `python3 -m aic.cli context <file_path>` for those modules. This will provide you with the "Rich Skeleton" (signatures, docstrings, and IO/side-effects) of the dependency without consuming excessive tokens.
+    -   **Protocol:** During the implementation of any task, if you encounter imported internal modules or functions whose names are not fully self-describing or whose implementation is not directly in your current context, you SHOULD call the `aic_get_file_context` tool for those modules. This will provide you with the "Rich Skeleton" (signatures, docstrings, and IO/side-effects) of the dependency without consuming excessive tokens.
 
 4.  **Execute Tasks and Update Track Plan:**
     a. **Announce:** State that you will now execute the tasks from the track's `plan.md` by following the procedures in `workflow.md`.
