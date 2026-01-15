@@ -7,7 +7,7 @@
       "command": "python3",
       "args": [
         "-c",
-        "import sys; sys.path.append('${extensionPath}'); import aic.server; aic.server.mcp.run()"
+        "import sys; sys.path.append('${extensionPath}'); import aic.server; import asyncio; asyncio.run(aic.server.server.run())"
       ],
       "cwd": "${workspaceFolder}"
     }
