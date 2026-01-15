@@ -1,25 +1,38 @@
 import argparse
 import os
 from aic.db import init_db, upsert_node, get_node, get_dependencies, update_edges, mark_dirty
-from aic.skeleton import RichSkeletonizer
-from aic.utils import calculate_hash
+from aic.skeleton import UniversalSkeletonizer
+from aic.utils import calculate_hash, resolve_dep_to_path, get_ignore_patterns, should_ignore
 
 def index_repo(root_dir="."):
     init_db()
-    skeletonizer = RichSkeletonizer()
+    skeletonizer = UniversalSkeletonizer()
+    ignore_patterns = get_ignore_patterns(root_dir)
+    
+    indexed_count = 0
+    
     for root, dirs, files in os.walk(root_dir):
         # Exclusions
-        dirs[:] = [d for d in dirs if d not in ('.git', '.aic', '__pycache__', 'node_modules')]
+        dirs[:] = [d for d in dirs if not should_ignore(d, ignore_patterns)]
         
         for file in files:
-            if not file.endswith('.py'):
+            if should_ignore(file, ignore_patterns):
                 continue
                 
             file_path = os.path.join(root, file)
             rel_path = os.path.relpath(file_path, root_dir)
             
-            with open(file_path, 'r') as f:
-                content = f.read()
+            # Skip non-text files to avoid reading binaries
+            # Simple heuristic: check extension or try reading
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='strict') as f:
+                    content = f.read()
+            except UnicodeDecodeError:
+                # print(f"Skipping binary file: {rel_path}")
+                continue
+            except Exception as e:
+                print(f"Skipping {rel_path}: {e}")
+                continue
                 
             current_hash = calculate_hash(content)
             existing = get_node(rel_path)
@@ -40,33 +53,9 @@ def index_repo(root_dir="."):
                     resolved_deps.append(resolved)
             
             update_edges(rel_path, resolved_deps)
-
-def resolve_dep_to_path(dep_name, current_file, root_dir):
-    """Simple heuristic to resolve module name to file path."""
-    # Handle relative imports (e.g., '.module' or '..module')
-    if dep_name.startswith('.'):
-        levels = 0
-        while dep_name.startswith('.'):
-            levels += 1
-            dep_name = dep_name[1:]
-        
-        curr_dir = os.path.dirname(current_file)
-        for _ in range(levels - 1):
-            curr_dir = os.path.dirname(curr_dir)
-        
-        base_path = os.path.join(curr_dir, dep_name.replace('.', os.sep))
-    else:
-        base_path = os.path.join(root_dir, dep_name.replace('.', os.sep))
-
-    candidates = [
-        base_path + ".py",
-        os.path.join(base_path, "__init__.py")
-    ]
-    
-    for cand in candidates:
-        if os.path.exists(cand):
-            return os.path.relpath(cand, root_dir)
-    return None
+            indexed_count += 1
+            
+    print(f"Finished indexing. Processed {indexed_count} files.")
 
 def get_context(file_path):
     node = get_node(file_path)

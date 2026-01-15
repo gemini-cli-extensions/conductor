@@ -6,10 +6,10 @@
     "aic": {
       "command": "python3",
       "args": [
-        "-m",
-        "aic.server"
+        "-c",
+        "import sys; sys.path.append('${extensionPath}'); import aic.server; aic.server.mcp.run()"
       ],
-      "cwd": "${extensionPath}"
+      "cwd": "${workspaceFolder}"
     }
   }
 }

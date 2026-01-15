@@ -2,15 +2,15 @@ import asyncio
 import os
 from mcp.server.fastmcp import FastMCP
 from aic.db import init_db, upsert_node, update_edges, mark_dirty
-from aic.skeleton import RichSkeletonizer
-from aic.utils import calculate_hash
-from aic.cli import resolve_dep_to_path, get_context
+from aic.skeleton import UniversalSkeletonizer
+from aic.utils import calculate_hash, resolve_dep_to_path, get_ignore_patterns, should_ignore
+from aic.cli import get_context
 
 # Initialize FastMCP server
 mcp = FastMCP("aic")
 
 @mcp.tool()
-async def index_repo(root_dir: str) -> str:
+async def aic_index(root_dir: str) -> str:
     """
     Indexes the repository to build a semantic dependency graph.
     Scans for Python files, generates skeletons, and updates the SQLite database.
@@ -19,26 +19,32 @@ async def index_repo(root_dir: str) -> str:
         root_dir: The root directory of the repository to index.
     """
     init_db()
-    skeletonizer = RichSkeletonizer()
+    skeletonizer = UniversalSkeletonizer()
     indexed_count = 0
     
     # Ensure we use absolute path for walking
     abs_root_dir = os.path.abspath(root_dir)
+    ignore_patterns = get_ignore_patterns(abs_root_dir)
     
     for root, dirs, files in os.walk(abs_root_dir):
         # Exclusions
-        dirs[:] = [d for d in dirs if d not in ('.git', '.aic', '__pycache__', 'node_modules')]
+        dirs[:] = [d for d in dirs if not should_ignore(d, ignore_patterns)]
         
         for file in files:
-            if not file.endswith('.py'):
+            if should_ignore(file, ignore_patterns):
                 continue
                 
             file_path = os.path.join(root, file)
             rel_path = os.path.relpath(file_path, abs_root_dir)
             
+            # Skip non-text files to avoid reading binaries
+            # Simple heuristic: check extension or try reading
             try:
-                with open(file_path, 'r') as f:
+                with open(file_path, 'r', encoding='utf-8', errors='strict') as f:
                     content = f.read()
+            except UnicodeDecodeError:
+                # print(f"Skipping binary file: {rel_path}")
+                continue
             except Exception as e:
                 print(f"Skipping {rel_path}: {e}")
                 continue
@@ -66,7 +72,7 @@ async def index_repo(root_dir: str) -> str:
     return f"Successfully indexed {indexed_count} files in {abs_root_dir}"
 
 @mcp.tool()
-async def get_file_context(file_path: str) -> str:
+async def aic_get_file_context(file_path: str) -> str:
     """
     Retrieves the extensive context for a file, including its skeleton and its direct dependencies' skeletons.
     
@@ -79,7 +85,7 @@ async def get_file_context(file_path: str) -> str:
         return f"Error retrieving context for {file_path}: {str(e)}"
 
 @mcp.tool()
-async def list_directory(path: str) -> str:
+async def aic_list_directory(path: str) -> str:
     """
     Lists the files and directories in the specified path.
     
@@ -102,7 +108,7 @@ async def list_directory(path: str) -> str:
         return f"Error listing directory '{path}': {str(e)}"
 
 @mcp.tool()
-async def run_shell_command(command: str, cwd: str) -> str:
+async def aic_run_shell_command(command: str, cwd: str) -> str:
     """
     Executes a shell command.
     
