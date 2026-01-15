@@ -12,9 +12,7 @@ license = "Apache-2.0"
 authors = [
     { name = "Google DeepMind" },
 ]
-dependencies = [
-    "mcp",
-]
+dependencies = []
 
 [project.scripts]
 aic = "aic.cli:main"

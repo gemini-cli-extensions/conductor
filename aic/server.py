@@ -1,22 +1,187 @@
 import asyncio
+import sys
+import json
+import logging
+import inspect
 import os
-from mcp.server.fastmcp import FastMCP
+import traceback
+from typing import Any, Callable, Dict, List, Optional
+
 from aic.db import init_db, upsert_node, update_edges, mark_dirty
 from aic.skeleton import UniversalSkeletonizer
 from aic.utils import calculate_hash, resolve_dep_to_path, get_ignore_patterns, should_ignore
 from aic.cli import get_context
 
-# Initialize FastMCP server
-mcp = FastMCP("aic")
+# Configure logging to stderr so it doesn't interfere with JSON-RPC on stdout
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+logger = logging.getLogger("aic-server")
 
-@mcp.tool()
+class MCPServer:
+    def __init__(self, name: str):
+        self.name = name
+        self.tools: Dict[str, Callable] = {}
+        self.tool_schemas: List[Dict[str, Any]] = []
+
+    def tool(self):
+        """Decorator to register a function as a tool."""
+        def decorator(func: Callable):
+            self.register_tool(func)
+            return func
+        return decorator
+
+    def register_tool(self, func: Callable):
+        name = func.__name__
+        doc = inspect.getdoc(func) or ""
+        sig = inspect.signature(func)
+        
+        properties = {}
+        required = []
+        
+        for param_name, param in sig.parameters.items():
+            param_type = "string"  # Default to string for simplicity in this minimal implementation
+            if param.annotation == int:
+                param_type = "integer"
+            elif param.annotation == bool:
+                param_type = "boolean"
+                
+            properties[param_name] = {
+                "type": param_type,
+                "description": f"Parameter {param_name}" 
+            }
+            # Simple heuristic: parameters without defaults are required
+            if param.default == inspect.Parameter.empty:
+                required.append(param_name)
+
+        schema = {
+            "name": name,
+            "description": doc,
+            "inputSchema": {
+                "type": "object",
+                "properties": properties,
+                "required": required
+            }
+        }
+        
+        self.tools[name] = func
+        self.tool_schemas.append(schema)
+        logger.info(f"Registered tool: {name}")
+
+    async def handle_request(self, request: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        method = request.get("method")
+        msg_id = request.get("id")
+        
+        if method == "tools/list":
+            return {
+                "jsonrpc": "2.0",
+                "id": msg_id,
+                "result": {
+                    "tools": self.tool_schemas
+                }
+            }
+            
+        elif method == "tools/call":
+            params = request.get("params", {})
+            tool_name = params.get("name")
+            tool_args = params.get("arguments", {})
+            
+            if tool_name not in self.tools:
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "error": {
+                        "code": -32601,
+                        "message": f"Tool not found: {tool_name}"
+                    }
+                }
+            
+            try:
+                func = self.tools[tool_name]
+                # Check if async
+                if inspect.iscoroutinefunction(func):
+                    result = await func(**tool_args)
+                else:
+                    result = func(**tool_args)
+                
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": str(result)
+                            }
+                        ]
+                    }
+                }
+            except Exception as e:
+                logger.error(f"Error executing {tool_name}: {traceback.format_exc()}")
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "error": {
+                        "code": -32603,
+                        "message": f"Internal error: {str(e)}"
+                    }
+                }
+        
+        # Handle other MCP lifecycle methods strictly to avoid errors
+        elif method == "initialize":
+             return {
+                "jsonrpc": "2.0",
+                "id": msg_id,
+                "result": {
+                    "protocolVersion": "0.1.0",
+                    "capabilities": {
+                        "tools": {}
+                    },
+                    "serverInfo": {
+                        "name": self.name,
+                        "version": "0.1.0"
+                    }
+                }
+            }
+        elif method == "notifications/initialized":
+             # No response needed for notifications
+             return None
+             
+        return None
+
+    async def run(self):
+        logger.info(f"Starting {self.name} server on stdio...")
+        
+        # We need to read from stdin line by line (JSON-RPC)
+        loop = asyncio.get_event_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+        await loop.connect_read_pipe(lambda: protocol, sys.stdin)
+        
+        while True:
+            try:
+                line = await reader.readline()
+                if not line:
+                    break
+                    
+                message = json.loads(line)
+                response = await self.handle_request(message)
+                
+                if response:
+                    sys.stdout.write(json.dumps(response) + "\n")
+                    sys.stdout.flush()
+                    
+            except json.JSONDecodeError:
+                logger.error("Failed to decode JSON from stdin")
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}")
+                break
+
+server = MCPServer("aic")
+
+@server.tool()
 async def aic_index(root_dir: str) -> str:
     """
     Indexes the repository to build a semantic dependency graph.
     Scans for Python files, generates skeletons, and updates the SQLite database.
-    
-    Args:
-        root_dir: The root directory of the repository to index.
     """
     init_db()
     skeletonizer = UniversalSkeletonizer()
@@ -38,23 +203,17 @@ async def aic_index(root_dir: str) -> str:
             rel_path = os.path.relpath(file_path, abs_root_dir)
             
             # Skip non-text files to avoid reading binaries
-            # Simple heuristic: check extension or try reading
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='strict') as f:
                     content = f.read()
             except UnicodeDecodeError:
-                # print(f"Skipping binary file: {rel_path}")
                 continue
             except Exception as e:
                 print(f"Skipping {rel_path}: {e}")
                 continue
                 
             current_hash = calculate_hash(content)
-            # We skip optimization for now to ensure we always get latest state or implement get_node in db
-            # existing = get_node(rel_path)
-            # if existing and existing['hash'] == current_hash:
-            #     continue
-                
+            
             skeleton, dependencies = skeletonizer.skeletonize(content, rel_path)
             upsert_node(rel_path, current_hash, skeleton)
             mark_dirty(rel_path)
@@ -71,26 +230,20 @@ async def aic_index(root_dir: str) -> str:
             
     return f"Successfully indexed {indexed_count} files in {abs_root_dir}"
 
-@mcp.tool()
+@server.tool()
 async def aic_get_file_context(file_path: str) -> str:
     """
     Retrieves the extensive context for a file, including its skeleton and its direct dependencies' skeletons.
-    
-    Args:
-        file_path: Relative path to the file to get context for.
     """
     try:
         return get_context(file_path)
     except Exception as e:
         return f"Error retrieving context for {file_path}: {str(e)}"
 
-@mcp.tool()
+@server.tool()
 async def aic_list_directory(path: str) -> str:
     """
     Lists the files and directories in the specified path.
-    
-    Args:
-        path: The directory path to list.
     """
     try:
         abs_path = os.path.abspath(path)
@@ -107,18 +260,12 @@ async def aic_list_directory(path: str) -> str:
     except Exception as e:
         return f"Error listing directory '{path}': {str(e)}"
 
-@mcp.tool()
+@server.tool()
 async def aic_run_shell_command(command: str, cwd: str) -> str:
     """
     Executes a shell command.
-    
-    Args:
-        command: The command line string to execute.
-        cwd: Current working directory (use "." for current).
     """
     try:
-        # Resolve "." to None if needed, or just let shell handle it if we pass it? 
-        # asyncio.create_subprocess_shell handles cwd="." fine.
         process = await asyncio.create_subprocess_shell(
             command,
             stdout=asyncio.subprocess.PIPE,
@@ -138,4 +285,4 @@ async def aic_run_shell_command(command: str, cwd: str) -> str:
         return f"Error executing command: {str(e)}"
 
 if __name__ == "__main__":
-    mcp.run()
+    asyncio.run(server.run())
