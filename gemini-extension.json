@@ -1,15 +1,5 @@
 {
   "name": "conductor",
-  "version": "0.1.3",
-  "contextFileName": "GEMINI.md",
-  "mcpServers": {
-    "aic": {
-      "command": "python3",
-      "args": [
-        "-c",
-        "import sys; sys.path.append('${extensionPath}'); import aic.server; import asyncio; asyncio.run(aic.server.server.run())"
-      ],
-      "cwd": "${workspaceFolder}"
-    }
-  }
+  "version": "0.2.0",
+  "contextFileName": "GEMINI.md"
 }
