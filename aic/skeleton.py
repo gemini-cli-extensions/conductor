@@ -1,13 +1,17 @@
 import ast
 import os
 
-class RichSkeletonizer(ast.NodeVisitor):
+class PythonSkeletonizer(ast.NodeVisitor):
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.skeleton = []
         self.dependencies = set()
         self.imports = []
 
     def skeletonize(self, source_code, path):
+        self.reset()
         try:
             tree = ast.parse(source_code)
         except Exception as e:
@@ -106,3 +110,17 @@ class RichSkeletonizer(ast.NodeVisitor):
         if calls: res.append(f"CALLS: {' | '.join(list(set(calls))[:5])}")
         
         return " | ".join(res)
+
+class UniversalSkeletonizer:
+    def __init__(self):
+        self.py_skeletonizer = PythonSkeletonizer()
+
+    def skeletonize(self, source_code, path):
+        if path.endswith('.py'):
+            return self.py_skeletonizer.skeletonize(source_code, path)
+        else:
+            # For non-Python files, treat content as the skeleton
+            # Limit size to avoid DB bloat (e.g. 100KB)
+            if len(source_code) > 100 * 1024:
+                return f"# Content truncated (size: {len(source_code)} bytes)\n" + source_code[:100*1024] + "...", set()
+            return source_code, set()

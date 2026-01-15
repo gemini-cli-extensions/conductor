@@ -120,10 +120,10 @@ Conductor leverages the **Model Context Protocol (MCP)** to provide deep, local 
 -   **Client**: The Gemini CLI acts as the MCP client.
 -   **Server**: The `aic` package runs as a local MCP server (`python3 -m aic.server`).
 -   **Tools**: The server exposes the following tools to the agent:
-    -   `index_repo`: Builds/updates the semantic dependency graph.
-    -   `get_file_context`: Retrieves token-optimized skeletons for files and their dependencies.
-    -   `list_directory`: Provides filesystem visibility.
-    -   `run_shell_command`: Allows safe execution of setup and maintenance commands.
+    -   `aic_index`: Builds/updates the semantic dependency graph.
+    -   `aic_get_file_context`: Retrieves token-optimized skeletons for files and their dependencies.
+    -   `aic_list_directory`: Provides filesystem visibility.
+    -   `aic_run_shell_command`: Allows safe execution of setup and maintenance commands.
 
 ## Resources
 
