@@ -49,13 +49,13 @@ All tasks follow a strict lifecycle:
    - Propose a clear, concise commit message e.g, `feat(ui): Create basic HTML structure for calculator`.
    - Perform the commit.
 
-9. **Attach Task Summary with Git Notes:**
-   - **Step 9.1: Get Commit Hash:** Obtain the hash of the *just-completed commit* (`git log -1 --format="%H"`).
-   - **Step 9.2: Draft Note Content:** Create a detailed summary for the completed task. This should include the task name, a summary of changes, a list of all created/modified files, and the core "why" for the change.
-   - **Step 9.3: Attach Note:** Use the `git notes` command to attach the summary to the commit.
+9. **Store Task Summary in Metadata Log:**
+   - **Step 9.1: Get Commit Hash:** Obtain the hash of the *just-completed commit* by executing the `get_latest_commit_hash` command from `VCS_COMMANDS`.
+   - **Step 9.2: Draft Summary:** Create a detailed summary for the completed task. This should include the task name, a summary of changes, and the core "why" for the change.
+   - **Step 9.3: Store Metadata:** Execute the `store_commit_metadata` command from `VCS_COMMANDS`, passing the commit hash and the summary as arguments. This will append the information to the `.conductor/metadata.json` log file.
      ```bash
-     # The note content from the previous step is passed via the -m flag.
-     git notes add -m "<note content>" <commit_hash>
+     # Example of the underlying command being called:
+     # echo '{"hash": "<commit_hash>", "message": "<summary>"}' >> .conductor/metadata.json
      ```
 
 10. **Get and Record Task Commit SHA:**
@@ -73,8 +73,8 @@ All tasks follow a strict lifecycle:
 1.  **Announce Protocol Start:** Inform the user that the phase is complete and the verification and checkpointing protocol has begun.
 
 2.  **Ensure Test Coverage for Phase Changes:**
-    -   **Step 2.1: Determine Phase Scope:** To identify the files changed in this phase, you must first find the starting point. Read `plan.md` to find the Git commit SHA of the *previous* phase's checkpoint. If no previous checkpoint exists, the scope is all changes since the first commit.
-    -   **Step 2.2: List Changed Files:** Execute `git diff --name-only <previous_checkpoint_sha> HEAD` to get a precise list of all files modified during this phase.
+    -   **Step 2.1: Determine Phase Scope:** To identify the files changed in this phase, you must first find the starting point. Read `plan.md` to find the VCS commit SHA of the *previous* phase's checkpoint. If no previous checkpoint exists, the scope is all changes since the first commit.
+    -   **Step 2.2: List Changed Files:** Execute the `get_changed_files_since` command from `VCS_COMMANDS`, providing the previous checkpoint SHA as the argument, to get a precise list of all files modified during this phase.
     -   **Step 2.3: Verify and Create Tests:** For each file in the list:
         -   **CRITICAL:** First, check its extension. Exclude non-code files (e.g., `.json`, `.md`, `.yaml`).
         -   For each remaining code file, verify a corresponding test file exists.
@@ -119,12 +119,12 @@ All tasks follow a strict lifecycle:
     -   Stage all changes. If no changes occurred in this step, proceed with an empty commit.
     -   Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
 
-7.  **Attach Auditable Verification Report using Git Notes:**
-    -   **Step 7.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    -   **Step 7.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
+7.  **Attach Auditable Verification Report to Metadata Log:**
+    -   **Step 7.1: Draft Report:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
+    -   **Step 7.2: Store Metadata:** Use the `store_commit_metadata` command from `VCS_COMMANDS` to attach the full report to the checkpoint commit's hash.
 
 8.  **Get and Record Phase Checkpoint SHA:**
-    -   **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
+    -   **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* by executing `get_latest_commit_hash` from `VCS_COMMANDS`.
     -   **Step 8.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
     -   **Step 8.3: Write Plan:** Write the updated content back to `plan.md`.
 
@@ -132,7 +132,7 @@ All tasks follow a strict lifecycle:
     - **Action:** Stage the modified `plan.md` file.
     - **Action:** Commit this change with a descriptive message following the format `conductor(plan): Mark phase '<PHASE NAME>' as complete`.
 
-10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
+10. **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report stored in the project's metadata log.
 
 ### Quality Gates
 
@@ -272,7 +272,7 @@ A task is complete when:
 6. Works beautifully on mobile (if applicable)
 7. Implementation notes added to `plan.md`
 8. Changes committed with proper message
-9. Git note with task summary attached to the commit
+9. Task summary stored in the project metadata log
 
 ## Emergency Procedures
 

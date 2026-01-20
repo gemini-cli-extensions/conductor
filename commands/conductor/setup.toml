@@ -312,7 +312,6 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         The default workflow includes:
          - 80% code test coverage
          - Commit changes after every task
-         - Use Git Notes for task summaries
         -   A) Default
         -   B) Customize
     -   If the user chooses to **customize** (Option B):
@@ -322,9 +321,6 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Question 2:** "Do you want to commit changes after each task or after each phase (group of tasks)?"
             -   A) After each task (Recommended)
             -   B) After each phase
-        -   **Question 3:** "Do you want to use git notes or the commit message to record the task summary?"
-            -   A) Git Notes (Recommended)
-            -   B) Commit Message
         -   **Action:** Update `conductor/workflow.md` based on the user's responses.
         -   **Commit State:** After the `workflow.md` file is successfully written or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
             `{"last_successful_step": "2.5_workflow"}`

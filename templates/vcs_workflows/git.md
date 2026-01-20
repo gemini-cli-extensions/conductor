@@ -36,7 +36,8 @@ git diff --name-only {{hash}} HEAD
 ### store_commit_metadata
 ```bash
 # Expects {{hash}} and {{message}} to be replaced.
-git notes add -m "{{message}}" {{hash}}
+# Appends a JSON object to the metadata log.
+echo "{\"hash\": \"{{hash}}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"message\": \"{{message}}\"}" >> .conductor/metadata.json
 ```
 
 ### revert_commit
