@@ -80,36 +80,47 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ---
 
 ## 3.0 PHASE 2: VCS RECONCILIATION & VERIFICATION
-**GOAL: Find ALL actual commit(s) in the VCS history that correspond to the user's confirmed intent and analyze them.**
+**GOAL: Find ALL actual commit(s) in the VCS history that correspond to the user's confirmed intent, retrieve their detailed summaries, and analyze them.**
 
 1.  **Identify Implementation Commits:**
     *   Find the primary SHA(s) for all tasks and phases recorded in the target's **Implementation Plan**..
     *   **Handle "Ghost" Commits (Rewritten History):** If a SHA from a plan is not found in the VCS history, announce this. Execute the `search_commit_history` command from `VCS_COMMANDS` with a pattern matching the commit message. If a similar commit is found, ask the user to confirm it as the replacement. If not confirmed, halt.
 
-2.  **Identify Associated Plan-Update Commits:**
+2.  **Retrieve Rich Context from Metadata Log:**
+    *   **CRITICAL:** For each validated commit SHA, you MUST open the `.conductor/metadata.json` file.
+    *   You MUST process this file efficiently due to its potential size. Instead of loading the entire file, you MUST read it **line by line in reverse order** (e.g., using `tac` or equivalent efficient method).
+    *   For each line, you MUST parse it as a JSON object.
+    *   You MUST then find the JSON entry where the `hash` value exactly matches the commit SHA.
+    *   Once the matching entry is found, you MUST extract the value of the `message` key and store it as the `commit_summary`.
+    *   If no matching entry is found, report an error and halt.
+
+3.  **Identify Associated Plan-Update Commits:**
     *   For each validated implementation commit, execute the `get_commit_history_for_file` command from `VCS_COMMANDS` with the relevant **Implementation Plan** file as the target. Search the output to find the corresponding plan-update commit that occurred *after* the implementation commit.
 
-3.  **Identify the Track Creation Commit (Track Revert Only):**
+4.  **Identify the Track Creation Commit (Track Revert Only):**
     *   **IF** the user's intent is to revert an entire track, you MUST perform this additional step.
-    *   **Method:** Execute `get_commit_history_for_file` from `VCS_COMMANDS` with the **Tracks Registry**  as the target. Search the output for the commit that first introduced the track entry.
+    *   **Method:** Execute `get_commit_history_for_file` from `VCS_COMMANDS` with **Tracks Registry** as the target. Search the output for the commit that first introduced the track entry.
         *   Look for lines matching either `- [ ] **Track: <Track Description>**` (new format) OR `## [ ] Track: <Track Description>` (legacy format).
     *   Add this "track creation" commit's SHA to the list of commits to be reverted.
 
-4.  **Compile and Analyze Final List:**
+5.  **Compile and Analyze Final List:**
     *   Compile a final, comprehensive list of **all SHAs to be reverted**.
     *   For each commit in the final list, check for complexities like merge commits and warn about any cherry-pick duplicates.
 
 ---
 
 ## 4.0 PHASE 3: FINAL EXECUTION PLAN CONFIRMATION
-**GOAL: Present a clear, final plan of action to the user before modifying anything.**
+**GOAL: Present a clear, final plan of action to the user, including the detailed summary, before modifying anything.**
 
-1.  **Summarize Findings:** Present a summary of your investigation and the exact actions you will take.
+1.  **Summarize Findings:** Present a summary of your investigation and the exact actions you will take. You MUST use the `commit_summary` retrieved in the previous phase.
     > "I have analyzed your request. Here is the plan:"
     > *   **Target:** Revert Task '[Task Description]'.
     > *   **Commits to Revert:** 2
-    > `  - <sha_code_commit> ('feat: Add user profile')`
+    > `  - <sha_code_commit> ('<short_commit_message>')`
     > `  - <sha_plan_commit> ('conductor(plan): Mark task complete')`
+    > *   **Details from Project Log:**
+    >     > `<commit_summary>`
+    >
     > *   **Action:** I will run the `revert_commit` command on these commits in reverse order.
 
 2.  **Final Go/No-Go:** Ask for final confirmation: "**Do you want to proceed? (yes/no)**".
