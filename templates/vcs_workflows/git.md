@@ -44,3 +44,15 @@ git notes add -m "{{message}}" {{hash}}
 # Expects {{hash}} to be replaced.
 git revert --no-edit {{hash}}
 ```
+
+### get_commit_history_for_file
+```bash
+# Expects {{file}} to be replaced.
+git log -- {{file}}
+```
+
+### search_commit_history
+```bash
+# Expects {{pattern}} to be replaced.
+git log --grep="{{pattern}}"
+```
