@@ -68,6 +68,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 3.  **Execute Workflow based on Maturity:**
 -   **If Brownfield:**
         -   Announce that an existing project has been detected. If a VCS is present, specify the `VCS_TYPE`.
+        -   Execute `mkdir -p conductor`.
+        -   **Initialize Metadata Log:** You MUST create `conductor/metadata.json` as an empty JSON file with the exact content: `[]`
         -   If `VCS_TYPE` is not "none" and the `get_repository_status` command indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
         -   **Begin Brownfield Project Initialization Protocol:**
             -   **1.0 Pre-analysis Confirmation:**
@@ -121,6 +123,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Execute `mkdir -p conductor`.
         -   **Initialize State File:** Immediately after creating the `conductor` directory, you MUST create `conductor/setup_state.json` with the exact content:
             `{"last_successful_step": ""}`
+        -   **Initialize Metadata Log:** Immediately after creating the state file, you MUST create `conductor/metadata.json` as an empty JSON file with the exact content: `[]`
         -   Write the user's response into `conductor/product.md` under a header named `# Initial Concept`.
 
 5.  **Continue:** Immediately proceed to the next section.
