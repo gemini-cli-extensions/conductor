@@ -52,12 +52,10 @@ All tasks follow a strict lifecycle:
 9. **Store Task Summary in Metadata Log:**
    - **Step 9.1: Get Commit Hash:** Obtain the hash of the *just-completed commit* by executing the `get_latest_commit_hash` command from `VCS_COMMANDS`.
    - **Step 9.2: Draft Summary:** Create a detailed summary for the completed task. This should include the task name, a summary of changes, and the core "why" for the change.
-   - **Step 9.3: Store Metadata:** Execute the `store_commit_metadata` command from `VCS_COMMANDS`, passing the commit hash and the summary as arguments. This will read the `conductor/metadata.json` log file, append the new entry to the JSON array, and write the updated array back to the file, ensuring the file remains a valid JSON array.
+   - **Step 9.3: Store Metadata:** Execute the `store_commit_metadata` command from `VCS_COMMANDS`, passing the commit hash and the summary as arguments. This will append a new JSON object on a new line to the `conductor/metadata.json` log file.
      ```bash
      # Conceptual example of the underlying operation:
-     # 1. Read conductor/metadata.json -> [{"hash": "abc", "message": "msg1"}]
-     # 2. Add new entry -> [{"hash": "abc", "message": "msg1"}, {"hash": "def", "message": "msg2"}]
-     # 3. Write back to conductor/metadata.json
+     # echo '{"hash": "<commit_hash>", "message": "<summary>"}' >> conductor/metadata.json
      ```
 
 10. **Get and Record Task Commit SHA:**
@@ -123,7 +121,7 @@ All tasks follow a strict lifecycle:
 
 7.  **Attach Auditable Verification Report to Metadata Log:**
     -   **Step 7.1: Draft Report:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    -   **Step 7.2: Store Metadata:** Use the `store_commit_metadata` command from `VCS_COMMANDS` to attach the full report to the checkpoint commit's hash. This will read the `conductor/metadata.json` log file, append the new entry to the JSON array, and write the updated array back to the file.
+    -   **Step 7.2: Store Metadata:** Use the `store_commit_metadata` command from `VCS_COMMANDS` to attach the full report to the checkpoint commit's hash. This will append a new JSON object on a new line to the `conductor/metadata.json` log file.
 
 8.  **Get and Record Phase Checkpoint SHA:**
     -   **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* by executing `get_latest_commit_hash` from `VCS_COMMANDS`.
