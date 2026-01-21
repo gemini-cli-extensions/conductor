@@ -87,11 +87,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     *   **Handle "Ghost" Commits (Rewritten History):** If a SHA from a plan is not found in the VCS history, announce this. Execute the `search_commit_history` command from `VCS_COMMANDS` with a pattern matching the commit message. If a similar commit is found, ask the user to confirm it as the replacement. If not confirmed, halt.
 
 2.  **Retrieve Rich Context from Metadata Log:**
-    *   **CRITICAL:** For each validated commit SHA, you MUST open the `conductor/metadata.json` file.
-    *   You MUST process this file efficiently due to its potential size. Instead of loading the entire file, you MUST read it **line by line in reverse order** (e.g., using `tac` or equivalent efficient method).
-    *   For each line, you MUST parse it as a JSON object.
-    *   You MUST then find the JSON entry where the `hash` value exactly matches the commit SHA.
-    *   Once the matching entry is found, you MUST extract the value of the `message` key and store it as the `commit_summary`.
+    *   **CRITICAL:** For each validated commit SHA, you MUST execute the `get_commit_metadata` command from `VCS_COMMANDS`, passing the commit hash as the `{{hash}}` parameter. You MUST then parse the resulting JSON output to extract the `message` field and store it as the `commit_summary`.
     *   If no matching entry is found, report an error and halt.
 
 3.  **Identify Associated Plan-Update Commits:**
