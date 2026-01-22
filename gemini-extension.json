@@ -6,8 +6,12 @@
     "aic": {
       "command": "python3",
       "args": [
-        "{{extensionPath}}/aic/server.py"
-      ]
+        "-m",
+        "aic.server"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
     }
   }
 }
