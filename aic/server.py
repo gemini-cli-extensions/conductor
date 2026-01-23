@@ -16,7 +16,7 @@ mcp = FastMCP("aic")
 async def aic_index(root_dir: str = ".") -> str:
     """
     Indexes the repository to build a semantic dependency graph.
-    Scans for Python files, generates skeletons, and updates the SQLite database.
+    Scans for Python, TypeScript/JavaScript, and Go files, generates skeletons, and updates the SQLite database.
     """
     init_db()
     skeletonizer = UniversalSkeletonizer()

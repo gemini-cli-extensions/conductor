@@ -1,6 +1,8 @@
 import hashlib
 import os
 import fnmatch
+import sys
+import re
 
 def calculate_hash(content):
     if isinstance(content, str):
@@ -43,28 +45,86 @@ def should_ignore(name, patterns):
     return False
 
 def resolve_dep_to_path(dep_name, current_file, root_dir):
-    """Simple heuristic to resolve module name to file path."""
-    # Handle relative imports (e.g., '.module' or '..module')
+    """Refined heuristic to resolve module name to file path."""
+    if not dep_name:
+        return None
+
+    # Ensure absolute paths for processing
+    abs_root = os.path.abspath(root_dir)
+    # current_file might be relative to root_dir
+    abs_current_file = os.path.abspath(os.path.join(abs_root, current_file))
+    curr_dir = os.path.dirname(abs_current_file)
+
+    # Determine language from current_file
+    ext = os.path.splitext(current_file)[1]
+    
+    # 1. Handle Relative Imports
     if dep_name.startswith('.'):
         levels = 0
-        while dep_name.startswith('.'):
+        temp_dep = dep_name
+        while temp_dep.startswith('.'):
             levels += 1
-            dep_name = dep_name[1:]
+            temp_dep = temp_dep[1:]
         
-        curr_dir = os.path.dirname(current_file)
+        # .module (levels=1) -> same dir
+        # ..module (levels=2) -> parent dir
+        # ./ts (levels=1, temp_dep='/ts' or levels=2, temp_dep='ts'?) 
+        # Actually:
+        # ./ts starts with '.', levels=1, temp_dep='ts' if we handle it right.
+        # But wait: './ts' -> starts with '.', one dot. Then '/ts'.
+        # Let's be more robust:
+        m = re.match(r'^(\.+)(.*)$', dep_name)
+        dots = m.group(1)
+        rel_path = m.group(2).lstrip('/\\').replace('.', os.sep)
+        levels = len(dots)
+        
+        target_dir = curr_dir
         for _ in range(levels - 1):
-            curr_dir = os.path.dirname(curr_dir)
+            target_dir = os.path.dirname(target_dir)
         
-        base_path = os.path.join(curr_dir, dep_name.replace('.', os.sep))
+        if len(target_dir) < len(abs_root):
+            target_dir = abs_root
+            
+        base_path = os.path.join(target_dir, rel_path)
     else:
-        base_path = os.path.join(root_dir, dep_name.replace('.', os.sep))
+        # 2. Handle Absolute/Package Imports
+        # Try resolving relative to root_dir
+        base_path = os.path.join(abs_root, dep_name.replace('.', os.sep))
 
-    candidates = [
-        base_path + ".py",
-        os.path.join(base_path, "__init__.py")
-    ]
-    
+    # 3. Language specific candidates
+    candidates = []
+    if ext == '.py':
+        candidates = [
+            base_path + ".py",
+            os.path.join(base_path, "__init__.py")
+        ]
+    elif ext in ('.ts', '.tsx', '.js', '.jsx'):
+        candidates = [
+            base_path + ".ts",
+            base_path + ".tsx",
+            base_path + ".js",
+            base_path + ".jsx",
+            os.path.join(base_path, "index.ts"),
+            os.path.join(base_path, "index.js")
+        ]
+    elif ext == '.go':
+        candidates = [
+            base_path + ".go",
+            os.path.join(base_path, "main.go")
+        ]
+        if os.path.isdir(base_path):
+            try:
+                for f in os.listdir(base_path):
+                    if f.endswith('.go'):
+                        candidates.append(os.path.join(base_path, f))
+                        break
+            except Exception:
+                pass
+    else:
+        candidates = [base_path, base_path + ext]
+
     for cand in candidates:
         if os.path.exists(cand):
-            return os.path.relpath(cand, root_dir)
+            return os.path.relpath(cand, abs_root)
+            
     return None
