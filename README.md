@@ -15,6 +15,7 @@ The philosophy behind Conductor is simple: control your code. By treating contex
 - **Iterate safely**: Review plans before code is written, keeping you firmly in the loop.
 - **Work as a team**: Set project-level context for your product, tech stack, and workflow preferences that become a shared foundation for your team.
 - **Build on existing projects**: Intelligent initialization for both new (Greenfield) and existing (Brownfield) projects.
+- **Semantic Awareness (AIC)**: Automatically indexes your codebase into "Rich Skeletons" using the AI Compiler (AIC). This functionality is powered by a local **Model Context Protocol (MCP)** server that exposes tools for semantic indexing and context retrieval ( `index_repo`, `get_file_context`) directly to the Gemini agent.
 - **Smart revert**: A git-aware revert command that understands logical units of work (tracks, phases, tasks) rather than just commit hashes.
 
 ## Installation
@@ -112,8 +113,21 @@ During implementation, you can also:
 | `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
 | `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 
+## Architecture
+
+Conductor leverages the **Model Context Protocol (MCP)** to provide deep, local integration with your codebase.
+
+-   **Client**: The Gemini CLI acts as the MCP client.
+-   **Server**: The `aic` package runs as a local MCP server (`python3 -m aic.server`).
+-   **Tools**: The server exposes the following tools to the agent:
+    -   `aic_index`: Builds/updates the semantic dependency graph.
+    -   `aic_get_file_context`: Retrieves token-optimized skeletons for files and their dependencies.
+    -   `aic_list_directory`: Provides filesystem visibility.
+    -   `aic_run_shell_command`: Allows safe execution of setup and maintenance commands.
+
 ## Resources
 
+- [AI Compiler Patent](https://www.tdcommons.org/dpubs_series/8241/): Semantic Dependency Graph for AI Agents
 - [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Documentation about using extensions in Gemini CLI
 - [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
 
