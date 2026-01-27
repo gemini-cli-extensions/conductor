@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${extensionPath}/hooks/ralph-mode/setup.js",
+            "name": "Ralph Mode Initializer"
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${extensionPath}/hooks/ralph-mode/controller.js",
+            "name": "Ralph Mode Controller"
+          }
+        ]
+      }
+    ]
+  }
+}

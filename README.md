@@ -91,6 +91,22 @@ Conductor will:
 3.  Update the status in the plan as it progresses.
 4.  **Verify Progress**: Guide you through a manual verification step at the end of each phase to ensure everything works as expected.
 
+#### Ralph Mode (Autonomous Loop)
+Ralph Mode is a functionality based on the Geoffrey Huntley's Ralph loop technique for the Gemini CLI that enables continuous autonomous development cycles. It allows the agent to iteratively improve your project until completion, following an automated Red-Green-Refactor loop with built-in safeguards to prevent infinite loops.
+
+```bash
+/conductor:implement --ralph
+```
+* `--max-iterations=N`: Change the retry limit (default: 10).
+* `--completion-word=WORD`: Change the work completion magic word (default: TRACK_COMPLETE).
+
+> [!NOTE]
+> For a seamless autonomous experience, you may enable `accepts-edits` or YOLO mode in your configuration.
+
+> [!WARNING]
+> Using Gemini CLI in YOLO mode allows the agent to modify files and use tools without explicit confirmation and authorization from the user.
+
+
 During implementation, you can also:
 
 - **Check status**: Get a high-level overview of your project's progress.
@@ -113,7 +129,7 @@ During implementation, you can also:
 | :--- | :--- | :--- |
 | `/conductor:setup` | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md` |
 | `/conductor:newTrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md` |
-| `/conductor:implement` | Executes the tasks defined in the current track's plan. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
+| /conductor:implement | Executes the tasks defined in the current track's plan. Use `--ralph` for autonomous TDD loop. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
 | `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
 | `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 | `/conductor:review` | Reviews completed work against guidelines and the plan. | Reads `plan.md`, `product-guidelines.md` |
