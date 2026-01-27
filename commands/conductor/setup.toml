@@ -50,31 +50,29 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 
 ### 2.0 Project Inception
-1.  **Detect Project Maturity:**
-    -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
-    -   **Brownfield Indicators:**
-        -   Check for existence of version control directories: `.git`, `.svn`, or `.hg`.
-        -   If a `.git` directory exists, execute `git status --porcelain`. If the output is not empty, classify as "Brownfield" (dirty repository).
-        -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`.
-        -   Check for source code directories: `src/`, `app/`, `lib/` containing code files.
-        -   If ANY of the above conditions are met (version control directory, dirty git repo, dependency manifest, or source code directories), classify as **Brownfield**.
-    -   **Greenfield Condition:**
-        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found AND the current directory is empty or contains only generic documentation (e.g., a single `README.md` file) without functional code or dependencies.
-
-2.  **Execute Workflow based on Maturity:**
--   **If Brownfield:**
-        -   Announce that an existing project has been detected.
-        -   If the `git status --porcelain` command (executed as part of Brownfield Indicators) indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your Git repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
-        -   **Begin Brownfield Project Initialization Protocol:**
-            -   **1.0 Pre-analysis Confirmation:**
-                1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
-                2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project with the following options using the next structure:
-                    > A) Yes
-                    > B) No
-                    >
-                    >  Please respond with A or B.
-                3.  **Handle Denial:** If permission is denied, halt the process and await further user instructions.
-                4.  **Confirmation:** Upon confirmation, proceed to the next step.
+1.  **Detect Project Maturity and Execute Workflow:**
+    -   **Classify Project:** First, determine if the project is "Brownfield" (Existing) or "Greenfield" (New) by checking for the presence of ANY of the following in the project root:
+        -   VCS directories: `.jj`, `.git`
+        -   Dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`
+        -   Source code directories: `src/`, `app/`, `lib/`
+    -   **Execute Workflow based on Maturity:**
+        -   **If ANY of the above indicators are found (Brownfield):**
+            -   Announce that an existing project has been detected.
+            -   **VCS Discovery:** Determine the `VCS_TYPE` by checking for `.jj` or `.git`. If a VCS is present, specify the `VCS_TYPE`.
+            -   **Copy and Parse Workflow:** Copy the corresponding workflow file using `mkdir -p conductor; cp ~/.gemini/extensions/conductor/templates/vcs_workflows/ conductor/vcs_workflow.md`. Then, read and parse it into the `VCS_COMMANDS` map.
+            -   Execute `mkdir -p conductor` if it was not already created.
+            -   **Initialize Metadata Log:** You MUST create `conductor/metadata.json` as an empty file.
+            -   **Check for Uncommitted Changes:** If `VCS_TYPE` is not "none", execute the `get_repository_status` command from `VCS_COMMANDS`. If the output is not empty, you MUST warn the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
+            -   **Begin Brownfield Project Initialization Protocol:**
+                -   **1.0 Pre-analysis Confirmation:**
+                    1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
+                    2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project with the following options using the next structure:
+                        > A) Yes
+                        > B) No
+                        >
+                        >  Please respond with A or B.
+                    3.  **Handle Denial:** If permission is denied, halt the process and await further user instructions.
+                    4.  **Confirmation:** Upon confirmation, proceed to the next step.
 
             -   **2.0 Code Analysis:**
                 1.  **Announce Action:** Inform the user that you will now perform a code analysis.
@@ -290,7 +288,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Ask the user for a simple confirmation to proceed with options like:
                     A) Yes, I want to proceed with the suggested code style guides.
                     B) No, I want to add more code style guides.
-    -   **Action:** Construct and execute a command to create the directory and copy all selected files. For example: `mkdir -p conductor/code_styleguides && cp ~/.gemini/extensions/conductor/templates/code_styleguides/python.md ~/.gemini/extensions/conductor/templates/code_styleguides/javascript.md conductor/code_styleguides/`
+    -   **Action:** Execute the shell command to create the directory and copy all selected files. For example: `mkdir -p conductor/code_styleguides && cp ~/.gemini/extensions/conductor/templates/code_styleguides/python.md ~/.gemini/extensions/conductor/templates/code_styleguides/javascript.md conductor/code_styleguides/`
     -   **Commit State:** Upon successful completion of the copy command, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.4_code_styleguides"}`
 
