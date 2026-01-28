@@ -3,7 +3,7 @@ import * as path from 'path';
 import { execSync } from 'child_process';
 import { tmpdir } from 'os';
 import { TestHarness } from '../harness';
-import { Vcs } from '../../vcs/jj';
+import { JjVcs } from '../../vcs/jj';
 import { Vcs as VcsInterface } from '../../vcs/types';
 import { harness as gitHarness } from '../git/harness';
 
@@ -53,7 +53,7 @@ export const harness: TestHarness = {
     teardownRepo,
     runCmd,
     createFile,
-    getVcs: (repoPath: string): VcsInterface => new Vcs(),
+    getVcs: (repoPath: string): VcsInterface => new JjVcs(),
 };
 
 // getCleanCommitId is a JJ-specific helper and not part of the generic harness interface.

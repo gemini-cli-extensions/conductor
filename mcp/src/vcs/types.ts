@@ -24,6 +24,37 @@ export interface Reference {
     type: 'branch' | 'tag' | 'detached';
 }
 
+export enum VcsType {
+    Git = 'git',
+    Jj = 'jj',
+}
+
+export interface VcsCapabilities {
+    has_staging_area: boolean;
+    supports_rewrite_history: boolean;
+    distinguishes_change_id: boolean;
+}
+
+export interface Vcs {
+    is_repository(repoPath: string): VcsType | null;
+    get_root_path(repoPath: string): string;
+    get_capabilities(): VcsCapabilities;
+    get_status(repoPath: string): VcsStatus;
+    switch_reference(params: { path: string, reference: string }): void;
+    create_commit(params: CommitParams): { commit_id: string, change_id: string };
+    is_binary(repoPath: string, filePath: string): boolean;
+    is_ignored(repoPath: string, filePath: string): boolean;
+    get_current_reference(repoPath: string): Reference;
+    get_upstream_buffer(repoPath: string): { ahead: number, behind: number };
+    get_parent_ids(repoPath: string, commitId: string): string[];
+    fetch(repoPath: string): void;
+    pull(repoPath: string): void;
+    push(repoPath: string): void;
+    list_conflicts(repoPath: string): string[];
+    resolve_conflict(params: { path: string, files: string[] }): void;
+    abort_operation(repoPath: string): void;
+}
+
 // --- (Error Classes) ---
 export class VCSNotFoundError extends Error {
   constructor(message: string) {

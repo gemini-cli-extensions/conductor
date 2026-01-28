@@ -1,9 +1,9 @@
 import { execSync, ExecSyncOptions } from 'child_process';
-import { VcsStatus, CommitParams, Reference, NotARepositoryError, GenericVCSError } from './types';
+import { VcsStatus, CommitParams, Reference, NotARepositoryError, GenericVCSError, Vcs, VcsType, VcsCapabilities } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class Vcs {
+export class JjVcs implements Vcs {
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
             // Ensure EDITOR is set to something non-interactive for commands that might open an editor.
@@ -51,10 +51,10 @@ export class Vcs {
         return status;
     }
 
-    is_repository(repoPath: string): 'jj' | null {
+    is_repository(repoPath: string): VcsType | null {
         try {
             this.runCommand(`status`, { cwd: repoPath });
-            return 'jj';
+            return VcsType.Jj;
         } catch (e) {
             if (e instanceof NotARepositoryError) return null;
             throw e;
@@ -65,7 +65,7 @@ export class Vcs {
         return this.runCommand(`root`, { cwd: repoPath });
     }
 
-    get_capabilities() {
+    get_capabilities(): VcsCapabilities {
         return {
             has_staging_area: false,
             supports_rewrite_history: true,

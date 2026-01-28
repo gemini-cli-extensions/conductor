@@ -1,6 +1,6 @@
 // mcp/src/__tests__/jj/vcs.unit.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Vcs } from '../../vcs/jj';
+import { JjVcs } from '../../vcs/jj';
 import { NotARepositoryError, GenericVCSError, VcsStatus } from '../../vcs/types';
 import { execSync } from 'child_process';
 
@@ -15,12 +15,12 @@ vi.mock('fs', () => ({
 }));
 
 describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
-    let vcs: Vcs;
+    let vcs: JjVcs;
     let mockExecSync: vi.Mock;
     let currentTest: string; // To control specific mocks for get_current_reference tests
 
     beforeEach(() => {
-        vcs = new Vcs();
+        vcs = new JjVcs();
         vi.resetAllMocks();
         mockExecSync = execSync as vi.Mock;
         mockExecSync.mockImplementation((command: string) => {

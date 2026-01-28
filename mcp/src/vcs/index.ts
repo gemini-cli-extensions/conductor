@@ -1,6 +1,8 @@
-import { Vcs as GitVcs } from './git';
-import { Vcs as JjVcs } from './jj';
-import { Vcs, VcsType } from './types';
+import { GitVcs } from './git';
+import { JjVcs } from './jj';
+import { Vcs } from './types';
+
+const strategies = [GitVcs, JjVcs];
 
 /**
  * Factory function to get the appropriate VCS implementation.
@@ -9,16 +11,11 @@ import { Vcs, VcsType } from './types';
  * @throws {Error} If the VCS type is unknown or no repository is found.
  */
 export function getVcs(repoPath: string): Vcs {
-    // First, try to detect Git
-    const gitVcs = new GitVcs();
-    if (gitVcs.is_repository(repoPath) === VcsType.Git) {
-        return gitVcs;
-    }
-
-    // If not Git, try to detect Jujutsu
-    const jjVcs = new JjVcs();
-    if (jjVcs.is_repository(repoPath) === VcsType.Jj) {
-        return jjVcs;
+    for (const Strategy of strategies) {
+        const vcs = new Strategy();
+        if (vcs.is_repository(repoPath)) {
+            return vcs;
+        }
     }
 
     throw new Error(`No supported VCS repository found at ${repoPath}`);

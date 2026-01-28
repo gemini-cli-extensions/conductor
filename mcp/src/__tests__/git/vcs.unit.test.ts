@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Vcs } from '../../vcs/git';
+import { GitVcs } from '../../vcs/git';
 import { NotARepositoryError, DirtyWorkingDirectoryError, GenericVCSError, VCSRepositoryLockedError, AuthenticationError, MergeConflictError, VCSNotFoundError, VcsStatus } from '../../vcs/types';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -11,11 +11,11 @@ vi.mock('child_process', () => ({
 vi.mock('fs');
 
 describe('VCS Abstraction Layer - Unit Tests', () => {
-    let vcs: Vcs;
+    let vcs: GitVcs;
     let mockExecSync: vi.Mock;
 
     beforeEach(() => {
-        vcs = new Vcs();
+        vcs = new GitVcs();
         vi.resetAllMocks();
         mockExecSync = execSync as vi.Mock;
         mockExecSync.mockImplementation((command: string, options?: any) => {

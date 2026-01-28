@@ -9,13 +9,16 @@ import {
     VCSNotFoundError,
     VcsStatus,
     CommitParams,
-    Reference
+    Reference,
+    Vcs,
+    VcsType,
+    VcsCapabilities
 } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-export class Vcs {
+export class GitVcs implements Vcs {
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
             return execSync(command, { stdio: 'pipe', encoding: 'utf-8', ...options }).trim();
@@ -86,10 +89,10 @@ export class Vcs {
         return status;
     }
 
-    is_repository(repoPath: string): 'git' | null {
+    is_repository(repoPath: string): VcsType | null {
         try {
             this.runCommand(`git -C "${repoPath}" rev-parse --is-inside-work-tree`);
-            return 'git';
+            return VcsType.Git;
         } catch (e) {
             if (e instanceof NotARepositoryError) return null;
             throw e;
@@ -100,7 +103,7 @@ export class Vcs {
         return this.runCommand(`git -C "${repoPath}" rev-parse --show-toplevel`);
     }
 
-    get_capabilities() {
+    get_capabilities(): VcsCapabilities {
         return {
             has_staging_area: true, // Git has a staging area
             supports_rewrite_history: true, // Git supports history rewrite (e.g., rebase)
@@ -158,7 +161,6 @@ export class Vcs {
         }
     }
 
-    // --- Stubs for functions not fully implemented in the last state ---
     is_binary(repoPath: string, filePath: string): boolean {
         const fullPath = path.join(repoPath, filePath);
 
@@ -247,17 +249,11 @@ export class Vcs {
         return { ahead, behind };
     }
 
-        get_parent_ids(repoPath: string, commitId: string): string[] {
-
-            const output = this.runCommand(`git log --pretty=%P -n 1 ${commitId}`, { cwd: repoPath });
-
-            // The output will be space-separated parent IDs, or empty string for initial commit
-
-            if (!output) return []; // No parents
-
-            return output.split(' ');
-
-        }
+    get_parent_ids(repoPath: string, commitId: string): string[] {
+        const output = this.runCommand(`git log --pretty=%P -n 1 ${commitId}`, { cwd: repoPath });
+        if (!output) return []; // No parents
+        return output.split(' ');
+    }
 
     fetch(repoPath: string): void {
         this.runCommand(`git -C "${repoPath}" fetch`);
@@ -274,9 +270,11 @@ export class Vcs {
     list_conflicts(repoPath: string): string[] { 
         return this.get_status(repoPath).conflicted;
      }
+
     resolve_conflict({ path: repoPath, files }: { path: string, files: string[] }): void {
         this.runCommand(`git -C "${repoPath}" add ${files.join(' ')}`);
     }
+
     abort_operation(repoPath: string): void { 
         const status = this.get_status(repoPath);
         if(status.is_operation_in_progress.type === 'merge') {

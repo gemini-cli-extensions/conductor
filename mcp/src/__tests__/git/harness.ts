@@ -3,7 +3,7 @@ import * as path from 'path';
 import { execSync } from 'child_process';
 import { tmpdir } from 'os';
 import { TestHarness } from '../harness';
-import { Vcs } from '../../vcs/git';
+import { GitVcs } from '../../vcs/git';
 import { Vcs as VcsInterface } from '../../vcs/types';
 
 function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
@@ -80,5 +80,5 @@ export const harness: TestHarness = {
     teardownRepo,
     runCmd,
     createFile,
-    getVcs: (repoPath: string): VcsInterface => new Vcs(),
+    getVcs: (repoPath: string): VcsInterface => new GitVcs(),
 };
