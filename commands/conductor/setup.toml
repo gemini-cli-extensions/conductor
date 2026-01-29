@@ -68,7 +68,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Begin Brownfield Project Initialization Protocol:**
                 -   **1.0 Pre-analysis Confirmation:**
                 1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
-                2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project using the `AskUser` tool with the following options:
+                2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project using the `ask_user` tool with the following options:
                     - **Header:** "Permission"
                     - **Question:** "A brownfield (existing) project has been detected. May I perform a read-only scan to analyze the project?"
                     - **Options:**
@@ -105,7 +105,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     -   If a `.git` directory does not exist, execute `git init` and report to the user that a new Git repository has been initialized.
 
 4.  **Inquire about Project Goal (for Greenfield):**
-    -   **Ask the user the following question using the `AskUser` tool and wait for their response before proceeding to the next step:**
+    -   **Ask the user the following question using the `ask_user` tool and wait for their response before proceeding to the next step:**
         - **Header:** "Project Goal"
         - **Type:** "text"
         - **Question:** "What do you want to build?"
@@ -121,12 +121,12 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 2.1 Generate Product Guide (Interactive)
 1.  **Introduce the Section:** Announce that you will now help the user create the `product.md`.
-2.  **Gather Information:** Use the `AskUser` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
-        -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `AskUser` tool calls.
+2.  **Gather Information:** Use the `ask_user` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
+        -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `ask_user` tool calls.
         -   **SUGGESTIONS:** For each question, generate 3 high-quality suggested answers based on common patterns or context.
         -   **Example Topics:** Target users, goals, features, etc.
         -   **General Guidelines:**
-            *   **1. Formulate the `AskUser` tool call:** Adhere to the following for each question in the `questions` array:
+            *   **1. Formulate the `ask_user` tool call:** Adhere to the following for each question in the `questions` array:
                 - **header:** Very short label (max 12 chars).
                 - **type:** "choice", "text", or "yesno".
                 - **multiSelect:** (Required for type: "choice") Set to `true` for multi-select (additive) or `false` for single-choice (exclusive).
@@ -138,13 +138,13 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 - **multiSelect:** `false` (Exclusive choice)
 
             *   **3. Interaction Flow:**
-                *   Wait for the user's response after each `AskUser` tool call.
+                *   Wait for the user's response after each `ask_user` tool call.
                 *   If the user selects "Autogenerate", stop asking questions and proceed to drafting.
                 *   If the user provides "Other" for a choice, follow up with a "text" type question if necessary.
     -   **FOR EXISTING PROJECTS (BROWNFIELD):** Batch project context-aware questions based on the code analysis.
 3.  **Draft the Document:** Once the dialogue is complete (or "Autogenerate" is selected), generate the content for `product.md`. Use your best judgment to infer any missing details.
     -   **CRITICAL:** The source of truth for generation is **only the user's selected answer(s)**.
-4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `AskUser` tool.
+4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `ask_user` tool.
     - **header:** "Review"
     - **question:** "I've drafted the product guide. Please review the following:\n\n```markdown\n[Drafted product.md content here]\n```\n\nWhat would you like to do next?"
     - **type:** "choice"
@@ -159,12 +159,12 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 2.2 Generate Product Guidelines (Interactive)
 1.  **Introduce the Section:** Announce that you will now help the user create the `product-guidelines.md`.
-2.  **Gather Information:** Use the `AskUser` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
-    -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `AskUser` tool calls.
+2.  **Gather Information:** Use the `ask_user` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
+    -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `ask_user` tool calls.
     -   **SUGGESTIONS:** For each question, generate 3 high-quality suggested answers based on common patterns or context. Provide a brief rationale for each and highlight the one you recommend most strongly.
     -   **Example Topics:** Prose style, brand messaging, visual identity, etc.
     *   **General Guidelines:**
-        *   **1. Formulate the `AskUser` tool call:** Adhere to the following for each question in the `questions` array:
+        *   **1. Formulate the `ask_user` tool call:** Adhere to the following for each question in the `questions` array:
             - **header:** Very short label (max 12 chars).
             - **type:** "choice", "text", or "yesno".
             - **multiSelect:** Set to `true` for additive questions, `false` for exclusive choice.
@@ -174,12 +174,12 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Label: "Autogenerate", Description: "Autogenerate and review product-guidelines.md"
 
         *   **3. Interaction Flow:**
-            *   Wait for the user's response after each `AskUser` tool call.
+            *   Wait for the user's response after each `ask_user` tool call.
             *   If the user selects "Autogenerate", stop asking questions and proceed to drafting.
             *   If the user provides "Other" for a choice, follow up with a "text" type question if necessary.
 3.  **Draft the Document:** Once the dialogue is complete (or "Autogenerate" is selected), generate the content for `product-guidelines.md`. Use your best judgment to infer any missing details.
      **CRITICAL:** The source of truth for generation is **only the user's selected answer(s)**.
-4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `AskUser` tool.
+4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `ask_user` tool.
     - **header:** "Review"
     - **question:** "I've drafted the product guidelines. Please review the following:\n\n```markdown\n[Drafted product-guidelines.md content here]\n```\n\nWhat would you like to do next?"
     - **type:** "choice"
@@ -194,12 +194,12 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 2.3 Generate Tech Stack (Interactive)
 1.  **Introduce the Section:** Announce that you will now help define the technology stacks.
-2.  **Gather Information:** Use the `AskUser` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
-    -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `AskUser` tool calls.
+2.  **Gather Information:** Use the `ask_user` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
+    -   **CONSTRAINT:** Limit your inquiry to a maximum of 5-8 details gathered across 1 or 2 `ask_user` tool calls.
     -   **SUGGESTIONS:** For each question, generate 3 high-quality suggested answers based on common patterns or context.
     -   **Example Topics:** programming languages, frameworks, databases, etc.
     *   **General Guidelines:**
-        *   **1. Formulate the `AskUser` tool call:** Adhere to the following for each question in the `questions` array:
+        *   **1. Formulate the `ask_user` tool call:** Adhere to the following for each question in the `questions` array:
             - **header:** Very short label (max 12 chars).
             - **type:** "choice", "text", or "yesno".
             - **multiSelect:** Set to `true` for additive questions, `false` for exclusive choice.
@@ -209,20 +209,20 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Label: "Autogenerate", Description: "Autogenerate and review tech-stack.md"
 
         *   **3. Interaction Flow:**
-            *   Wait for the user's response after each `AskUser` tool call.
+            *   Wait for the user's response after each `ask_user` tool call.
             *   If the user selects "Autogenerate", stop asking questions and proceed to drafting.
             *   If the user provides "Other" for a choice, follow up with a "text" type question if necessary.
     -   **FOR EXISTING PROJECTS (BROWNFIELD):**
             -   **CRITICAL WARNING:** Your goal is to document the project's *existing* tech stack, not to propose changes.
             -   **State the Inferred Stack:** Based on the code analysis, you MUST state the technology stack that you have inferred.
-            -   **Request Confirmation:** After stating the detected stack, you MUST ask the user for confirmation using the `AskUser` tool:
+            -   **Request Confirmation:** After stating the detected stack, you MUST ask the user for confirmation using the `ask_user` tool:
                 - **Header:** "Stack"
                 - **Question:** "Based on my analysis, this is the inferred tech stack:\n\n[List of inferred technologies]\n\nIs this correct?"
                 - **type:** "yesno"
-            -   **Handle Disagreement:** If the user disputes the suggestion, acknowledge their input and allow them to provide the correct technology stack manually using `AskUser` tool with `type: "text"`.
+            -   **Handle Disagreement:** If the user disputes the suggestion, acknowledge their input and allow them to provide the correct technology stack manually using `ask_user` tool with `type: "text"`.
 3.  **Draft the Document:** Once the dialogue is complete (or "Autogenerate" is selected), generate the content for `tech-stack.md`. Use your best judgment to infer any missing details.
     -   **CRITICAL:** The source of truth for generation is **only the user's selected answer(s)**.
-4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `AskUser` tool.
+4.  **User Confirmation Loop:** Present the drafted content and ask for approval using the `ask_user` tool.
     - **header:** "Review"
     - **question:** "I've drafted the tech stack. Please review the following:\n\n```markdown\n[Drafted tech-stack.md content here]\n```\n\nWhat would you like to do next?"
     - **type:** "choice"
@@ -241,7 +241,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     -   List the available style guides by running `ls ~/.gemini/extensions/conductor/templates/code_styleguides/`.
     -   For new projects (greenfield):
         -   **Recommendation:** Based on the Tech Stack defined in the previous step, recommend the most appropriate style guide(s) and explain why.
-        -   Ask the user how they would like to proceed using the `AskUser` tool:
+        -   Ask the user how they would like to proceed using the `ask_user` tool:
             - **header:** "Style Guides"
             - **question:** "How would you like to proceed with the code style guides?"
             - **type:** "choice"
@@ -250,7 +250,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 - Label: "Recommended"
                 - Label: "Edit"
         -   If the user chooses "Edit":
-            -   Present the list of all available guides to the user using the `AskUser` tool:
+            -   Present the list of all available guides to the user using the `ask_user` tool:
                 - **header:** "Select"
                 - **type:** "choice"
                 - **multiSelect:** `true`
@@ -258,7 +258,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 - **options:** Use the list of available guides as labels.
     -   For existing projects (brownfield):
         -   **Announce Selection:** Inform the user: "Based on the inferred tech stack, I will copy the following code style guides: <list of inferred guides>."
-        -   **Ask for Customization:** Ask the user if they'd like to proceed using the `AskUser` tool:
+        -   **Ask for Customization:** Ask the user if they'd like to proceed using the `ask_user` tool:
             - **header:** "Confirm"
             - **question:** "Would you like to proceed using only the suggested code style guides?"
             - **type:** "choice"
@@ -266,7 +266,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - **options:**
                 - Label: "Yes"
                 - Label: "Add More"
-            - **Handle Selection:** If the user chooses "Add More", present the full list using `AskUser` tool with `multiSelect: true`.
+            - **Handle Selection:** If the user chooses "Add More", present the full list using `ask_user` tool with `multiSelect: true`.
     -   **Action:** Construct and execute a command to create the directory and copy all selected files. For example: `mkdir -p conductor/code_styleguides && cp ~/.gemini/extensions/conductor/templates/code_styleguides/python.md ~/.gemini/extensions/conductor/templates/code_styleguides/javascript.md conductor/code_styleguides/`
     -   **Commit State:** Upon successful completion of the copy command, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.4_code_styleguides"}`
@@ -275,7 +275,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Copy Initial Workflow:**
     -   Copy `~/.gemini/extensions/conductor/templates/workflow.md` to `conductor/workflow.md`.
 2.  **Customize Workflow:**
-    -   Ask the user if they want to customize the workflow using the `AskUser` tool:
+    -   Ask the user if they want to customize the workflow using the `ask_user` tool:
         - **header:** "Workflow"
         - **question:** "Do you want to use the default workflow or customize it?"
         - **type:** "choice"
@@ -284,7 +284,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Label: "Default"
             - Label: "Customize"
     -   If the user chooses "Customize":
-        -   **Question 1:** Use `AskUser` tool.
+        -   **Question 1:** Use `ask_user` tool.
             - **header:** "Coverage"
             - **question:** "The default required test code coverage is >80%. Do you want to change this percentage?"
             - **type:** "choice"
@@ -292,8 +292,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - **options:**
                 - Label: "No"
                 - Label: "Yes"
-            - If "Yes", use `AskUser` tool with `type: "text"` to get the value.
-        -   **Question 2:** Use `AskUser` tool.
+            - If "Yes", use `ask_user` tool with `type: "text"` to get the value.
+        -   **Question 2:** Use `ask_user` tool.
             - **header:** "Commits"
             - **question:** "Do you want to commit changes after each task or after each phase (group of tasks)?"
             - **type:** "choice"
@@ -301,7 +301,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - **options:**
                 - Label: "Per Task"
                 - Label: "Per Phase"
-        -   **Question 3:** Use `AskUser` tool.
+        -   **Question 3:** Use `ask_user` tool.
             - **header:** "Summaries"
             - **question:** "Do you want to use git notes or the commit message to record the task summary?"
             - **type:** "choice"
@@ -347,11 +347,11 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 ### 3.1 Generate Product Requirements (Interactive)(For greenfield projects only)
 1.  **Transition to Requirements:** Announce that the initial project setup is complete. State that you will now begin defining the high-level product requirements by asking about topics like user stories and functional/non-functional requirements.
 2.  **Analyze Context:** Read and analyze the content of `conductor/product.md` to understand the project's core concept.
-3.  **Gather Information:** Use the `AskUser` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
-    -   **CONSTRAINT** Limit your total inquiry for this section to a maximum of 5-8 details gathered across 1 or 2 `AskUser` tool calls.
+3.  **Gather Information:** Use the `ask_user` tool to ask relevant questions. You can batch up to 4 related questions in a single tool call to streamline the process.
+    -   **CONSTRAINT** Limit your total inquiry for this section to a maximum of 5-8 details gathered across 1 or 2 `ask_user` tool calls.
     -   **SUGGESTIONS:** For each question, generate 3 high-quality suggested answers based on common patterns or context.
     *   **General Guidelines:**
-        *   **1. Formulate the `AskUser` tool call:** Adhere to the following for each question in the `questions` array:
+        *   **1. Formulate the `ask_user` tool call:** Adhere to the following for each question in the `questions` array:
             - **header:** Very short label (max 12 chars).
             - **type:** "choice", "text", or "yesno".
             - **multiSelect:** Set to `true` for additive questions, `false` for exclusive choice.
@@ -361,7 +361,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Label: "Autogenerate", Description: "Auto-generate the rest of requirements"
 
         *   **3. Interaction Flow:**
-            *   Wait for the user's response after each `AskUser` tool call.
+            *   Wait for the user's response after each `ask_user` tool call.
             *   If the user selects "Autogenerate", stop asking questions and proceed.
             *   If the user provides "Other" for a choice, follow up with a "text" type question if necessary.
 -   **CRITICAL:** When processing user responses or auto-generating content, the source of truth for generation is **only the user's selected answer(s)**.
@@ -380,7 +380,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         To create the first track of this project, I suggest the following track:
         - Create user authentication flow for user sign in.
         ```
-3.  **User Confirmation:** Present the generated track title to the user for review and approval using the `AskUser` tool.
+3.  **User Confirmation:** Present the generated track title to the user for review and approval using the `ask_user` tool.
     - **header:** "Confirm"
     - **question:** "To get the project started, I suggest the following track: <Track Title>. Do you approve?"
     - **type:** "choice"
@@ -388,7 +388,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - **options:**
         - Label: "Approve"
         - Label: "Revise"
-    - If the user declines, ask the user for clarification on what track to start with using `AskUser` tool with `type: "text"`.
+    - If the user declines, ask the user for clarification on what track to start with using `ask_user` tool with `type: "text"`.
 
 ### 3.3 Convert the Initial Track into Artifacts (Automated)
 1.  **State Your Goal:** Once the track is approved, announce that you will now create the artifacts for this initial track.
