@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.2.0...conductor-v0.3.0) (2026-01-29)
+
+
+### Features
+
+* add /conductor:review command ([d4749d3](https://github.com/gemini-cli-extensions/conductor/commit/d4749d320ae983a12064488eb4b605529b0841e9))
+* add /conductor:review command ([d6e382a](https://github.com/gemini-cli-extensions/conductor/commit/d6e382a980a816339c9ca9904a4744a635af7bd0))
+
+
+### Bug Fixes
+
+* improve error message when required files are missing in review command ([d61c588](https://github.com/gemini-cli-extensions/conductor/commit/d61c588c6d4adc3393468180d62f13097f589e4c))
+
 ## [0.2.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.1.1...conductor-v0.2.0) (2026-01-14)
 
 
