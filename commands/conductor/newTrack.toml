@@ -30,8 +30,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 1.  **Load Project Context:** Read and understand the content of the project documents (**Product Definition**, **Tech Stack**, etc.) resolved via the **Universal File Resolution Protocol**.
 2.  **Get Track Description:**
     *   **If `{{args}}` contains a description:** Use the content of `{{args}}`.
-    *   **If `{{args}}` is empty:** Ask the user:
-        > "Please provide a brief description of the track (feature, bug fix, chore, etc.) you wish to start."
+    *   **If `{{args}}` is empty:** Ask the user using the `AskUser` tool:
+        - **Header:** "Description"
+        - **Type:** "text"
+        - **Question:** "Please provide a brief description of the track (feature, bug fix, chore, etc.) you wish to start."
+        - **Placeholder:** "e.g., Implement user authentication"
         Await the user's response and use it as the track description.
 3.  **Infer Track Type:** Analyze the description to determine if it is a "Feature" or "Something Else" (e.g., Bug, Chore, Refactor). Do NOT ask the user to classify it.
 
@@ -40,48 +43,45 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 1.  **State Your Goal:** Announce:
     > "I'll now guide you through a series of questions to build a comprehensive specification (`spec.md`) for this track."
 
-2.  **Questioning Phase:** Ask a series of questions to gather details for the `spec.md`. Tailor questions based on the track type (Feature or Other).
-    *   **CRITICAL:** You MUST ask these questions sequentially (one by one). Do not ask multiple questions in a single turn. Wait for the user's response after each question.
+2.  **Questioning Phase:** Ask a series of questions to gather details for the `spec.md` using the `AskUser` tool. You can batch up to 4 related questions in a single tool call to streamline the process. Tailor questions based on the track type (Feature or Other).
+    *   **CRITICAL:** Wait for the user's response after each `AskUser` tool call.
     *   **General Guidelines:**
         *   Refer to information in **Product Definition**, **Tech Stack**, etc., to ask context-aware questions.
         *   Provide a brief explanation and clear examples for each question.
         *   **Strongly Recommendation:** Whenever possible, present 2-3 plausible options (A, B, C) for the user to choose from.
-        *   **Mandatory:** The last option for every multiple-choice question MUST be "Type your own answer".
         
-        *   **1. Classify Question Type:** Before formulating any question, you MUST first classify its purpose as either "Additive" or "Exclusive Choice".
-            *   Use **Additive** for brainstorming and defining scope (e.g., users, goals, features, project guidelines). These questions allow for multiple answers.
-            *   Use **Exclusive Choice** for foundational, singular commitments (e.g., selecting a primary technology, a specific workflow rule). These questions require a single answer.
+        *   **1. Formulate the `AskUser` tool call:** Adhere to the following for each question in the `questions` array:
+            - **header:** Very short label (max 12 chars).
+            - **type:** "choice", "text", or "yesno".
+            - **multiSelect:** (Required for type: "choice") Set to `true` for multi-select (additive) or `false` for single-choice (exclusive).
+            - **options:** (Required for type: "choice") Provide 2-4 options. Note that "Other" is automatically added.
+            - **placeholder:** (For type: "text") Provide a hint.
 
-        *   **2. Formulate the Question:** Based on the classification, you MUST adhere to the following:
-            *   **Strongly Recommended:** Whenever possible, present 2-3 plausible options (A, B, C) for the user to choose from.
-            *   **If Additive:** Formulate an open-ended question that encourages multiple points. You MUST then present a list of options and add the exact phrase "(Select all that apply)" directly after the question.
-            *   **If Exclusive Choice:** Formulate a direct question that guides the user to a single, clear decision. You MUST NOT add "(Select all that apply)".
-
-        *   **3. Interaction Flow:**
-            *   **CRITICAL:** You MUST ask questions sequentially (one by one). Do not ask multiple questions in a single turn. Wait for the user's response after each question.
-            *   The last option for every multiple-choice question MUST be "Type your own answer".
-            *   Confirm your understanding by summarizing before moving on to the next question or section..
+        *   **2. Interaction Flow:**
+            *   Wait for the user's response after each `AskUser` tool call.
+            *   If the user selects "Other", use a subsequent `AskUser` tool call with `type: "text"` to get their input if necessary.
+            *   Confirm your understanding by summarizing before moving on to drafting.
 
     *   **If FEATURE:**
-        *   **Ask 3-5 relevant questions** to clarify the feature request.
+        *   Ask 3-5 relevant questions to clarify the feature request using the `AskUser` tool.
         *   Examples include clarifying questions about the feature, how it should be implemented, interactions, inputs/outputs, etc.
         *   Tailor the questions to the specific feature request (e.g., if the user didn't specify the UI, ask about it; if they didn't specify the logic, ask about it).
 
     *   **If SOMETHING ELSE (Bug, Chore, etc.):**
-        *   **Ask 2-3 relevant questions** to obtain necessary details.
+        *   Ask 2-3 relevant questions to obtain necessary details using the `AskUser` tool.
         *   Examples include reproduction steps for bugs, specific scope for chores, or success criteria.
         *   Tailor the questions to the specific request.
 
 3.  **Draft `spec.md`:** Once sufficient information is gathered, draft the content for the track's `spec.md` file, including sections like Overview, Functional Requirements, Non-Functional Requirements (if any), Acceptance Criteria, and Out of Scope.
 
-4.  **User Confirmation:** Present the drafted `spec.md` content to the user for review and approval.
-    > "I've drafted the specification for this track. Please review the following:"
-    >
-    > ```markdown
-    > [Drafted spec.md content here]
-    > ```
-    >
-    > "Does this accurately capture the requirements? Please suggest any changes or confirm."
+4.  **User Confirmation:** Present the drafted `spec.md` content and ask for approval using the `AskUser` tool.
+    - **header:** "Confirm Spec"
+    - **question:** "I've drafted the specification for this track. Please review the following:\n\n```markdown\n[Drafted spec.md content here]\n```\n\nDoes this accurately capture the requirements?"
+    - **type:** "choice"
+    - **multiSelect:** `false`
+    - **options:**
+        - Label: "Approve"
+        - Label: "Revise"
     Await user feedback and revise the `spec.md` content until confirmed.
 
 ### 2.3 Interactive Plan Generation (`plan.md`)
@@ -99,14 +99,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         - Sub-task: `    - [ ] ...`
     *   **CRITICAL: Inject Phase Completion Tasks.** Determine if a "Phase Completion Verification and Checkpointing Protocol" is defined in the **Workflow**. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - User Manual Verification '<Phase Name>' (Protocol in workflow.md)`.
 
-3.  **User Confirmation:** Present the drafted `plan.md` to the user for review and approval.
-    > "I've drafted the implementation plan. Please review the following:"
-    >
-    > ```markdown
-    > [Drafted plan.md content here]
-    > ```
-    >
-    > "Does this plan look correct and cover all the necessary steps based on the spec and our workflow? Please suggest any changes or confirm."
+3.  **User Confirmation:** Present the drafted `plan.md` content and ask for approval using the `AskUser` tool.
+    - **header:** "Confirm Plan"
+    - **question:** "I've drafted the implementation plan. Please review the following:\n\n```markdown\n[Drafted plan.md content here]\n```\n\nDoes this look correct based on the spec and workflow?"
+    - **type:** "choice"
+    - **multiSelect:** `false`
+    - **options:**
+        - Label: "Approve"
+        - Label: "Revise"
     Await user feedback and revise the `plan.md` content until confirmed.
 
 ### 2.4 Create Track Artifacts and Update Main Plan
