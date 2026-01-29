@@ -1,7 +1,8 @@
 {
   "hooks": {
-    "BeforeAgent": [
+    "AfterTool": [
       {
+        "matcher": "ralph_start",
         "hooks": [
           {
             "type": "command",
@@ -9,10 +10,9 @@
             "name": "Ralph Mode Initializer"
           }
         ]
-      }
-    ],
-    "AfterAgent": [
+      },
       {
+        "matcher": "ralph_end",
         "hooks": [
           {
             "type": "command",

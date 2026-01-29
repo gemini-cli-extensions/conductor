@@ -3,16 +3,13 @@ const path = require('path');
 const directiveContent = require('./directive.js');
 
 /**
- *
- * MANAGES THE AUTONOMOUS RALPH LOOP. 
- * 
+ * MANAGES THE AUTONOMOUS RALPH LOOP VIA AfterTool HOOK.
  */
 
 const STATE_FILE = path.join(process.cwd(), 'conductor', '.ralph-state.json');
 
 async function main() {
-
-  // State File Missing (Quiet Exit for normal usage)
+  // State File Missing (Quiet Exit)
   if (!fs.existsSync(STATE_FILE)) {
     console.log(JSON.stringify({}));
     return;
@@ -23,15 +20,14 @@ async function main() {
   try {
     context = JSON.parse(fs.readFileSync(0, 'utf8'));
   } catch (e) {
-    console.error(`[Ralph] Error reading input: ${e.message}`);
     console.log(JSON.stringify({}));
     return;
   }
 
-  const { prompt_response, stop_hook_active } = context;
+  const { hook_event_name, tool_name, tool_input } = context;
 
-  // Safety Checks
-  if (stop_hook_active || !prompt_response) {
+  // Check if this is the end tool
+  if (hook_event_name !== 'AfterTool' || !tool_name.endsWith('ralph_end')) {
     console.log(JSON.stringify({}));
     return;
   }
@@ -41,26 +37,14 @@ async function main() {
   try {
     state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
   } catch (e) {
-    console.log(JSON.stringify({
-      systemMessage: `⚠️ Ralph Error: State file is corrupt (${e.message}). Please delete .ralph-state.json.`
-    }));
-    return;
-  }
-
-  // --- CORE LOGIC START ---
-  
-  // Check for Ralph Token (Agent reporting task completion status)
-  if (!prompt_response.includes('[Ralph]:')) {
     console.log(JSON.stringify({}));
     return;
   }
 
-  // Analyze for Success
-  const escapedWord = state.completionWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const successRegex = new RegExp('<promise>\\s*' + escapedWord + '\\s*</promise>', 'i');
-  
+  const { status, message } = tool_input;
+
   // Case: SUCCESS
-  if (successRegex.test(prompt_response)) {
+  if (status === 'SUCCESS') {
     try {
       fs.unlinkSync(STATE_FILE);
     } catch (e) {
@@ -75,7 +59,6 @@ async function main() {
   }
 
   // Case: FAILURE / RETRY LOOP
-  // The agent reported [Ralph]: but NOT the success token.
   
   // Check Iteration Limit
   if (state.iteration >= state.maxIterations) {
@@ -86,15 +69,14 @@ async function main() {
     }
     console.log(JSON.stringify({
       decision: "deny",
-      reason: "Stopping Ralph loop.",
+      reason: "Stopping Ralph loop. Max iterations reached.",
       systemMessage: "🛑 Ralph: Max iterations reached. Stopping loop."
     }));
     return;
   }
 
   // Increment Iteration for the next turn
-  const currentIteration = state.iteration || 0;
-  state.iteration = currentIteration + 1;
+  state.iteration += 1;
   fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 
   // Prepare Re-injection Context
@@ -103,12 +85,14 @@ async function main() {
   const failureContext = `
 [RALPH SYSTEM MESSAGE]:
 The previous session context was cleared to ensure focus.
-LAST STATUS: FAILED (Iteration ${state.iteration - 1} of ${state.maxIterations})
+LAST STATUS: ${status} (Iteration ${state.iteration - 1} of ${state.maxIterations})
+REASON: ${message || "No specific reason provided."}
+
 ACTION REQUIRED:
-1.  **RE-ORIENT:** Run \`git status\` and \`git diff\` (or read the modified files) to understand what changes were made in the previous failed attempt.
-2.  **ANALYZE:** Use the failure reason provided above to determine why those changes failed or why you were stuck.
-3.  **FIX:** Modify the code, tests, or **Strategy** (if stuck).
-4.  **VERIFY:** Run tests again.
+1.  **RE-ORIENT:** Analyze the current project state (git status, diff, logs).
+2.  **FIX:** Modify the code, tests, or **Strategy** based on the failure reason.
+3.  **VERIFY:** Run tests again.
+4.  **FINALIZE:** Call 'ralph_end' with status 'SUCCESS' only when all tests pass and requirements are met.
 `;
 
   const fullContextPrompt = `
@@ -124,13 +108,12 @@ ${failureContext}
   // FORCE RETRY
   console.log(JSON.stringify({
     decision: "deny",
-    clearContext: true,
     reason: fullContextPrompt,  // Re-injects full context prompt.
-    systemMessage: `🔄 Ralph: Test failure detected. Auto-retrying (Iter ${state.iteration}/${state.maxIterations})...`
+    systemMessage: `🔄 Ralph: ${status} detected. Auto-retrying (Iter ${state.iteration}/${state.maxIterations})...`
   }));
 }
 
 main().catch(err => {
-  console.error(`[Ralph] Fatal Error: ${err.message}`);
+  console.error(`[Ralph Controller] Fatal: ${err.message}`);
   process.exit(1);
 });

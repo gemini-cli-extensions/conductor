@@ -3,32 +3,10 @@ const path = require('path');
 const directiveContent = require('./directive.js');
 
 /**
- *
- * INITIALIZES RALPH MODE BEFORE THE AGENT STARTS.
- * 
- * Strategy:
- * 1. Check user prompt for '--ralph' flag.
- * 2. If found, create .ralph-state.json.
- * 3. Inject the Ralph Protocol Directive
+ * INITIALIZES RALPH MODE AFTER THE START TOOL IS CALLED.
  **/
 
 const STATE_FILE = path.join(process.cwd(), 'conductor', '.ralph-state.json');
-
-/**
- * Extracts the value of a specific flag from a text string.
- * Supports formats like --flag=value, --flag value, --flag="value".
- * 
- * @param {string} text - The input text to search.
- * @param {string} flag - The flag name (including dashes).
- * @returns {string|null} The extracted value or null if not found.
- */
-function getFlag(text, flag) {
-  const regex = new RegExp(`${flag}[=\\s]+(?:["']([^"']+)["']|([^\\s]+))`);
-  const match = text.match(regex);
-  if (!match) return null;
-  // match[1] is the quoted value, match[2] is the unquoted value
-  return match[1] || match[2];
-}
 
 async function main() {
   // Read Input
@@ -40,27 +18,26 @@ async function main() {
     return;
   }
 
-  const { prompt, timestamp } = context;
+  const { hook_event_name, tool_name, tool_input } = context;
 
-  // Check for Flag and Command Scope
-  if (!prompt || !prompt.includes('/conductor:implement') || !prompt.includes('--ralph')) {
+  // Check if this is the start tool
+  if (hook_event_name !== 'AfterTool' || !tool_name.endsWith('ralph_start')) {
     console.log(JSON.stringify({}));
     return;
   }
 
   // --- RALPH MODE DETECTED ---
 
-  // Robust Argument Parsing
-  const completionWord = getFlag(prompt, '--completion-word') || 'TRACK_COMPLETE';
-  const maxIterationsStr = getFlag(prompt, '--max-iterations');
-  const maxIterations = maxIterationsStr ? parseInt(maxIterationsStr, 10) : 10;
+  const prompt = tool_input.prompt || "";
+  const completionWord = tool_input.completionWord || 'TRACK_COMPLETE';
+  const maxIterations = tool_input.maxIterations || 10;
 
   // Create State File
   const state = {
     completionWord: completionWord,
     maxIterations: maxIterations,
     iteration: 1,
-    startedAt: timestamp || new Date().toISOString(),
+    startedAt: new Date().toISOString(),
     originalPrompt: prompt,
   };
 
@@ -70,7 +47,9 @@ async function main() {
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
   } catch (e) {
     console.log(JSON.stringify({
-      systemMessage: `⚠️ Ralph Init Failed: Could not create state file (${e.message}). Loop will not be active.`
+      decision: "deny",
+      reason: `CRITICAL: Ralph Mode failed to initialize. Could not create state file (${e.message}). Aborting autonomous mode.`,
+      systemMessage: "🛑 Ralph Init Failed: File system error."
     }));
     return;
   }
@@ -81,7 +60,7 @@ async function main() {
   // Output the JSON response
   console.log(JSON.stringify({
     hookSpecificOutput: {
-      hookEventName: "BeforeAgent",
+      hookEventName: "AfterTool",
       additionalContext: directive
     },
     systemMessage: "🔴 Ralph Mode Activated: TDD Loop Engaged.",
