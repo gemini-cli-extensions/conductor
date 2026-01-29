@@ -16,11 +16,43 @@
   },
   "categories": [
     "Programming Languages",
-    "Other"
+    "Other",
+    "AI",
+    "Chat"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "chatParticipants": [
+      {
+        "id": "conductor.agent",
+        "name": "conductor",
+        "description": "Context-Driven Development assistant",
+        "isDefault": false,
+        "commands": [
+          {
+            "name": "setup",
+            "description": "Initialize project context"
+          },
+          {
+            "name": "newtrack",
+            "description": "Create a new track"
+          },
+          {
+            "name": "status",
+            "description": "Show project status"
+          },
+          {
+            "name": "implement",
+            "description": "Implement current track"
+          },
+          {
+            "name": "revert",
+            "description": "Revert work"
+          }
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "conductor.setup",

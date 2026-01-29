@@ -28,6 +28,50 @@ const vscode = __importStar(require("vscode"));
 const child_process_1 = require("child_process");
 function activate(context) {
     const outputChannel = vscode.window.createOutputChannel("Conductor");
+    // Copilot Chat Participant
+    const handler = async (request, context, stream, token) => {
+        const command = request.command || 'status';
+        const prompt = request.prompt || '';
+        stream.progress(`Conductor is processing /${command}...`);
+        // Map Copilot commands to Conductor CLI args
+        const cmdMap = {
+            'setup': ['setup', '--goal', prompt],
+            'newtrack': ['new-track', `"${prompt}"`],
+            'status': ['status'],
+            'implement': ['implement'],
+            'revert': ['revert']
+        };
+        const args = cmdMap[command] || ['status'];
+        try {
+            const result = await runConductorCommandAsync(args);
+            stream.markdown(result);
+        }
+        catch (err) {
+            stream.markdown(`**Error:** ${err.message}`);
+        }
+        return { metadata: { command } };
+    };
+    const agent = vscode.chat.createChatParticipant('conductor.agent', handler);
+    agent.iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.png');
+    function runConductorCommandAsync(args) {
+        return new Promise((resolve, reject) => {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders) {
+                reject(new Error("No workspace folder open."));
+                return;
+            }
+            const cwd = workspaceFolders[0].uri.fsPath;
+            const command = `conductor-gemini ${args.join(' ')}`;
+            (0, child_process_1.exec)(command, { cwd }, (error, stdout, stderr) => {
+                if (error) {
+                    reject(new Error(stderr || stdout || error.message));
+                }
+                else {
+                    resolve(stdout);
+                }
+            });
+        });
+    }
     function runConductorCommand(args) {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
@@ -65,7 +109,10 @@ function activate(context) {
             args.push(`"${desc}"`);
         runConductorCommand(args);
     }), vscode.commands.registerCommand('conductor.revert', async () => {
-        vscode.window.showInformationMessage("Revert command is handled via track plan updates.");
+        const trackId = await vscode.window.showInputBox({ prompt: "Enter track ID" });
+        const taskDesc = await vscode.window.showInputBox({ prompt: "Enter task description to revert" });
+        if (trackId && taskDesc)
+            runConductorCommand(['revert', trackId, `"${taskDesc}"`]);
     }));
 }
 exports.activate = activate;
