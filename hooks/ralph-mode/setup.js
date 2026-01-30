@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const directiveContent = require('./directive.js');
 
 /**
  * INITIALIZES RALPH MODE AFTER THE START TOOL IS CALLED.
@@ -55,6 +54,19 @@ async function main() {
   }
 
   // Inject Directive
+  let directiveContent = "";
+  try {
+    const directivePath = path.join(__dirname, 'directive.md');
+    directiveContent = fs.readFileSync(directivePath, 'utf8');
+  } catch (e) {
+    console.log(JSON.stringify({
+      decision: "deny",
+      reason: `CRITICAL: Ralph Mode failed to initialize. (${e.message}). Aborting.`,
+      systemMessage: "🛑 Ralph Init Failed: Missing directive."
+    }));
+    return;
+  }
+
   const directive = directiveContent.replace('{{COMPLETION_WORD}}', completionWord);
 
   // Output the JSON response

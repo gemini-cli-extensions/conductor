@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const directiveContent = require('./directive.js');
 
 /**
  * MANAGES THE AUTONOMOUS RALPH LOOP VIA AfterTool HOOK.
@@ -78,6 +77,21 @@ async function main() {
   // Increment Iteration for the next turn
   state.iteration += 1;
   fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+
+  // Load Directive
+  let directiveContent = "";
+  try {
+    const directivePath = path.join(__dirname, 'directive.md');
+    directiveContent = fs.readFileSync(directivePath, 'utf8');
+  } catch (e) {
+    console.log(JSON.stringify({
+      decision: "deny",
+      reason: `CRITICAL: Ralph Mode controller failed. Could not read directive file (${e.message}). Aborting loop.`,
+      systemMessage: "🛑 Ralph Controller Failed: Missing directive."
+    }));
+    return;
+  }
+
 
   // Prepare Re-injection Context
   const directive = directiveContent.replace('{{COMPLETION_WORD}}', state.completionWord);
