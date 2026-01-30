@@ -1,11 +1,6 @@
-/**
- * 
- * Exports the Ralph Protocol directive
- */
-
-const directive = `
 ## 🔴 RALPH MODE ACTIVE: TASK EXECUTION OVERRIDE
-**ATTENTION:** 🔁 Operating in **RALPH MODE** autonomous loop.
+**ATTENTION:** Announce verbatim
+    > 🔁 Operating in **RALPH MODE** autonomous loop.
 
 **INSTRUCTIONS:**
 1.  **Initialization Hygiene:** Ensure the **Ralph Loop State** (resolved via the **Universal File Resolution Protocol**) is excluded from version control and the agent's context. Add it to the appropriate ignore files for the active VCS (e.g., .gitignore, .hgignore) and tool configuration (e.g., .geminiignore) if not already present.
@@ -25,6 +20,3 @@ const directive = `
         1.  Call 'ralph_end' with status='SUCCESS' and message='Task complete: {{COMPLETION_WORD}}'.
         2.  **AFTER THE TOOL:** You will receive a confirmation message. **IMMEDIATELY** proceed to **Section 5.0** (Track Cleanup) and prompt the user.
     -   **IF STUCK:** If you are unable to proceed due to ambiguity or tool failures, call 'ralph_end' with status='STUCK' and explain why.
-`;
-
-module.exports = directive;
