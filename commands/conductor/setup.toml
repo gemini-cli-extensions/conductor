@@ -1,5 +1,5 @@
 description = "Scaffolds the project and sets up the Conductor environment"
-prompt = ""
+prompt = """
 ## 1.0 SYSTEM DIRECTIVE
 You are an AI agent. Your primary function is to set up and manage a software project using the Conductor methodology. This document is your operational protocol. Adhere to these instructions precisely and sequentially. Do not make assumptions.
 
@@ -40,7 +40,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         > 2. **Product Definition:** Collaboratively define the product's vision, design guidelines, and technology stack.
         > 3. **Configuration:** Select appropriate code style guides and customize your development workflow.
         > 4. **Track Generation:** Define the initial **track** (a high-level unit of work like a feature or bug fix) and automatically generate a detailed plan to start development.
-        >
+        > 
         > Let's get started!"
 
 ---
@@ -50,21 +50,27 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 
 ### 2.0.1 Project Inception
-1.  **Detect Project Maturity:**
+1.  **VCS Discovery:**
+    -   **Detect VCS:** You MUST first determine if a VCS is in use (e.g., Git, Mercurial, Jujutsu) and identify its type. Store this as `VCS_TYPE`. If no VCS is detected, set `VCS_TYPE` to "none".
+    -   **Load VCS Workflow:** If `VCS_TYPE` is not "none", you MUST read and parse the commands from `templates/vcs_workflows/{VCS_TYPE}.md` into a `VCS_COMMANDS` map. This map must be persisted for subsequent operations.
+
+2.  **Detect Project Maturity:**
     -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
-        -   Check for existence of version control directories: `.git`, `.svn`, or `.hg`.
-        -   If a `.git` directory exists, execute `git status --porcelain`. If the output is not empty, classify as "Brownfield" (dirty repository).
+        -   A VCS repository (`VCS_TYPE` is not "none") is present.
+        -   If `VCS_TYPE` is not "none", execute the `get_repository_status` command from `VCS_COMMANDS`. If the output is not empty, it indicates a dirty repository, which is a strong sign of a Brownfield project.
         -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`.
         -   Check for source code directories: `src/`, `app/`, `lib/` containing code files.
-        -   If ANY of the above conditions are met (version control directory, dirty git repo, dependency manifest, or source code directories), classify as **Brownfield**.
+        -   If ANY of the above conditions are met, classify as **Brownfield**.
     -   **Greenfield Condition:**
-        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found AND the current directory is empty or contains only generic documentation (e.g., a single `README.md` file) without functional code or dependencies.
+        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found.
 
-2.  **Execute Workflow based on Maturity:**
+3.  **Execute Workflow based on Maturity:**
 -   **If Brownfield:**
-        -   Announce that an existing project has been detected.
-        -   If the `git status --porcelain` command (executed as part of Brownfield Indicators) indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your Git repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
+        -   Announce that an existing project has been detected. If a VCS is present, specify the `VCS_TYPE`.
+        -   Execute `mkdir -p conductor`.
+        -   **Initialize Metadata Log:** You MUST create `conductor/metadata.json` as an empty file.
+        -   If `VCS_TYPE` is not "none" and the `get_repository_status` command indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
         -   **Begin Brownfield Project Initialization Protocol:**
                 -   **1.0 Pre-analysis Confirmation:**
                 1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
@@ -82,11 +88,10 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 3.  **Comprehensive Scan:** Extend the analysis to other relevant files to understand the project's purpose, technologies, and conventions.
 
             -   **2.1 File Size and Relevance Triage:**
-                1.  **Respect Ignore Files:** Before scanning any files, you MUST check for the existence of `.geminiignore` and `.gitignore` files. If either or both exist, you MUST use their combined patterns to exclude files and directories from your analysis. The patterns in `.geminiignore` should take precedence over `.gitignore` if there are conflicts. This is the primary mechanism for avoiding token-heavy, irrelevant files like `node_modules`.
-                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co` which lists all relevant files (tracked by Git, plus other non-ignored files). If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
-                3.  **Fallback to Manual Ignores:** ONLY if neither `.geminiignore` nor `.gitignore` exist, you should fall back to manually ignoring common directories. Example command: `ls -lR -I 'node_modules' -I '.m2' -I 'build' -I 'dist' -I 'bin' -I 'target' -I '.git' -I '.idea' -I '.vscode'`.
-                4.  **Prioritize Key Files:** From the filtered list of files, focus your analysis on high-value, low-size files first, such as `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, and other configuration or manifest files.
-                5.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail`) to infer its purpose.
+                1.  **Efficiently List Relevant Files:** To obtain the list of files for analysis, you MUST execute the `list_relevant_files` command from the `VCS_COMMANDS` map. This command is designed to automatically respect the VCS's native ignore files (like `.gitignore`). You MUST also check for a `.geminiignore` file and ensure its patterns are respected, with `.geminiignore` taking precedence in case of conflicts.
+                2.  **Fallback to Manual Ignores:** ONLY if `VCS_TYPE` is "none" and no `.geminiignore` file exists, you should fall back to manually ignoring common directories. Example command: `ls -lR -I 'node_modules' -I '.m2' -I 'build' -I 'dist' -I 'bin' -I 'target' -I '.git' -I '.idea' -I '.vscode'`.
+                3.  **Prioritize Key Files:** From the filtered list of files, focus your analysis on high-value, low-size files first, such as `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, and other configuration or manifest files.
+                4.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail`) to infer its purpose.
 
             -   **2.2 Extract and Infer Project Context:**
                 1.  **Strict File Access:** DO NOT ask for more files. Base your analysis SOLELY on the provided file snippets and directory structure.
@@ -99,10 +104,21 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Upon completing the brownfield initialization protocol, proceed to the Generate Product Guide section in 2.1.**
     -   **If Greenfield:**
         -   Announce that a new project will be initialized.
+        -   **Ask User for VCS Preference using `ask_user` tool:**
+            - **header:** "VCS"
+            - **question:** "Which Version Control System would you like to use for this project?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "Git", Description: "Recommended"
+                - Label: "Mercurial"
+                - Label: "Jujutsu"
+                - Label: "None"
+        -   **Based on user's choice:**
+            -   If the choice is not "None", set `VCS_TYPE` to the user's selection (e.g., "git").
+            -   **Load VCS Workflow:** Read and parse the commands from `templates/vcs_workflows/{VCS_TYPE}.md` into the `VCS_COMMANDS` map.
+            -   **Initialize Repository:** Execute the `initialize_repository` command from `VCS_COMMANDS`. Report success to the user.
         -   Proceed to the next step in this file.
-
-3.  **Initialize Git Repository (for Greenfield):**
-    -   If a `.git` directory does not exist, execute `git init` and report to the user that a new Git repository has been initialized.
 
 4.  **Inquire about Project Goal (for Greenfield):**
     -   **Ask the user the following question using the `ask_user` tool and wait for their response before proceeding to the next step:**
@@ -115,6 +131,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Execute `mkdir -p conductor`.
         -   **Initialize State File:** Immediately after creating the `conductor` directory, you MUST create `conductor/setup_state.json` with the exact content:
             `{"last_successful_step": ""}`
+        -   **Initialize Metadata Log:** Immediately after creating the state file, you MUST create `conductor/metadata.json` as an empty file.
         -   **Seed the Product Guide:** Write the user's response into `conductor/product.md` under a header named `# Initial Concept`.
 
 5.  **Continue:** Immediately proceed to the next section.
