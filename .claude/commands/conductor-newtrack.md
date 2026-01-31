@@ -148,4 +148,3 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         (Replace `<Relative Track Path>` with the path to the track directory relative to the **Tracks Registry** file location.)
 7.  **Announce Completion:** Inform the user:
     > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
-```

@@ -1,20 +1,17 @@
-# Conductor
+# Workflow Reference
 
-Context-Driven Development for Claude Code. Measure twice, code once.
+## Task Lifecycle
+All tasks follow this lifecycle:
+1. Red (Failing tests)
+2. Green (Passing tests)
+3. Refactor (Clean up)
 
-## Commands
+## Commit Protocol
+- One commit per task
+- Summary attached via `git notes`
+- Conventional commit messages
 
-| Command | Description |
-| --- | --- |
-| `setup` | Initialize project with Conductor context-driven development. Sets up product.md, tech-stack.md, and workflow.md. |
-| `newtrack` | Create a new feature/bug track with spec and plan. |
-| `implement` | Execute tasks from a track's plan following the TDD workflow. |
-| `status` | Display project progress overview. |
-| `revert` | Git-aware revert of tracks, phases, or tasks. |
-
----
-
-## Instructions
-
-This document is generated from `skills/manifest.json` and the core templates.
-For the full protocol for each command, see the corresponding command SKILL.md.
+## Quality Gates
+- >95% code coverage
+- Pass all lint/type checks
+- Validated on mobile if applicable

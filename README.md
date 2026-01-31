@@ -2,7 +2,13 @@
 
 **Measure twice, code once.**
 
+<<<<<<< HEAD
 Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a protocol to specify, plan, and implement software features and bug fixes.
+=======
+Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
+
+**Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills)
+>>>>>>> pr-9
 
 **Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills) | [VS Code](#vs-code)
 
@@ -37,12 +43,17 @@ See `docs/skill-command-syntax.md` for tool-native command syntax and the artifa
 
 ## Installation
 
+<<<<<<< HEAD
 ### Gemini CLI / Qwen Code
+=======
+### Gemini CLI
+>>>>>>> pr-9
 
 ```bash
 gemini extensions install https://github.com/gemini-cli-extensions/conductor --auto-update
 ```
 
+<<<<<<< HEAD
 ### VS Code
 
 Download the `conductor.vsix` from the [Releases](https://github.com/gemini-cli-extensions/conductor/releases) page and install it in VS Code.
@@ -69,6 +80,46 @@ The installer will ask where to install (OpenCode, Claude CLI, Codex, or all). Y
 ./skill/scripts/install.sh --list
 ```
 The skill is installed with symlinks to this repository, so running `git pull` will automatically update the skill.
+=======
+### Claude Code
+
+**From marketplace (recommended):**
+```bash
+# Add the marketplace
+/plugin marketplace add jasonkneen/conductor
+
+# Install the plugin
+/plugin install conductor
+```
+
+**Manual installation:**
+```bash
+# Clone and copy commands/skills to your global config
+git clone https://github.com/jasonkneen/conductor.git
+cp -r conductor/.claude/commands/* ~/.claude/commands/
+cp -r conductor/.claude/skills/* ~/.claude/skills/
+```
+
+This installs 5 slash commands and a skill that auto-activates for conductor projects.
+
+### Agent Skills
+
+For CLIs supporting the [Agent Skills specification](https://agentskills.io), point to:
+
+```
+skills/conductor/
+├── SKILL.md
+└── references/
+    └── workflows.md
+```
+
+### Project-Local Installation
+
+Copy to any project for project-scoped Claude Code support:
+```bash
+cp -r /path/to/conductor/.claude your-project/
+```
+>>>>>>> pr-9
 
 ## Usage
 
@@ -128,18 +179,35 @@ During implementation, you can also:
 
 | Gemini CLI | Claude Code | Description |
 | :--- | :--- | :--- |
+<<<<<<< HEAD
 | `/conductor:setup` | `/conductor-setup` | Initialize project context |
 | `/conductor:newTrack` | `/conductor-newtrack` | Create new feature/bug track |
 | `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan |
 | `/conductor:status` | `/conductor-status` | Display progress overview |
 | `/conductor:revert` | `/conductor-revert` | Git-aware revert of tracks, phases, or tasks |
 | `/conductor:review` | `/conductor-review` | Review completed work against guidelines |
+=======
+| `/conductor:setup` | `/conductor-setup` | Initialize project with product.md, tech-stack.md, workflow.md |
+| `/conductor:newTrack` | `/conductor-newtrack` | Create new feature/bug track with spec.md and plan.md |
+| `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan |
+| `/conductor:status` | `/conductor-status` | Display progress overview |
+| `/conductor:revert` | `/conductor-revert` | Git-aware revert of tracks, phases, or tasks |
+
+Projects set up with either tool are fully interoperable.
+>>>>>>> pr-9
 
 ## Development
 
+<<<<<<< HEAD
 ### Prerequisites
 -   Python 3.9+
 -   Node.js 16+ (for VS Code extension)
+=======
+- [Claude Code README](.claude/README.md): Detailed Claude Code installation and usage
+- [Gemini CLI extensions](https://geminicli.com/docs/extensions/): Gemini CLI documentation
+- [Agent Skills specification](https://agentskills.io): Open standard for AI agent skills
+- [GitHub issues](https://github.com/gemini-cli-extensions/conductor/issues): Report bugs or request features
+>>>>>>> pr-9
 
 ### Building Artifacts
 ```bash
