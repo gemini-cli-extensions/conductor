@@ -28,12 +28,10 @@ async function main() {
   // --- RALPH MODE DETECTED ---
 
   const prompt = tool_input.prompt || "";
-  const completionWord = tool_input.completionWord || 'TRACK_COMPLETE';
   const maxIterations = tool_input.maxIterations || 10;
 
   // Create State File
   const state = {
-    completionWord: completionWord,
     maxIterations: maxIterations,
     iteration: 1,
     startedAt: new Date().toISOString(),
@@ -67,7 +65,7 @@ async function main() {
     return;
   }
 
-  const directive = directiveContent.replace('{{COMPLETION_WORD}}', completionWord);
+  const directive = directiveContent;
 
   // Output the JSON response
   console.log(JSON.stringify({
@@ -75,7 +73,7 @@ async function main() {
       hookEventName: "AfterTool",
       additionalContext: directive
     },
-    systemMessage: "🔴 Ralph Mode Activated: TDD Loop Engaged.",
+    systemMessage: "🔴 Ralph Mode Activated: Architect Phase Engaged.",
   }));
 }
 

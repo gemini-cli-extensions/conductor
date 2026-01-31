@@ -91,14 +91,19 @@ Conductor will:
 3.  Update the status in the plan as it progresses.
 4.  **Verify Progress**: Guide you through a manual verification step at the end of each phase to ensure everything works as expected.
 
-#### Ralph Mode (Autonomous Loop)
-Ralph Mode is a functionality based on the Geoffrey Huntley's Ralph loop technique for the Gemini CLI that enables continuous autonomous development cycles. It allows the agent to iteratively improve your project until completion, following an automated Red-Green-Refactor loop with built-in safeguards to prevent infinite loops.
+#### Ralph Mode (Autonomous Architect)
+Ralph Mode upgrades the standard implementation flow into a two-phase autonomous process:
+
+1.  **Architect Phase:** The agent iteratively analyzes and refines the track's implementation plan against it's specification until it guarantees a perfect, atomic plan. It acts as a senior architect, ensuring the blueprint is solid before a single line of code is written.
+2.  **Builder Phase:** Once the plan is certified, the agent switches to autonomous execution. It implements tasks sequentially, running tests and committing code without stopping for confirmation unless it encounters a critical risk (e.g., API keys required).
 
 ```bash
 /conductor:implement --ralph
 ```
-* `--max-iterations=N`: Change the retry limit (default: 10).
-* `--completion-word=WORD`: Change the work completion magic word (default: TRACK_COMPLETE).
+
+**Options:**
+*   `--max-iterations=N`: Sets the retry limit for the Architect Phase (default: 10). If the agent cannot perfect the plan within N attempts, it will stop and ask for help.
+*   `--manual-replan`: Disables "Autonomous Re-planning." By default, if the agent gets stuck during execution, it will automatically re-enter the Architect Phase to fix the plan. Use this flag to force the agent to PAUSE and ask for your permission before changing the plan.
 
 > [!NOTE]
 > For a seamless autonomous experience, you may enable `accepts-edits` or YOLO mode in your configuration.
@@ -129,7 +134,7 @@ During implementation, you can also:
 | :--- | :--- | :--- |
 | `/conductor:setup` | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md` |
 | `/conductor:newTrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md` |
-| /conductor:implement | Executes the tasks defined in the current track's plan. Use `--ralph` for autonomous TDD loop. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
+| `/conductor:implement` | Executes the tasks defined in the current track's plan. Use `--ralph` for autonomous Architect loop. | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md` |
 | `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
 | `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 | `/conductor:review` | Reviews completed work against guidelines and the plan. | Reads `plan.md`, `product-guidelines.md` |
