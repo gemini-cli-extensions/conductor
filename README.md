@@ -2,7 +2,7 @@
 
 **Measure twice, code once.**
 
-Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
+Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a protocol to specify, plan, and implement software features and bug fixes.
 
 **Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills) | [VS Code](#vs-code)
 
@@ -103,6 +103,27 @@ Run `/conductor:implement`. Your coding agent then works through the `plan.md` f
 /conductor:implement
 ```
 
+Conductor will:
+1.  Select the next pending task.
+2.  Follow the defined workflow (e.g., TDD: Write Test -> Fail -> Implement -> Pass).
+3.  Update the status in the plan as it progresses.
+4.  **Verify Progress**: Guide you through a manual verification step at the end of each phase to ensure everything works as expected.
+
+During implementation, you can also:
+
+- **Check status**: Get a high-level overview of your project's progress.
+  ```bash
+  /conductor:status
+  ```
+- **Revert work**: Undo a feature or a specific task if needed.
+  ```bash
+  /conductor:revert
+  ```
+- **Review work**: Review completed work against guidelines and the plan.
+  ```bash
+  /conductor:review
+  ```
+
 ## Commands Reference
 
 | Gemini CLI | Claude Code | Description |
@@ -112,6 +133,7 @@ Run `/conductor:implement`. Your coding agent then works through the `plan.md` f
 | `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan |
 | `/conductor:status` | `/conductor-status` | Display progress overview |
 | `/conductor:revert` | `/conductor-revert` | Git-aware revert of tracks, phases, or tasks |
+| `/conductor:review` | `/conductor-review` | Review completed work against guidelines |
 
 ## Development
 

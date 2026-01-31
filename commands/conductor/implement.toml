@@ -150,19 +150,22 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 2.  **Ask for User Choice:** You MUST prompt the user with the available options for the completed track.
     > "Track '<track_description>' is now complete. What would you like to do?
-    > A.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
-    > B.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
-    > C.  **Skip:** Do nothing and leave it in the tracks file.
-    > Please enter the letter of your choice (A, B, or C)."
+    > A.  **Review (Recommended):** Run the review command to verify changes before finalizing.
+    > B.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
+    > C.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
+    > D.  **Skip:** Do nothing and leave it in the tracks file.
+    > Please enter the option of your choice (A, B, C, or D)."
 
 3.  **Handle User Response:**
-    *   **If user chooses "A" (Archive):**
+    *   **If user chooses "A" (Review):**
+        *   Announce: "Please run `/conductor:review` to verify your changes. You will be able to archive or delete the track after the review."
+    *   **If user chooses "B" (Archive):**
         i.   **Create Archive Directory:** Check for the existence of `conductor/archive/`. If it does not exist, create it.
         ii.  **Archive Track Folder:** Move the track's folder from its current location (resolved via the **Tracks Directory**) to `conductor/archive/<track_id>`.
         iii. **Remove from Tracks File:** Read the content of the **Tracks Registry** file, remove the entire section for the completed track (the part that starts with `---` and contains the track description), and write the modified content back to the file.
         iv.  **Commit Changes:** Stage the **Tracks Registry** file and `conductor/archive/`. Commit with the message `chore(conductor): Archive track '<track_description>'`.
         v.   **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
-    *   **If user chooses "B" (Delete):**
+    *   **If user chooses "C" (Delete):**
         i. **CRITICAL WARNING:** Before proceeding, you MUST ask for a final confirmation due to the irreversible nature of the action.
             > "WARNING: This will permanently delete the track folder and all its contents. This action cannot be undone. Are you sure you want to proceed? (yes/no)"
         ii. **Handle Confirmation:**
@@ -173,6 +176,6 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 d. **Announce Success:** Announce: "Track '<track_description>' has been permanently deleted."
             - **If 'no' (or anything else)**:
                 a. **Announce Cancellation:** Announce: "Deletion cancelled. The track has not been changed."
-    *   **If user chooses "C" (Skip) or provides any other input:**
+    *   **If user chooses "D" (Skip) or provides any other input:**
         *   Announce: "Okay, the completed track will remain in your tracks file for now."
 """
