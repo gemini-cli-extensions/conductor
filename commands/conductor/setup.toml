@@ -454,4 +454,11 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Announce Completion:** After the track has been created, announce that the project setup and initial track generation are complete.
 2.  **Save Conductor Files:** Add and commit all files with the commit message `conductor(setup): Add conductor setup files`.
 3.  **Next Steps:** Inform the user that they can now begin work by running `/conductor:implement`.
+
+---
+
+## 4.0 POST-EXECUTION ADVICE
+**CRITICAL:** You MUST display the following tip to the user ONLY when the entire command execution is finished and you are about to halt. DO NOT display this tip if you are asking for user input or if the command is still in progress.
+
+"**TIP:** Use `/clear` or `/compress` to reduce context window and latency."
 """
