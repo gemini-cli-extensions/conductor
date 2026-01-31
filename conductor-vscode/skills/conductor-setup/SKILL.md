@@ -54,7 +54,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 **PROTOCOL: Follow this sequence to perform a guided, interactive setup with the user.**
 
 
-### 2.0 Project Inception
+### 2.0.1 Project Inception
 1.  **Detect Project Maturity:**
     -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
@@ -88,7 +88,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
             -   **2.1 File Size and Relevance Triage:**
                 1.  **Respect Ignore Files:** Before scanning any files, you MUST check for the existence of `.geminiignore` and `.gitignore` files. If either or both exist, you MUST use their combined patterns to exclude files and directories from your analysis. The patterns in `.geminiignore` should take precedence over `.gitignore` if there are conflicts. This is the primary mechanism for avoiding token-heavy, irrelevant files like `node_modules`.
-                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co | xargs -n 1 dirname | sort -u` which lists all relevant directories (tracked by Git, plus other non-ignored files) without listing every single file. If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
+                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co` which lists all relevant files (tracked by Git, plus other non-ignored files). If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
                 3.  **Fallback to Manual Ignores:** ONLY if neither `.geminiignore` nor `.gitignore` exist, you should fall back to manually ignoring common directories. Example command: `ls -lR -I 'node_modules' -I '.m2' -I 'build' -I 'dist' -I 'bin' -I 'target' -I '.git' -I '.idea' -I '.vscode'`.
                 4.  **Prioritize Key Files:** From the filtered list of files, focus your analysis on high-value, low-size files first, such as `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, and other configuration or manifest files.
                 5.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail`) to infer its purpose.
@@ -322,14 +322,34 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             -   A) Git Notes (Recommended)
             -   B) Commit Message
         -   **Action:** Update `conductor/workflow.md` based on the user's responses.
-        -   **Commit State:** After the `workflow.md` file is successfully written or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
-            `{"last_successful_step": "2.5_workflow"}`
+    -   **Commit State:** After the `workflow.md` file is successfully copied or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
+        `{"last_successful_step": "2.5_workflow"}`
 
 ### 2.6 Finalization
-1.  **Summarize Actions:** Present a summary of all actions taken during Phase 1, including:
+1.  **Generate Index File:**
+    -   Create `conductor/index.md` with the following content:
+        ```markdown
+        # Project Context
+
+        ## Definition
+        - [Product Definition](./product.md)
+        - [Product Guidelines](./product-guidelines.md)
+        - [Tech Stack](./tech-stack.md)
+
+        ## Workflow
+        - [Workflow](./workflow.md)
+        - [Code Style Guides](./code_styleguides/)
+
+        ## Management
+        - [Tracks Registry](./tracks.md)
+        - [Tracks Directory](./tracks/)
+        ```
+    -   **Announce:** "Created `conductor/index.md` to serve as the project context index."
+
+2.  **Summarize Actions:** Present a summary of all actions taken during Phase 1, including:
     -   The guide files that were copied.
     -   The workflow file that was copied.
-2.  **Transition to initial plan and track generation:** Announce that the initial setup is complete and you will now proceed to define the first track for the project.
+3.  **Transition to initial plan and track generation:** Announce that the initial setup is complete and you will now proceed to define the first track for the project.
 
 ---
 
@@ -391,32 +411,44 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
     ---
 
-    ## [ ] Track: <Track Description>
-    *Link: [./conductor/tracks/<track_id>/](./conductor/tracks/<track_id>/)*
+    - [ ] **Track: <Track Description>**
+      *Link: [./<Tracks Directory Name>/<track_id>/](./<Tracks Directory Name>/<track_id>/)*
     ```
+    (Replace `<Tracks Directory Name>` with the actual name of the tracks folder resolved via the protocol.)
 3.  **Generate Track Artifacts:**
     a. **Define Track:** The approved title is the track description.
     b. **Generate Track-Specific Spec & Plan:**
         i. Automatically generate a detailed `spec.md` for this track.
         ii. Automatically generate a `plan.md` for this track.
-            - **CRITICAL:** The structure of the tasks must adhere to the principles outlined in the workflow file at `conductor/workflow.md`. For example, if the workflow specificies Test-Driven Development, each feature task must be broken down into a "Write Tests" sub-task followed by an "Implement Feature" sub-task.
+            - **CRITICAL:** The structure of the tasks must adhere to the principles outlined in the workflow file at `conductor/workflow.md`. For example, if the workflow specifying Test-Driven Development, each feature task must be broken down into a "Write Tests" sub-task followed by an "Implement Feature" sub-task.
+            - **CRITICAL:** Include status markers `[ ]` for **EVERY** task and sub-task. The format must be:
+                - Parent Task: `- [ ] Task: ...`
+                - Sub-task: `    - [ ] ...`
             - **CRITICAL: Inject Phase Completion Tasks.** You MUST read the `conductor/workflow.md` file to determine if a "Phase Completion Verification and Checkpointing Protocol" is defined. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - User Manual Verification '<Phase Name>' (Protocol in workflow.md)`. You MUST replace `<Phase Name>` with the actual name of the phase.
     c. **Create Track Artifacts:**
         i. **Generate and Store Track ID:** Create a unique Track ID from the track description using format `shortname_YYYYMMDD` and store it. You MUST use this exact same ID for all subsequent steps for this track.
-        ii. **Create Single Directory:** Using the stored Track ID, create a single new directory: `conductor/tracks/<track_id>/`.
+        ii. **Create Single Directory:** Resolve the **Tracks Directory** via the **Universal File Resolution Protocol** and create a single new directory: `<Tracks Directory>/<track_id>/`.
         iii. **Create `metadata.json`:** In the new directory, create a `metadata.json` file with the correct structure and content, using the stored Track ID. An example is:
             - ```json
             {
             "track_id": "<track_id>",
-            "type": "feature", // or "bug"
-            "status": "new", // or in_progress, completed, cancelled
+            "type": "feature",
+            "status": "new",
             "created_at": "YYYY-MM-DDTHH:MM:SSZ",
             "updated_at": "YYYY-MM-DDTHH:MM:SSZ",
             "description": "<Initial user description>"
             }
             ```
-        Populate fields with actual values. Use the current timestamp.
+        Populate fields with actual values. Use the current timestamp. Valid values for `type`: "feature" or "bug". Valid values for `status`: "new", "in_progress", "completed", or "cancelled".
         iv. **Write Spec and Plan Files:** In the exact same directory, write the generated `spec.md` and `plan.md` files.
+        v.  **Write Index File:** In the exact same directory, write `index.md` with content:
+            ```markdown
+            # Track <track_id> Context
+
+            - [Specification](./spec.md)
+            - [Implementation Plan](./plan.md)
+            - [Metadata](./metadata.json)
+            ```
 
     d. **Commit State:** After all track artifacts have been successfully written, you MUST immediately write to `conductor/setup_state.json` with the exact content:
        `{"last_successful_step": "3.3_initial_track_generated"}`
