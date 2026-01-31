@@ -2,7 +2,7 @@
 
 **Measure twice, code once.**
 
-Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a strict protocol to specify, plan, and implement software features and bug fixes.
+Conductor enables **Context-Driven Development** for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a protocol to specify, plan, and implement software features and bug fixes.
 
 **Works with:** [Gemini CLI](#gemini-cli) | [Claude Code](#claude-code) | [Agent Skills compatible CLIs](#agent-skills) | [VS Code](#vs-code)
 
@@ -128,6 +128,22 @@ Conductor will:
 3.  Update the status in the plan as it progresses.
 4.  **Verify Progress**: Guide you through a manual verification step at the end of each phase to ensure everything works as expected.
 
+#### Ralph Mode (Autonomous Loop)
+Ralph Mode is a functionality based on the Geoffrey Huntley's Ralph loop technique for the Gemini CLI that enables continuous autonomous development cycles. It allows the agent to iteratively improve your project until completion, following an automated Red-Green-Refactor loop with built-in safeguards to prevent infinite loops.
+
+```bash
+/conductor:implement --ralph
+```
+* `--max-iterations=N`: Change the retry limit (default: 10).
+* `--completion-word=WORD`: Change the work completion magic word (default: TRACK_COMPLETE).
+
+> [!NOTE]
+> For a seamless autonomous experience, you may enable `accepts-edits` or YOLO mode in your configuration.
+
+> [!WARNING]
+> Using Gemini CLI in YOLO mode allows the agent to modify files and use tools without explicit confirmation and authorization from the user.
+
+
 During implementation, you can also:
 
 - **Check status**: Get a high-level overview of your project's progress.
@@ -149,7 +165,7 @@ During implementation, you can also:
 | :--- | :--- | :--- |
 | `/conductor:setup` | `/conductor-setup` | Initialize project context |
 | `/conductor:newTrack` | `/conductor-newtrack` | Create new feature/bug track |
-| `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan |
+| `/conductor:implement` | `/conductor-implement` | Execute tasks from the current track's plan. Use `--ralph` for autonomous loop. |
 | `/conductor:status` | `/conductor-status` | Display progress overview |
 | `/conductor:revert` | `/conductor-revert` | Git-aware revert of tracks, phases, or tasks |
 | `/conductor:review` | `/conductor-review` | Review completed work against guidelines |
