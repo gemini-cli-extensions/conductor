@@ -78,6 +78,10 @@ if [ "$LIST_ONLY" = "true" ]; then
     exit 0
 fi
 
+echo "Conductor Skill Installer"
+echo "========================="
+echo ""
+
 # Check if we're running from within a conductor repo
 if [ ! -f "$CONDUCTOR_ROOT/commands/conductor/setup.toml" ]; then
     echo "Error: This script must be run from within the Conductor repository."
@@ -161,8 +165,13 @@ for TARGET_DIR in "${TARGETS[@]}"; do
         continue
     fi
 
+    # Remove existing installation
     rm -rf "$TARGET_DIR"
+    
+    # Create skill directory
     mkdir -p "$TARGET_DIR"
+    
+    # Copy SKILL.md (the only actual file)
     cp "$SKILL_DIR/SKILL.md" "$TARGET_DIR/"
 
     if [ "$MODE" = "copy" ]; then
