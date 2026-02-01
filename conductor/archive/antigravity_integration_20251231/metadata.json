@@ -1,0 +1,8 @@
+{
+  "track_id": "antigravity_integration_20251231",
+  "type": "research",
+  "status": "new",
+  "created_at": "2025-12-31T14:05:00Z",
+  "updated_at": "2025-12-31T14:05:00Z",
+  "description": "Google antigravity and vscode plugin installs, but doesn't actually work in copilot or antigravity. Research what needs to occur to get these to work properly in these programs."
+}

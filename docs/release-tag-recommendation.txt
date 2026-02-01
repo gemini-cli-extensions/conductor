@@ -1,0 +1,6 @@
+Recommended tag: v0.1.1
+Reasoning:
+- Minor doc/tooling additions and workflow alignment updates.
+- No breaking changes; no public API changes.
+
+You can use release-notes in docs/release-body.md as the GitHub Release body.

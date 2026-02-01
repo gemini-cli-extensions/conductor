@@ -1,0 +1,35 @@
+# Implementation Plan: Elite Code Quality & CI/CD Hardening
+
+## Phase 1: Tooling Audit & Baseline [checkpoint: eeb318c]
+- [x] Task: Audit current typing and coverage status across `conductor-core` and adapters [eeb318c]
+- [x] Task: Install `mypy`, `ruff`, `pre-commit`, and `pytest-cov` dependencies [eeb318c]
+- [x] Task: Configure `ruff.toml` with strict rule sets and fix immediate linting errors [eeb318c]
+- [x] Task: Create `scripts/setup_dev.sh` to automate local pre-commit installation [eeb318c]
+- [x] Task: Conductor - Automated Verification 'Phase 1: Tooling Audit & Baseline' (Protocol in workflow.md) [eeb318c]
+
+## Phase 2: Pyrefly Integration & Strict Typing [checkpoint: 225d14b]
+- [x] Task: Configure `Pyrefly` in `pyproject.toml` and integrate into CI [f3ab52e]
+- [x] Task: Enable `mypy --strict` and resolve type errors in `conductor-core` [225d14b]
+- [x] Task: Resolve type errors in `conductor-gemini` and auxiliary scripts [225d14b]
+- [x] Task: Verify Pyrefly functionality (create a test case that Pyrefly catches) [225d14b]
+- [x] Task: Conductor - Automated Verification 'Phase 2: Pyrefly Integration & Strict Typing' (Protocol in workflow.md) [225d14b]
+
+## Phase 3: Coverage Hardening (100% Goal) [checkpoint: fea0737]
+- [x] Task: Configure `pytest-cov` to enforce 100% coverage [9ce5d0d]
+- [x] Task: Backfill tests for `conductor-core` (ProjectManager, TaskRunner, GitService) [782c899]
+- [x] Task: Backfill tests for `conductor-gemini` and CLI adapters [782c899]
+- [x] Task: Backfill tests for helper scripts (`sync_skills.py`, `install_local.py`) [782c899]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Coverage Hardening (100% Goal)' (Protocol in workflow.md) [fea0737]
+
+## Phase 4: CI/CD Hardening & Release Automation [checkpoint: ae6afc8]
+- [x] Task: Create GitHub Actions workflow for multi-version test matrix (3.9 - 3.12) [df19aad]
+- [x] Task: Configure `release-please` for automated versioning and changelogs [df19aad]
+- [x] Task: Integrate static analysis (Ruff/Mypy/Pyrefly) and dependency scanning into CI [df19aad]
+- [x] Task: Configure automated artifact publishing (VSIX and PyPI) on tag [df19aad]
+- [x] Task: Conductor - Automated Verification 'Phase 4: CI/CD Hardening & Release Automation' (Protocol in workflow.md) [ae6afc8]
+
+## Phase 5: Documentation & Final Polish [checkpoint: 6e938f5]
+- [x] Task: Update `CONTRIBUTING.md` with strict quality standards [3d45e94]
+- [x] Task: Update `conductor/code_styleguides/` with new typing rules [3d45e94]
+- [x] Task: Perform final "Elite Check" (All checks passing on clean checkout) [3d45e94]
+- [x] Task: Conductor - Automated Verification 'Phase 5: Documentation & Final Polish' (Protocol in workflow.md) [6e938f5]
