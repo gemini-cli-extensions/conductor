@@ -1,0 +1,14 @@
+{
+  "name": "conductor-marketplace",
+  "owner": {
+    "name": "Gemini CLI Extensions",
+    "url": "https://github.com/gemini-cli-extensions"
+  },
+  "plugins": [
+    {
+      "name": "conductor",
+      "source": "./",
+      "description": "Context-driven development: specs, plans, tracks, and TDD workflows"
+    }
+  ]
+}

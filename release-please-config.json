@@ -4,8 +4,21 @@
       "release-type": "simple",
       "package-name": "conductor",
       "extra-files": [
-        "gemini-extension.json"
+        "gemini-extension.json",
+        "qwen-extension.json"
       ]
+    },
+    "conductor-core": {
+      "release-type": "python",
+      "package-name": "conductor-core"
+    },
+    "conductor-gemini": {
+      "release-type": "python",
+      "package-name": "conductor-gemini"
+    },
+    "conductor-vscode": {
+      "release-type": "node",
+      "package-name": "conductor-vscode"
     }
   }
 }

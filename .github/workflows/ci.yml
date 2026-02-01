@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd conductor-core && pip install -e ".[test]"
+          cd ../conductor-gemini && pip install -e .
+          pip install pytest pytest-cov ruff mypy pyrefly pip-audit
+          cd ../conductor-vscode && npm ci
+
+      - name: Run Core Tests
+        run: |
+          cd conductor-core && pytest --cov=conductor_core --cov-report=xml --cov-fail-under=100
+
+      - name: Run Gemini Tests
+        run: |
+          cd conductor-gemini && pytest --cov=conductor_gemini --cov-report=xml --cov-fail-under=99
+
+      - name: Static Analysis
+        run: |
+          ruff check .
+          ruff format --check .
+          cd conductor-core && mypy --strict src && (pyrefly check || python -m pyrefly check)
+          cd ../conductor-gemini && mypy --strict src && (pyrefly check || python -m pyrefly check)
+
+      - name: Dependency Audit
+        run: |
+          pip-audit
+          cd conductor-vscode && npm audit --audit-level=high --omit=dev
+
+      - name: Run Smoke Test
+        run: |
+          python scripts/smoke_test.py
+
+      - name: Build Core
+        run: |
+          ./scripts/build_core.sh
+
+      - name: Build VS Code Extension
+        run: |
+          ./scripts/build_vsix.sh
+
+      - name: Validate Artifacts
+        run: |
+          python scripts/validate_artifacts.py --require-vsix

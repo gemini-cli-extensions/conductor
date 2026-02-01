@@ -47,7 +47,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *   Provide a brief explanation and clear examples for each question.
         *   **Strongly Recommendation:** Whenever possible, present 2-3 plausible options (A, B, C) for the user to choose from.
         *   **Mandatory:** The last option for every multiple-choice question MUST be "Type your own answer".
-        
+
         *   **1. Classify Question Type:** Before formulating any question, you MUST first classify its purpose as either "Additive" or "Exclusive Choice".
             *   Use **Additive** for brainstorming and defining scope (e.g., users, goals, features, project guidelines). These questions allow for multiple answers.
             *   Use **Exclusive Choice** for foundational, singular commitments (e.g., selecting a primary technology, a specific workflow rule). These questions require a single answer.
@@ -97,7 +97,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     *   Include status markers `[ ]` for **EVERY** task and sub-task. The format must be:
         - Parent Task: `- [ ] Task: ...`
         - Sub-task: `    - [ ] ...`
-    *   **CRITICAL: Inject Phase Completion Tasks.** Determine if a "Phase Completion Verification and Checkpointing Protocol" is defined in the **Workflow**. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - User Manual Verification '<Phase Name>' (Protocol in workflow.md)`.
+    *   **CRITICAL: Inject Phase Completion Tasks.** Determine if a "Phase Completion Verification and Checkpointing Protocol" is defined in the **Workflow**. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - Automated Verification '<Phase Name>' (Protocol in workflow.md)`.
 
 3.  **User Confirmation:** Present the drafted `plan.md` to the user for review and approval.
     > "I've drafted the implementation plan. Please review the following:"
@@ -118,14 +118,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     ```json
     {
       "track_id": "<track_id>",
-      "type": "feature", // or "bug", "chore", etc.
-      "status": "new", // or in_progress, completed, cancelled
+      "type": "<feature|bug|chore>",
+      "status": "<new|in_progress|completed|cancelled>",
       "created_at": "YYYY-MM-DDTHH:MM:SSZ",
       "updated_at": "YYYY-MM-DDTHH:MM:SSZ",
       "description": "<Initial user description>"
     }
     ```
-    *   Populate fields with actual values. Use the current timestamp.
+    *   Populate fields with actual values. Use the current timestamp. Valid `type` values: "feature", "bug", "chore". Valid `status` values: "new", "in_progress", "completed", "cancelled".
 5.  **Write Files:**
     *   Write the confirmed specification content to `<Tracks Directory>/<track_id>/spec.md`.
     *   Write the confirmed plan content to `<Tracks Directory>/<track_id>/plan.md`.
@@ -150,5 +150,5 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         (Replace `<Relative Track Path>` with the path to the track directory relative to the **Tracks Registry** file location.)
 7.  **Announce Completion:** Inform the user:
     > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
-
+```
 """

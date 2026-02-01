@@ -1,0 +1,30 @@
+---
+name: {{ skill.name }}
+description: {{ skill.description }}
+triggers: {{ skill.triggers | tojson }}
+version: {{ skill.version }}
+engine_compatibility: {{ skill.engine_compatibility }}
+---
+
+# {{ skill.name }}
+
+{{ skill.description }}
+
+## Triggers
+This skill is activated by the following phrases:
+{% for trigger in skill.triggers %}
+- "{{ trigger }}"
+{% endfor %}
+
+## Usage
+To use this skill, simply type one of the triggers or ask the agent to "{{ skill.id }}".
+
+## Platform-Specific Commands
+{% for platform, command in skill.commands.items() %}
+- **{{ platform | capitalize }}:** `{{ command }}`
+{% endfor %}
+
+## Capabilities Required
+{% for capability in skill.capabilities %}
+- {{ capability }}
+{% endfor %}

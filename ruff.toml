@@ -1,0 +1,22 @@
+target-version = "py39"
+line-length = 120
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "D",       # pydocstyle (We have a separate documentation strategy)
+    "ANN101",  # Missing type annotation for `self` in method
+    "ANN102",  # Missing type annotation for `cls` in classmethod
+    "COM812",  # Missing trailing comma (conflict with formatter)
+    "ISC001",  # Single line implicit string concatenation (conflict with formatter)
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "EM101",   # Exception must not use a string literal
+    "EM102",   # Exception must not use an f-string literal
+    "FIX002",  # Line contains TODO
+    "TD002",   # Missing author in TODO
+    "TD003",   # Missing issue link in TODO
+]
+
+[lint.per-file-ignores]
+"**/tests/*" = ["S101", "ANN", "PLR2004", "INP001"] # Assertions, types, magic numbers in tests
+"scripts/*" = ["INP001"] # Implicit namespace packages

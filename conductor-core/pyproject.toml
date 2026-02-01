@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conductor-core"
+version = "0.2.0"
+description = "Platform-agnostic core logic for Conductor"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.0.0",
+    "jinja2>=3.0.0",
+    "gitpython>=3.1.0",
+    "pygls>=1.3.0",
+    "lsprotocol>=2023.0.1",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.pyrefly]
+# Pyrefly configuration
+targets = ["src"]
+strict = true

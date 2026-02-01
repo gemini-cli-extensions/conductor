@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conductor-gemini"
+version = "0.2.0"
+description = "Gemini CLI adapter for Conductor"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "conductor-core>=0.2.0,<0.3.0",
+    "click>=8.0.0",
+]
+
+[project.scripts]
+conductor-gemini = "conductor_gemini.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+[tool.pyrefly]
+targets = ["src"]
+strict = true
