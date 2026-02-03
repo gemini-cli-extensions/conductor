@@ -44,6 +44,17 @@ export interface Vcs {
     create_commit(params: CommitParams): { commit_id: string, change_id: string };
     is_binary(repoPath: string, filePath: string): boolean;
     is_ignored(repoPath: string, filePath: string): boolean;
+    get_ignored_files(repoPath: string): string[];
+    get_file_content(repoPath: string, revision: string, filePath: string): string;
+    get_diff(repoPath: string, revisionRange: string | undefined, filePath?: string): string | null;
+    get_binary_diff_info(repoPath: string, filePath: string, revisionRange?: string): { is_binary: boolean, old_size: number, new_size: number } | null;
+    get_changed_files(repoPath: string, revisionRange: string): string[];
+    get_log(repoPath: string, limit: number, revisionRange?: string): { commit_id: string, message: string, date: string, author: string }[];
+    search_history(repoPath: string, query: string, limit: number): { commit_id: string, message: string, date: string, author: string }[];
+    get_merge_base(repoPath: string, revisionA: string, revisionB: string): string | null;
+    revert_commit(repoPath: string, commitId: string, waitForLock?: boolean): string;
+    get_config(repoPath: string, key: string): string | null;
+    get_user_identity(repoPath: string): { name: string, email: string } | null;
     get_current_reference(repoPath: string): Reference;
     get_upstream_buffer(repoPath: string): { ahead: number, behind: number };
     get_parent_ids(repoPath: string, commitId: string): string[];

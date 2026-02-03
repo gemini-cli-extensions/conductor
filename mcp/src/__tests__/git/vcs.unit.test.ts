@@ -287,14 +287,14 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
         });
 
         it('should return correct status for renamed files', () => {
-            const porcelainOutput = `2 R. N... 100644 100644 100644 cbc4e2e35b801b151db095c8bf8e687cb92420c7 cbc4e2e35b801b151db095c8bf8e687cb92420c7 R100\tto.txt\tfrom.txt`;
+            const porcelainOutput = `2 R. N... 100644 100644 100644 cbc4e2e35b801b151db095c8bf8e687cb92420c7 cbc4e2e35b801b151db095c8bf8e687cb92420c7 R100 to.txt\tfrom.txt`;
             mockExecSync.mockReturnValue(porcelainOutput);
             const status = vcs.get_status('/path/to/repo');
             expect(status.renamed).toEqual([{ from: 'from.txt', to: 'to.txt' }]);
         });
 
         it('should return correct status for conflicted files', () => {
-            const porcelainOutput = `u UU N... 100644 100644 100644 100644 fce2a2b... 7914439... 937b003... conflict.txt`;
+            const porcelainOutput = `u UU N 0 0 0 0 0 0 0 conflict.txt`;
             mockExecSync.mockReturnValue(porcelainOutput);
             const status = vcs.get_status('/path/to/repo');
             expect(status.conflicted).toEqual(['conflict.txt']);
@@ -344,7 +344,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
     
     describe('list_conflicts()', () => {
         it('should return conflicted files', () => {
-            const porcelainOutput = `u UU N... file1.txt\nu UU N... file2.txt`;
+            const porcelainOutput = `u UU N 0 0 0 0 0 0 0 file1.txt\nu UU N 0 0 0 0 0 0 0 file2.txt`;
             mockExecSync.mockReturnValue(porcelainOutput);
             expect(vcs.list_conflicts('/path/to/repo')).toEqual(['file1.txt', 'file2.txt']);
         });
@@ -383,7 +383,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                 message: 'Commit specific files',
                 files: ['file1.txt', 'file2.txt'],
             });
-            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('add file1.txt file2.txt'), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("add 'file1.txt' 'file2.txt'"), expect.any(Object));
             expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('commit -m "Commit specific files"'), expect.any(Object));
         });
 
@@ -443,6 +443,135 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                 throw { code: 'ENOENT' }; // Simulate 'git: command not found' with only code
             });
             expect(() => vcs.get_root_path('/path/to/repo')).toThrow(VCSNotFoundError);
+        });
+    });
+
+    describe('Extended API Methods', () => {
+        describe('get_config()', () => {
+            it('should return config value', () => {
+                mockExecSync.mockReturnValue('Test User');
+                expect(vcs.get_config('/path/to/repo', 'user.name')).toBe('Test User');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('config user.name'), expect.any(Object));
+            });
+            it('should return null if not set', () => {
+                mockExecSync.mockImplementation(() => { throw { status: 1 }; });
+                expect(vcs.get_config('/path/to/repo', 'user.unknown')).toBeNull();
+            });
+        });
+
+        describe('get_user_identity()', () => {
+            it('should return user identity', () => {
+                mockExecSync.mockImplementation((cmd: string) => {
+                    if (cmd.includes('user.name')) return 'Test User';
+                    if (cmd.includes('user.email')) return 'test@example.com';
+                    return '';
+                });
+                expect(vcs.get_user_identity('/path/to/repo')).toEqual({ name: 'Test User', email: 'test@example.com' });
+            });
+            it('should return null if not configured', () => {
+                mockExecSync.mockImplementation(() => { throw { status: 1 }; });
+                expect(vcs.get_user_identity('/path/to/repo')).toBeNull();
+            });
+        });
+
+    describe('get_ignored_files()', () => {
+        it('should return list of ignored files', () => {
+            mockExecSync.mockReturnValue('! ignored1.txt\n! ignored2.log');
+            expect(vcs.get_ignored_files('/path/to/repo')).toEqual(['ignored1.txt', 'ignored2.log']);
+            // Assuming implementation uses something like git ls-files -o -i --exclude-standard
+            // or git status --ignored --porcelain=v2
+        });
+    });
+
+        describe('get_file_content()', () => {
+            it('should return file content', () => {
+                mockExecSync.mockReturnValue('content');
+                expect(vcs.get_file_content('/path/to/repo', 'HEAD', 'file.txt')).toBe('content');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("show HEAD:'file.txt'"), expect.any(Object));
+            });
+        });
+
+        describe('get_diff()', () => {
+            it('should return diff output', () => {
+                mockExecSync.mockReturnValue('diff output');
+                expect(vcs.get_diff('/path/to/repo', 'HEAD~1..HEAD', 'file.txt')).toBe('diff output');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("diff HEAD~1..HEAD -- 'file.txt'"), expect.any(Object));
+            });
+             it('should return null if binary', () => {
+                 // The implementation should check is_binary or handle the binary diff output
+                 // If mocking checking is_binary internally:
+                 vi.spyOn(vcs, 'is_binary').mockReturnValue(true);
+                 expect(vcs.get_diff('/path/to/repo', 'HEAD~1..HEAD', 'file.png')).toBeNull();
+            });
+        });
+
+        describe('get_binary_diff_info()', () => {
+             it('should return binary info', () => {
+                // Mocking underlying calls. 
+                // Implementation might check attributes and size.
+                // We assume it might use 'git cat-file -s' for size.
+                mockExecSync.mockImplementation((cmd: string) => {
+                    if (cmd.includes('check-attr')) return 'binary: set';
+                    if (cmd.includes('cat-file -s')) return '1024';
+                    return '';
+                });
+                
+                const info = vcs.get_binary_diff_info('/path/to/repo', 'file.bin', 'HEAD~1..HEAD');
+                expect(info).toEqual({ is_binary: true, old_size: 1024, new_size: 1024 }); 
+                // Note: The logic for old_size/new_size in git might require two calls.
+                // We just check basic structure here.
+            });
+        });
+
+        describe('get_changed_files()', () => {
+            it('should return list of changed files', () => {
+                mockExecSync.mockReturnValue('file1.txt\nfile2.txt');
+                expect(vcs.get_changed_files('/path/to/repo', 'HEAD~1..HEAD')).toEqual(['file1.txt', 'file2.txt']);
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('diff --name-only HEAD~1..HEAD'), expect.any(Object));
+            });
+        });
+
+        describe('get_log()', () => {
+            it('should return parsed log', () => {
+                // Format: %H|||%s|||%aI|||%an
+                const logOutput = 'hash1\x00msg1\x002023-01-01T00:00:00Z\x00Author1\nhash2\x00msg2\x002023-01-02T00:00:00Z\x00Author2';
+                mockExecSync.mockReturnValue(logOutput);
+                const log = vcs.get_log('/path/to/repo', 2);
+                expect(log).toEqual([
+                    { commit_id: 'hash1', message: 'msg1', date: '2023-01-01T00:00:00Z', author: 'Author1' },
+                    { commit_id: 'hash2', message: 'msg2', date: '2023-01-02T00:00:00Z', author: 'Author2' }
+                ]);
+            });
+        });
+
+        describe('search_history()', () => {
+            it('should return matching commits', () => {
+                const logOutput = 'hash1|||msg1|||2023-01-01T00:00:00Z|||Author1';
+                mockExecSync.mockReturnValue(logOutput);
+                const results = vcs.search_history('/path/to/repo', 'query', 10);
+                expect(results).toHaveLength(1);
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('--grep=query'), expect.any(Object));
+            });
+        });
+
+        describe('get_merge_base()', () => {
+            it('should return merge base commit id', () => {
+                mockExecSync.mockReturnValue('base_commit_id');
+                expect(vcs.get_merge_base('/path/to/repo', 'branch1', 'branch2')).toBe('base_commit_id');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('merge-base branch1 branch2'), expect.any(Object));
+            });
+        });
+
+        describe('revert_commit()', () => {
+            it('should revert commit and return new commit id', () => {
+                mockExecSync.mockImplementation((cmd: string) => {
+                    if (cmd.includes('revert')) return '';
+                    if (cmd.includes('rev-parse HEAD')) return 'revert_commit_id';
+                    return '';
+                });
+                expect(vcs.revert_commit('/path/to/repo', 'commit_to_revert')).toBe('revert_commit_id');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('revert --no-edit commit_to_revert'), expect.any(Object));
+            });
         });
     });
 });

@@ -13,6 +13,10 @@ function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
         execSync(`git clone ${remoteUrl} .`, { cwd: repoPath });
     } else {
         execSync('git init', { cwd: repoPath });
+        // Harden environment
+        execSync('git config core.autocrlf false', { cwd: repoPath });
+        execSync('git config commit.gpgsign false', { cwd: repoPath });
+        execSync('git config init.defaultBranch main', { cwd: repoPath });
         execSync('git config user.email "test@example.com"', { cwd: repoPath });
         execSync('git config user.name "Test User"', { cwd: repoPath });
         

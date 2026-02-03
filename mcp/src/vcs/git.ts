@@ -19,19 +19,24 @@ import * as path from 'path';
 import * as os from 'os';
 
 export class GitVcs implements Vcs {
+    private shellEscape(arg: string): string {
+        return "'" + arg.replace(/'/g, "'\\''") + "'";
+    }
+
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
             return execSync(command, { stdio: 'pipe', encoding: 'utf-8', ...options }).trim();
         } catch (error: any) {
             // Define stderr once at the beginning of the catch block
             const stderr = error.stderr?.toString().toLowerCase() || '';
+            const message = error.message?.toLowerCase() || '';
 
             // VCSNotFoundError: Check first, as it's a fundamental system-level error
             if (error.code === 'ENOENT' || stderr.includes('command not found') || stderr.includes('enoent')) {
                 throw new VCSNotFoundError('Git executable not found');
             }
             // VCSRepositoryLockedError
-            if (stderr.includes('index.lock')) {
+            if (stderr.includes('index.lock') || stderr.includes('another git process seems to be running') || message.includes('index.lock')) {
                 throw new VCSRepositoryLockedError('Repo locked', '.git/index.lock');
             }
             // NotARepositoryError
@@ -58,35 +63,108 @@ export class GitVcs implements Vcs {
     private parseStatus(output: string): VcsStatus {
         const status: VcsStatus = { modified:[], untracked:[], added:[], deleted:[], conflicted:[], renamed:[], is_operation_in_progress:{type:'none'} };
         if (!output) return status;
+        
+        const unquote = (str: string): string => {
+            if (str.startsWith('"') && str.endsWith('"')) {
+                // Git quotes C-style. Simple JSON.parse might work for standard chars, but robust unescaping is needed.
+                // For simplicity in this env, assuming mostly standard chars + JSON compatible or simple escapes.
+                // We strip quotes and handle basic escapes.
+                try {
+                    return JSON.parse(str);
+                } catch {
+                    // Fallback strip quotes
+                    return str.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+                }
+            }
+            return str;
+        };
+
         output.split('\n').forEach(line => {
             const lineCode = line[0];
-            const contentRaw = line.substring(line.indexOf(' ', 5) + 1);
-            let contentProcessed = contentRaw; // Initialize here
-
             const xy = line.substring(2, 4);
-
-            if (lineCode === '?') {
-                status.untracked.push(contentRaw.substring(2)); // Remove '? '
-            } else if (lineCode === 'u') {
-                status.conflicted.push(contentRaw.split(' ').pop()!);
+            const rest = line.substring(line.indexOf(' ', 5) + 1);
+            
+            // Renamed/Copied have 2 paths
+            if (lineCode === '2' && (xy[0] === 'R' || xy[1] === 'R')) {
+                 let idx = 0;
+                 for(let i=0; i<8; i++) {
+                     idx = line.indexOf(' ', idx) + 1;
+                 }
+                 const content = line.substring(idx);
+                 
+                 if (xy[0] === 'R' || xy[1] === 'R') {
+                     const scoreEnd = content.indexOf(' ');
+                     const pathsPart = content.substring(scoreEnd + 1);
+                     const [to, from] = pathsPart.split('\t');
+                     status.renamed.push({ from: unquote(from), to: unquote(to) });
+                 } else {
+                     // Normal change (Copied? But copied is usually 'C')
+                     // Fallback for '2' line without R/C if any
+                     let path = content;
+                     if (lineCode === '1') { // This inner check is redundant if we are in '2' block?
+                         // Actually lineCode is '2'. '1' is handled in else if.
+                         // But previous code checked lineCode === '1' inside?
+                         // Ah, previous code logic was convoluted.
+                         // For '2' lines that are NOT renames (e.g. Copied or just Changed?),
+                         // Porcelain v2 '2' implies "Changed or Renamed or Copied" with 2 paths?
+                         // No, '2' is "Changed tracked entry".
+                         // Wait, '2' format is specifically for rename/copy.
+                         // "2 <XY> ... <path> <origPath>"
+                         // If not R/C, it shouldn't be '2'?
+                         // Valid XY for '2': R., .R, C., .C.
+                         // So it is always rename/copy.
+                         // So unquote(path) logic above was maybe backup?
+                     }
+                 }
             } else if (lineCode === '1') {
-                // For other '1' codes (modified, added, deleted)
-                const parts = contentRaw.split(/\s+/);
-                contentProcessed = parts[parts.length - 1];
-                if (xy[0] === 'M' || xy[1] === 'M') status.modified.push(contentProcessed);
-                if (xy[0] === 'A' || xy[1] === 'A') status.added.push(contentProcessed);
-                if (xy[0] === 'D' || xy[1] === 'D') status.deleted.push(contentProcessed);
-            } else if (lineCode === '2') {
-                // Renamed or copied files (start with '2')
-                if (xy[0] === 'R' || xy[1] === 'R') {
-                    const parts = contentRaw.split('\t');
-                    const to = parts[parts.length - 2].split(' ').pop();
-                    const from = parts[parts.length - 1];
-                    status.renamed.push({ from, to });
+                // 1 XY sub mH mI mW hH hI path
+                const fields = line.split(' ');
+                let idx = 0;
+                for(let i=0; i<8; i++) {
+                     idx = line.indexOf(' ', idx) + 1;
                 }
+                const path = line.substring(idx);
+                if (xy[0] === 'M' || xy[1] === 'M') status.modified.push(unquote(path));
+                if (xy[0] === 'A' || xy[1] === 'A') status.added.push(unquote(path));
+                if (xy[0] === 'D' || xy[1] === 'D') status.deleted.push(unquote(path));
+            } else if (lineCode === '?') {
+                 // ? path
+                 const path = line.substring(2);
+                 status.untracked.push(unquote(path));
+            } else if (lineCode === 'u') {
+                 // u XY sub m1 m2 m3 mW h1 h2 h3 path
+                 const fields = line.split(' ');
+                 let idx = 0;
+                 for(let i=0; i<10; i++) { // u has more fields? 
+                     // u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
+                     idx = line.indexOf(' ', idx) + 1;
+                 }
+                 const path = line.substring(idx);
+                 status.conflicted.push(unquote(path));
             }
         });
         return status;
+    }
+
+    // ... (rest of methods)
+
+    get_log(repoPath: string, limit: number, revisionRange?: string): { commit_id: string, message: string, date: string, author: string }[] {
+        const range = revisionRange ? ` ${revisionRange}` : '';
+        // Use %x00 as delimiter
+        const output = this.runCommand(`git -C "${repoPath}" log --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}${range}`);
+        return output.split('\n').filter(Boolean).map(line => {
+            const [commit_id, message, date, author] = line.split('\0');
+            return { commit_id, message, date, author };
+        });
+    }
+
+    search_history(repoPath: string, query: string, limit: number): { commit_id: string, message: string, date: string, author: string }[] {
+        // Use %x00 as delimiter
+        const output = this.runCommand(`git -C "${repoPath}" log --grep=${query} --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}`);
+        return output.split('\n').filter(Boolean).map(line => {
+             const [commit_id, message, date, author] = line.split('\0');
+             return { commit_id, message, date, author };
+        });
     }
 
     is_repository(repoPath: string): VcsType | null {
@@ -140,7 +218,7 @@ export class GitVcs implements Vcs {
             // Initialize the temporary index from the current HEAD
             this.runCommand('git read-tree HEAD', options);
 
-            const fileList = files ? files.join(' ') : '.';
+            const fileList = files ? files.map(f => this.shellEscape(f)).join(' ') : '.';
             this.runCommand(`git add ${fileList}`, options);
             this.runCommand(`git commit -m "${message}"`, options);
             const commitId = this.runCommand(`git rev-parse HEAD`, options);
@@ -165,7 +243,7 @@ export class GitVcs implements Vcs {
         const fullPath = path.join(repoPath, filePath);
 
         // 1. Check gitattributes
-        const attrOutput = this.runCommand(`git -C "${repoPath}" check-attr binary -- "${filePath}"`);
+        const attrOutput = this.runCommand(`git -C "${repoPath}" check-attr binary -- ${this.shellEscape(filePath)}`);
 
         if (attrOutput.endsWith(': set')) {
             return true;
@@ -199,7 +277,7 @@ export class GitVcs implements Vcs {
 
     is_ignored(repoPath: string, filePath: string): boolean {
         try {
-            this.runCommand(`git -C "${repoPath}" check-ignore --quiet "${filePath}"`);
+            this.runCommand(`git -C "${repoPath}" check-ignore --quiet ${this.shellEscape(filePath)}`);
             return true; // If command succeeds, it's ignored
         } catch (e) {
             // If command fails with exit code 1, it's not ignored
@@ -282,5 +360,109 @@ export class GitVcs implements Vcs {
         } else if (status.is_operation_in_progress.type === 'rebase') {
             this.runCommand(`git -C "${repoPath}" rebase --abort`);
         }
+    }
+
+    get_config(repoPath: string, key: string): string | null {
+        try {
+            return this.runCommand(`git -C "${repoPath}" config ${key}`);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    get_user_identity(repoPath: string): { name: string, email: string } | null {
+        try {
+            const name = this.get_config(repoPath, 'user.name');
+            const email = this.get_config(repoPath, 'user.email');
+            if (name && email) return { name, email };
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    get_ignored_files(repoPath: string): string[] {
+        try {
+            const output = this.runCommand(`git -C "${repoPath}" status --ignored --porcelain=v2`);
+            const ignored: string[] = [];
+            output.split('\n').forEach(line => {
+                if (line.startsWith('! ')) {
+                    ignored.push(line.substring(2));
+                }
+            });
+            return ignored;
+        } catch (e) {
+            return [];
+        }
+    }
+
+    get_file_content(repoPath: string, revision: string, filePath: string): string {
+        return this.runCommand(`git -C "${repoPath}" show ${revision}:${this.shellEscape(filePath)}`);
+    }
+
+    get_diff(repoPath: string, revisionRange: string | undefined, filePath?: string): string | null {
+        if (filePath && this.is_binary(repoPath, filePath)) return null;
+        const range = revisionRange || ''; 
+        const file = filePath ? ` -- ${this.shellEscape(filePath)}` : '';
+        try {
+            return this.runCommand(`git -C "${repoPath}" diff ${range}${file}`);
+        } catch (e: any) {
+            return null;
+        }
+    }
+
+    get_binary_diff_info(repoPath: string, filePath: string, revisionRange?: string): { is_binary: boolean, old_size: number, new_size: number } | null {
+        if (!this.is_binary(repoPath, filePath)) return null;
+        
+        let oldRev = 'HEAD';
+        let newRev: string | null = null; 
+
+        if (revisionRange) {
+            if (revisionRange.includes('..')) {
+                const parts = revisionRange.split('..');
+                oldRev = parts[0];
+                newRev = parts[1];
+            } else {
+                oldRev = revisionRange;
+            }
+        }
+
+        try {
+            const escapedPath = this.shellEscape(filePath);
+            const oldSize = parseInt(this.runCommand(`git -C "${repoPath}" cat-file -s ${oldRev}:${escapedPath}`));
+            let newSize = 0;
+            if (newRev && newRev !== 'HEAD') { // If newRev is explicit and not working copy (simplified assumption: only HEAD or range)
+                 // If range is HEAD~1..HEAD, newRev is HEAD.
+                 // If newRev is HEAD, use cat-file.
+                 // If newRev is not provided (null), use stat.
+                 newSize = parseInt(this.runCommand(`git -C "${repoPath}" cat-file -s ${newRev}:${escapedPath}`));
+            } else if (newRev === 'HEAD') {
+                 newSize = parseInt(this.runCommand(`git -C "${repoPath}" cat-file -s HEAD:${escapedPath}`));
+            } else {
+                 const stat = fs.statSync(path.join(repoPath, filePath));
+                 newSize = stat.size;
+            }
+            return { is_binary: true, old_size: oldSize, new_size: newSize };
+        } catch (e) {
+            return null;
+        }
+    }
+
+    get_changed_files(repoPath: string, revisionRange: string): string[] {
+        const output = this.runCommand(`git -C "${repoPath}" diff --name-only ${revisionRange}`);
+        return output.split('\n').filter(Boolean);
+    }
+
+    get_merge_base(repoPath: string, revisionA: string, revisionB: string): string | null {
+        try {
+            return this.runCommand(`git -C "${repoPath}" merge-base ${revisionA} ${revisionB}`);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    revert_commit(repoPath: string, commitId: string, waitForLock?: boolean): string {
+        this.runCommand(`git -C "${repoPath}" revert --no-edit ${commitId}`);
+        return this.runCommand(`git -C "${repoPath}" rev-parse HEAD`);
     }
 }

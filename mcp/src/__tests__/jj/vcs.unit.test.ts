@@ -25,19 +25,23 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
         mockExecSync = execSync as vi.Mock;
         mockExecSync.mockImplementation((command: string) => {
             const separator = '|||';
-            // Match the new delimited command structure
+            // Match the new delimited command structure for log
             if (command.includes(separator)) {
                 if (currentTest === 'branch') return `commit1${separator}change1${separator}my-branch${separator}`;
                 if (currentTest === 'tag') return `commit2${separator}change2${separator}${separator}v1.0.0`;
                 if (currentTest === 'detached') return `commit3${separator}change3${separator}${separator}`;
+                // Default log output for other tests
+                return `hash1${separator}msg1${separator}2023-01-01T00:00:00Z${separator}Author1\nhash2${separator}msg2${separator}2023-01-02T00:00:00Z${separator}Author2`;
             }
 
             // A generic happy-path mock for other commands.
             if (command.includes('jj status')) return 'M modified.txt\nA added.txt\nD deleted.txt';
+            if (command.includes('diff --git -r @-')) return ''; // Default no renames
             if (command.includes('jj root')) return '/path/to/repo';
             if (command.includes('git -C')) {
                 // Mock for is_ignored which uses git check-ignore
                 if (command.includes('ignored-file.txt')) return ''; 
+                if (command.includes('status --ignored')) return '!! ignored1.txt\n!! ignored2.log';
                 throw { status: 1, stderr: 'not ignored' };
             }
             if (command.includes('jj bookmark list')) return `main: rxyzabc... zyxwvut @ origin (ahead by 2, behind by 1)`;
@@ -57,10 +61,12 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
         });
 
         it('should return null if not a repository', () => {
-            mockExecSync.mockImplementation(() => {
-                throw { stderr: 'There is no jj repo in' };
+            mockExecSync.mockImplementation(() => { 
+                const err = new Error('Command failed');
+                (err as any).stderr = 'There is no jj repo in .';
+                throw err; 
             });
-            expect(vcs.is_repository('/path/to/non-repo')).toBeNull();
+            expect(vcs.is_repository('/path/to/repo')).toBeNull();
         });
     });
 
@@ -117,24 +123,40 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             const status = vcs.get_status('/path/to/repo');
             expect(status.untracked).toEqual(['untracked.txt']);
         });
+
+        it('should detect renamed files', () => {
+            // Mock status showing add/delete
+            mockExecSync.mockImplementation((cmd: string) => {
+                if (cmd.includes('jj status')) return 'A new.txt\nD old.txt';
+                if (cmd.includes('diff --git')) return 'diff --git a/old.txt b/new.txt\nrename from old.txt\nrename to new.txt';
+                return '';
+            });
+            vi.spyOn(vcs as any, 'getAllFilesInDir').mockReturnValue([]);
+            vi.spyOn(vcs as any, 'is_ignored').mockReturnValue(false);
+            vi.spyOn(vcs as any, 'list_conflicts').mockReturnValue([]);
+
+            const status = vcs.get_status('/path/to/repo');
+            expect(status.renamed).toEqual([{ from: 'old.txt', to: 'new.txt' }]);
+            expect(status.added).not.toContain('new.txt');
+            expect(status.deleted).not.toContain('old.txt');
+        });
     });
 
     describe('create_commit()', () => {
         it('should describe the current commit and create a new one', () => {
-            mockExecSync.mockImplementation((command: string) => {
-                if (command.includes('describe -m "Test commit"')) return '';
-                if (command.includes("log -r '@'")) return 'commit_abc change_xyz';
-                if (command.includes('new')) return '';
-                return '';
-            });
+            mockExecSync.mockReturnValueOnce(''); // status
+            mockExecSync.mockReturnValueOnce(''); // describe
+            mockExecSync.mockReturnValueOnce('commit_id change_id'); // log
+            mockExecSync.mockReturnValueOnce(''); // new
 
             const { commit_id, change_id } = vcs.create_commit({ path: '/path/to/repo', message: 'Test commit' });
 
-            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('describe -m "Test commit"'), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('status'), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("describe -m 'Test commit'"), expect.any(Object));
             expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("log -r '@'"), expect.any(Object));
             expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('new'), expect.any(Object));
-            expect(commit_id).toBe('commit_abc');
-            expect(change_id).toBe('change_xyz');
+            expect(commit_id).toBe('commit_id');
+            expect(change_id).toBe('change_id');
         });
     });
     
@@ -228,10 +250,93 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
         });
     });
 
+    describe('Extended API Methods', () => {
+        describe('get_config()', () => {
+            it('should return config value', () => {
+                mockExecSync.mockReturnValue('Test User');
+                expect(vcs.get_config('/path/to/repo', 'user.name')).toBe('Test User');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('config get --user user.name'), expect.any(Object));
+            });
+        });
+
+        describe('get_user_identity()', () => {
+            it('should return user identity', () => {
+                mockExecSync.mockImplementation((cmd: string) => {
+                    if (cmd.includes('user.name')) return 'Test User';
+                    if (cmd.includes('user.email')) return 'test@example.com';
+                    return '';
+                });
+                expect(vcs.get_user_identity('/path/to/repo')).toEqual({ name: 'Test User', email: 'test@example.com' });
+            });
+        });
+
+        describe('get_file_content()', () => {
+            it('should return file content', () => {
+                mockExecSync.mockReturnValue('content');
+                expect(vcs.get_file_content('/path/to/repo', 'HEAD', 'file.txt')).toBe('content');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("file show -r @ 'file.txt'"), expect.any(Object));
+            });
+        });
+
+        describe('get_diff()', () => {
+            it('should return diff output', () => {
+                mockExecSync.mockReturnValue('diff output');
+                expect(vcs.get_diff('/path/to/repo', 'HEAD~1..HEAD', 'file.txt')).toBe('diff output');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("diff -r \"HEAD~1..HEAD\" 'file.txt'"), expect.any(Object));
+            });
+        });
+
+        describe('get_changed_files()', () => {
+            it('should return list of changed files', () => {
+                mockExecSync.mockReturnValue('file1.txt\nfile2.txt');
+                expect(vcs.get_changed_files('/path/to/repo', 'HEAD~1..HEAD')).toEqual(['file1.txt', 'file2.txt']);
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('diff --name-only -r @~1..@'), expect.any(Object));
+            });
+        });
+
+        describe('get_log()', () => {
+            it('should return parsed log', () => {
+                const logOutput = 'hash1\x00msg1\x002023-01-01T00:00:00Z\x00Author1\nhash2\x00msg2\x002023-01-02T00:00:00Z\x00Author2';
+                mockExecSync.mockReturnValue(logOutput);
+                const log = vcs.get_log('/path/to/repo', 2);
+                expect(log).toEqual([
+                    { commit_id: 'hash1', message: 'msg1', date: '2023-01-01T00:00:00Z', author: 'Author1' },
+                    { commit_id: 'hash2', message: 'msg2', date: '2023-01-02T00:00:00Z', author: 'Author2' }
+                ]);
+            });
+        });
+
+        describe('search_history()', () => {
+            it('should return matching commits', () => {
+                const logOutput = 'hash1\x00msg1\x002023-01-01T00:00:00Z\x00Author1';
+                mockExecSync.mockReturnValue(logOutput);
+                const results = vcs.search_history('/path/to/repo', 'query', 10);
+                expect(results).toHaveLength(1);
+                // Spec: jj log -r "description(~<query>)"
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("log -r \"description(~'query') & ::@-\""), expect.any(Object));
+            });
+        });
+
+        describe('get_merge_base()', () => {
+            it('should return merge base commit id', () => {
+                mockExecSync.mockReturnValue('base_commit_id');
+                expect(vcs.get_merge_base('/path/to/repo', 'rev1', 'rev2')).toBe('base_commit_id');
+                // Spec: jj log --no-graph -T "commit_id" -r "ancestor(<rev1>, <rev2>)"
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('ancestor(rev1, rev2)'), expect.any(Object));
+            });
+        });
+
+        describe('revert_commit()', () => {
+            it('should throw error (not implemented)', () => {
+                expect(() => vcs.revert_commit('/path/to/repo', 'commit_id')).toThrow('Not implemented');
+            });
+        });
+    });
+
     describe('Implemented Methods', () => {
         it('switch_reference() should call jj new', () => {
             vcs.switch_reference({ path: '/path/to/repo', reference: 'my-branch' });
-            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('jj new "my-branch"'), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("jj new 'my-branch'"), expect.any(Object));
         });
 
         describe('is_binary()', () => {
@@ -306,7 +411,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
 
         it('resolve_conflict() should call jj resolve with files', () => {
             vcs.resolve_conflict({ path: '/path/to/repo', files: ['file1.txt', 'file2.txt'] });
-            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('jj resolve "file1.txt" "file2.txt"'), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("jj resolve 'file1.txt' 'file2.txt'"), expect.any(Object));
         });
 
         it('abort_operation() should call jj undo', () => {
