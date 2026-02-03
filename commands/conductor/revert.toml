@@ -87,12 +87,20 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     *   **Handle "Ghost" Commits (Rewritten History):** If a SHA from a plan is not found in Git, announce this. Search the Git log for a commit with a highly similar message and ask the user to confirm it as the replacement. If not confirmed, halt.
 
 2.  **Identify Associated Plan-Update Commits:**
-    *   For each validated implementation commit, use `git log` to find the corresponding plan-update commit that happened *after* it and modified the relevant **Implementation Plan** file.
+    *   For each validated implementation commit, call `vcs_get_log` with:
+        * `repo_path`: "."
+        * `limit`: 10
+        * `revision_range`: "<commit_sha>..HEAD"
+        * `file_path`: Path to the **Implementation Plan** file.
+    *   Analyze the logs to find the commit that modified the plan immediately after the implementation commit.
 
 3.  **Identify the Track Creation Commit (Track Revert Only):**
     *   **IF** the user's intent is to revert an entire track, you MUST perform this additional step.
-    *   **Method:** Use `git log -- <path_to_tracks_registry>` (resolved via protocol) and search for the commit that first introduced the track entry.
-        *   Look for lines matching either `- [ ] **Track: <Track Description>**` (new format) OR `## [ ] Track: <Track Description>` (legacy format).
+    *   **Method:** Call `vcs_search_history` with:
+        * `repo_path`: "."
+        * `query`: "Track: <Track Description>" (or parts of it to match the registry entry)
+        * `limit`: 5
+        * `file_path`: Path to **Tracks Registry** file.
     *   Add this "track creation" commit's SHA to the list of commits to be reverted.
 
 4.  **Compile and Analyze Final List:**
@@ -110,7 +118,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     > *   **Commits to Revert:** 2
     > `  - <sha_code_commit> ('feat: Add user profile')`
     > `  - <sha_plan_commit> ('conductor(plan): Mark task complete')`
-    > *   **Action:** I will run `git revert` on these commits in reverse order.
+    > *   **Action:** I will call `vcs_revert_commit` on these commits in reverse order.
 
 2.  **Final Go/No-Go:** Ask for final confirmation: "**Do you want to proceed? (yes/no)**".
     - **Structure:**
@@ -123,8 +131,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ## 5.0 PHASE 4: EXECUTION & VERIFICATION
 **GOAL: Execute the revert, verify the plan's state, and handle any runtime errors gracefully.**
 
-1.  **Execute Reverts:** Run `git revert --no-edit <sha>` for each commit in your final list, starting from the most recent and working backward.
-2.  **Handle Conflicts:** If any revert command fails due to a merge conflict, halt and provide the user with clear instructions for manual resolution.
-3.  **Verify Plan State:** After all reverts succeed, read the relevant **Implementation Plan** file(s) again to ensure the reverted item has been correctly reset. If not, perform a file edit to fix it and commit the correction.
+1.  **Execute Reverts:** Call `vcs_revert_commit(repo_path=".", commit_id="<sha>")` for each commit in your final list, starting from the most recent and working backward.
+2.  **Handle Conflicts:** If any revert command fails (e.g. tool returns error about conflicts), halt and provide the user with clear instructions for manual resolution (e.g. use `vcs_list_conflicts` or manual git tools).
+3.  **Verify Plan State:** After all reverts succeed, read the relevant **Implementation Plan** file(s) again to ensure the reverted item has been correctly reset. If not, perform a file edit to fix it and commit the correction using `vcs_create_commit`.
 4.  **Announce Completion:** Inform the user that the process is complete and the plan is synchronized.
 """

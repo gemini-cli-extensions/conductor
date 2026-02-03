@@ -148,7 +148,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *Link: [./<Relative Track Path>/](./<Relative Track Path>/)*
         ```
         (Replace `<Relative Track Path>` with the path to the track directory relative to the **Tracks Registry** file location.)
-7.  **Announce Completion:** Inform the user:
-    > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
+7.  **Persist Changes:**
+    -   **Commit Files:** Call `vcs_create_commit` with:
+        -   `repo_path`: "."
+        -   `message`: "feat(conductor): Initialize track '<track_id>'"
+        -   `files`: A list containing the paths to the **Tracks Registry**, **Tracks Directory** (or specific new track folder if supported, otherwise individual files), `spec.md`, `plan.md`, `metadata.json`, and `index.md`.
+            *   *Tip:* If the VCS tool supports adding a directory, pass the new track directory path. Otherwise, pass the paths to the 4 created files inside it plus the tracks registry.
+
+8.  **Announce Completion:** Inform the user:
+    > "New track '<track_id>' has been created and committed. You can now start implementation by running `/conductor:implement`."
 
 """

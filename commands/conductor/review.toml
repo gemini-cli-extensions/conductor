@@ -55,16 +55,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **Extract Commits:** Parse `plan.md` to find recorded git commit hashes (usually in the "Completed" tasks or "History" section).
     -   **Determine Revision Range:** Identify the start (first commit parent) and end (last commit).
 3.  **Load and Analyze Changes (Smart Chunking):**
-    -   **Volume Check:** Run `git diff --shortstat <revision_range>` first.
+    -   **Volume Check:** Call `vcs_get_status` first to see the list of modified files. If a revision range is determined, call `vcs_get_diff(repo_path=".", revision_range="<range>")`.
     -   **Strategy Selection:**
-        -   **Small/Medium Changes (< 300 lines):**
-            -   Run `git diff <revision_range>` to get the full context in one go.
-            -   Proceed to "Analyze and Verify".
-        -   **Large Changes (> 300 lines):**
+        -   **Small/Medium Changes:**
+            -   If the diff from `vcs_get_diff` is manageable, proceed to "Analyze and Verify".
+        -   **Large Changes:**
             -   **Announce:** "Use 'Iterative Review Mode' due to change size."
-            -   **List Files:** Run `git diff --name-only <revision_range>`.
-            -   **Iterate:** For each source file (ignore locks/assets):
-                1.  Run `git diff <revision_range> -- <file_path>`.
+            -   **Iterate:** For each modified source file (ignore locks/assets):
+                1.  Call `vcs_get_diff(repo_path=".", file_path="<file_path>", revision_range="<range>")`.
                 2.  Perform the "Analyze and Verify" checks on this specific chunk.
                 3.  Store findings in your temporary memory.
             -   **Aggregate:** Synthesize all file-level findings into the final report.
@@ -148,11 +146,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             i.   **Setup:** Ensure `conductor/archive/` exists.
             ii.  **Move:** Move track folder to `conductor/archive/<track_id>`.
             iii. **Update Registry:** Remove track section from **Tracks Registry**.
-            iv.  **Commit:** Stage registry and archive. Commit: `chore(conductor): Archive track '<track_name>'`.
+            iv.  **Commit:** Call `vcs_create_commit(repo_path=".", message="chore(conductor): Archive track '<track_name>'", files=["<path_to_registry>", "conductor/archive/<track_id>"])`.
             v.   **Announce:** "Track '<track_name>' archived."
         *   **If "B" (Delete):**
             i.   **Confirm:** "WARNING: Irreversible deletion. Proceed? (yes/no)"
-            ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
+            ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit using `vcs_create_commit(repo_path=".", message="chore(conductor): Delete track '<track_name>'", files=["<path_to_registry>"])`, announce success.
             iii. **If no:** Cancel.
         *   **If "C" (Skip):** Leave track as is.
 """
