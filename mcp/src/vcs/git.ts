@@ -13,7 +13,7 @@ import {
     Vcs,
     VcsType,
     VcsCapabilities
-} from './types';
+} from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -25,7 +25,7 @@ export class GitVcs implements Vcs {
 
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
-            return execSync(command, { stdio: 'pipe', encoding: 'utf-8', ...options }).trim();
+            return (execSync(command, { stdio: 'pipe', encoding: 'utf-8', ...options }) as string).trim();
         } catch (error: any) {
             // Define stderr once at the beginning of the catch block
             const stderr = error.stderr?.toString().toLowerCase() || '';
@@ -82,7 +82,7 @@ export class GitVcs implements Vcs {
         output.split('\n').forEach(line => {
             const lineCode = line[0];
             const xy = line.substring(2, 4);
-            const rest = line.substring(line.indexOf(' ', 5) + 1);
+            // const rest = line.substring(line.indexOf(' ', 5) + 1);
             
             // Renamed/Copied have 2 paths
             if (lineCode === '2' && (xy[0] === 'R' || xy[1] === 'R')) {
@@ -97,28 +97,11 @@ export class GitVcs implements Vcs {
                      const pathsPart = content.substring(scoreEnd + 1);
                      const [to, from] = pathsPart.split('\t');
                      status.renamed.push({ from: unquote(from), to: unquote(to) });
-                 } else {
-                     // Normal change (Copied? But copied is usually 'C')
-                     // Fallback for '2' line without R/C if any
-                     let path = content;
-                     if (lineCode === '1') { // This inner check is redundant if we are in '2' block?
-                         // Actually lineCode is '2'. '1' is handled in else if.
-                         // But previous code checked lineCode === '1' inside?
-                         // Ah, previous code logic was convoluted.
-                         // For '2' lines that are NOT renames (e.g. Copied or just Changed?),
-                         // Porcelain v2 '2' implies "Changed or Renamed or Copied" with 2 paths?
-                         // No, '2' is "Changed tracked entry".
-                         // Wait, '2' format is specifically for rename/copy.
-                         // "2 <XY> ... <path> <origPath>"
-                         // If not R/C, it shouldn't be '2'?
-                         // Valid XY for '2': R., .R, C., .C.
-                         // So it is always rename/copy.
-                         // So unquote(path) logic above was maybe backup?
-                     }
-                 }
+                 } 
+                 // Removing redundant else block that contained the conflicting check
             } else if (lineCode === '1') {
                 // 1 XY sub mH mI mW hH hI path
-                const fields = line.split(' ');
+                // const fields = line.split(' ');
                 let idx = 0;
                 for(let i=0; i<8; i++) {
                      idx = line.indexOf(' ', idx) + 1;
@@ -133,7 +116,7 @@ export class GitVcs implements Vcs {
                  status.untracked.push(unquote(path));
             } else if (lineCode === 'u') {
                  // u XY sub m1 m2 m3 mW h1 h2 h3 path
-                 const fields = line.split(' ');
+                 // const fields = line.split(' ');
                  let idx = 0;
                  for(let i=0; i<10; i++) { // u has more fields? 
                      // u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
@@ -283,7 +266,7 @@ export class GitVcs implements Vcs {
         try {
             this.runCommand(`git -C "${repoPath}" check-ignore --quiet ${this.shellEscape(filePath)}`);
             return true; // If command succeeds, it's ignored
-        } catch (e) {
+        } catch (e: any) {
             // If command fails with exit code 1, it's not ignored
             if (e instanceof GenericVCSError && e.exitCode === 1) return false;
             throw e; // Re-throw other errors
@@ -318,7 +301,7 @@ export class GitVcs implements Vcs {
     get_upstream_buffer(repoPath: string): { ahead: number, behind: number } {
         try {
             this.runCommand(`git -C "${repoPath}" rev-parse --abbrev-ref @{u}`);
-        } catch (e) {
+        } catch (e: any) {
             // No upstream configured
             if (e instanceof GenericVCSError && e.message.includes('no upstream')) {
                 return { ahead: 0, behind: 0 };
@@ -435,7 +418,7 @@ export class GitVcs implements Vcs {
             const escapedPath = this.shellEscape(filePath);
             const oldSize = parseInt(this.runCommand(`git -C "${repoPath}" cat-file -s ${oldRev}:${escapedPath}`));
             let newSize = 0;
-            if (newRev && newRev !== 'HEAD') { // If newRev is explicit and not working copy (simplified assumption: only HEAD or range)
+            if (newRev && newRev !== 'HEAD') { // If newRev is explicit and not working copy (simplified assumption: only HEAD or range) 
                  // If range is HEAD~1..HEAD, newRev is HEAD.
                  // If newRev is HEAD, use cat-file.
                  // If newRev is not provided (null), use stat.

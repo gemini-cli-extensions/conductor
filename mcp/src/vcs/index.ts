@@ -1,6 +1,6 @@
-import { GitVcs } from './git';
-import { JjVcs } from './jj';
-import { Vcs } from './types';
+import { GitVcs } from './git.js';
+import { JjVcs } from './jj.js';
+import { Vcs } from './types.js';
 
 const strategies = [GitVcs, JjVcs];
 

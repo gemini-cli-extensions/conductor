@@ -1,5 +1,5 @@
 import { execSync, ExecSyncOptions } from 'child_process';
-import { VcsStatus, CommitParams, Reference, NotARepositoryError, GenericVCSError, Vcs, VcsType, VcsCapabilities } from './types';
+import { VcsStatus, CommitParams, Reference, NotARepositoryError, GenericVCSError, Vcs, VcsType, VcsCapabilities } from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -10,7 +10,7 @@ export class JjVcs implements Vcs {
 
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
-            return execSync(`jj --color=never ${command}`, { stdio: 'pipe', encoding: 'utf-8', ...options }).trim();
+            return (execSync(`jj --color=never ${command}`, { stdio: 'pipe', encoding: 'utf-8', ...options }) as string).trim();
         } catch (error: any) {
             if (error.stderr) {
                 const stderr = error.stderr.toString();
@@ -36,7 +36,7 @@ export class JjVcs implements Vcs {
             if (!commitId) return 0;
             
             // Use git cat-file -s which is reliable for size
-            const output = execSync(`git -C "${repoPath}" cat-file -s ${commitId}:${this.shellEscape(filePath)}`, { stdio: 'pipe', encoding: 'utf-8' }).trim();
+            const output = (execSync(`git -C "${repoPath}" cat-file -s ${commitId}:${this.shellEscape(filePath)}`, { stdio: 'pipe', encoding: 'utf-8' }) as string).trim();
             return parseInt(output, 10);
         } catch (e) {
             return 0;
@@ -51,7 +51,7 @@ export class JjVcs implements Vcs {
             deleted:[], 
             conflicted:[], 
             renamed:[], 
-            is_operation_in_progress:{type:'none'} 
+            is_operation_in_progress:{type:'none'}
         };
         if (!output) return status;
 
@@ -154,14 +154,14 @@ export class JjVcs implements Vcs {
         }
 
         status.renamed.forEach(({ from, to }) => {
-            status.deleted = status.deleted.filter(f => f !== from);
-            status.added = status.added.filter(f => f !== to);
-            status.modified = status.modified.filter(f => f !== from && f !== to);
+            status.deleted = status.deleted.filter((f: string) => f !== from);
+            status.added = status.added.filter((f: string) => f !== to);
+            status.modified = status.modified.filter((f: string) => f !== from && f !== to);
         });
 
-        status.modified = status.modified.filter(f => !status.conflicted.includes(f));
-        status.added = status.added.filter(f => !status.conflicted.includes(f));
-        status.deleted = status.deleted.filter(f => !status.conflicted.includes(f));
+        status.modified = status.modified.filter((f: string) => !status.conflicted.includes(f));
+        status.added = status.added.filter((f: string) => !status.conflicted.includes(f));
+        status.deleted = status.deleted.filter((f: string) => !status.conflicted.includes(f));
 
         const trackedFilesOutput = this.runCommand(`file list`, { cwd: repoPath });
         const trackedFiles = trackedFilesOutput.split('\n').filter(Boolean);
@@ -175,7 +175,7 @@ export class JjVcs implements Vcs {
                                        status.added.includes(file) || 
                                        status.deleted.includes(file) ||
                                        status.conflicted.includes(file) ||
-                                       status.renamed.some(r => r.to === file);
+                                       status.renamed.some((r: any) => r.to === file);
             if (isReportedByStatus) return false;
 
             const isIgnored = this.is_ignored(repoPath, file);
@@ -216,7 +216,7 @@ export class JjVcs implements Vcs {
 
     is_binary(repoPath: string, filePath: string): boolean {
         try {
-            const output = execSync(`git -C "${repoPath}" check-attr binary -- ${this.shellEscape(filePath)}`, { stdio: 'pipe', encoding: 'utf-8' }).trim();
+            const output = (execSync(`git -C "${repoPath}" check-attr binary -- ${this.shellEscape(filePath)}`, { stdio: 'pipe', encoding: 'utf-8' }) as string).trim();
             return output.endsWith(': set');
         } catch (e: any) {
             if (e.status === 1) return false;
@@ -397,7 +397,7 @@ export class JjVcs implements Vcs {
 
     get_ignored_files(repoPath: string): string[] {
         try {
-            const output = execSync(`git -C "${repoPath}" status --ignored --porcelain`, { stdio: 'pipe', encoding: 'utf-8' });
+            const output = (execSync(`git -C "${repoPath}" status --ignored --porcelain`, { stdio: 'pipe', encoding: 'utf-8' }) as string);
             return output.split('\n')
                 .filter(line => line.startsWith('!! ')) 
                 .map(line => line.substring(3));
@@ -499,4 +499,5 @@ export class JjVcs implements Vcs {
              const [commit_id, message, date, author] = parts;
              return { commit_id, message, date, author };
         });
-    }}
+    }
+}
