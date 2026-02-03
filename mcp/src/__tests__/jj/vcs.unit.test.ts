@@ -35,8 +35,6 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             }
 
             // A generic happy-path mock for other commands.
-            if (command.includes('jj --color=never status')) return 'M modified.txt\nA added.txt\nD deleted.txt';
-            if (command.includes('diff --git -r @-')) return ''; // Default no renames
             if (command.includes('jj --color=never root')) return '/path/to/repo';
             if (command.includes('git -C')) {
                 // Mock for is_ignored which uses git check-ignore
@@ -55,8 +53,11 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             // The default mock should work here, as it doesn't throw.
             expect(vcs.is_repository('/path/to/repo')).toBe('jj');
             expect(mockExecSync).toHaveBeenCalledWith(
-                expect.stringContaining('jj --color=never status'),
-                expect.objectContaining({ cwd: '/path/to/repo' })
+                expect.stringContaining('jj root'), // Updated to expect 'jj root'
+                expect.objectContaining({ 
+                    cwd: '/path/to/repo',
+                    stdio: ['ignore', 'ignore', 'ignore'] // Updated to match jj.ts implementation
+                })
             );
         });
 
@@ -305,6 +306,12 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
                     { commit_id: 'hash2', message: 'msg2', date: '2023-01-02T00:00:00Z', author: 'Author2' }
                 ]);
             });
+
+            it('should filter log by file path', () => {
+                mockExecSync.mockReturnValue('');
+                vcs.get_log('/path/to/repo', 2, undefined, 'file.txt');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining(" cwd:\"file.txt\""), expect.any(Object));
+            });
         });
 
         describe('search_history()', () => {
@@ -315,6 +322,12 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
                 expect(results).toHaveLength(1);
                 // Spec: jj log -r "description(~<query>)"
                 expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("log -r \"description(~'query') & ::@-\" "), expect.any(Object));
+            });
+
+            it('should filter search by file path', () => {
+                mockExecSync.mockReturnValue('');
+                vcs.search_history('/path/to/repo', 'query', 10, 'file.txt');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining(" cwd:\"file.txt\""), expect.any(Object));
             });
         });
 

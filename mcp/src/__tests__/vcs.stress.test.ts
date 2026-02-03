@@ -60,6 +60,47 @@ vcsTypes.forEach((vcsType) => {
             expect(log.length).toBe(commitCount);
         }, 30000);
 
+        it('handles filtering logs in large history', () => {
+            const commitCount = 20; 
+            const targetFile = 'filter-target.txt';
+            harness.createFile(repoPath, targetFile, 'initial');
+            
+            if (vcsType === 'git') {
+                harness.runCmd(`git add ${targetFile}`, repoPath);
+                harness.runCmd('git commit -m "Initial target"', repoPath);
+            } else {
+                harness.runCmd('jj commit -m "Initial target"', repoPath);
+            }
+
+            // Create noise
+            for (let i = 0; i < commitCount; i++) {
+                harness.createFile(repoPath, `noise-${i}.txt`, `noise ${i}`);
+                if (vcsType === 'git') {
+                    harness.runCmd(`git add noise-${i}.txt`, repoPath);
+                    harness.runCmd(`git commit -m "Noise ${i}"`, repoPath);
+                } else {
+                    harness.runCmd(`jj commit -m "Noise ${i}"`, repoPath);
+                }
+            }
+
+            // Update target
+            harness.createFile(repoPath, targetFile, 'modified');
+            if (vcsType === 'git') {
+                harness.runCmd(`git add ${targetFile}`, repoPath);
+                harness.runCmd('git commit -m "Modify target"', repoPath);
+            } else {
+                harness.runCmd('jj commit -m "Modify target"', repoPath);
+            }
+
+            const log = vcs.get_log(repoPath, 100, undefined, targetFile);
+            // Should find Initial and Modify commits
+            expect(log.length).toBeGreaterThanOrEqual(2);
+            expect(log.some((c: any) => c.message === 'Modify target')).toBe(true);
+            expect(log.some((c: any) => c.message === 'Initial target')).toBe(true);
+            // Should NOT find noise
+            expect(log.some((c: any) => c.message.includes('Noise'))).toBe(false);
+        }, 30000);
+
         // Gap #3: Pathological Inputs
         it('handles filenames with spaces, quotes, and weird characters', () => {
             const weirdName = 'weird "name" with spaces and \'quotes\'.txt';

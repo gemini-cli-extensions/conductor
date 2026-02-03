@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { getVcs } from "./vcs/index.js";
-import { CommitParams } from "./vcs/types.js";
+import { getVcs, detectVcs, initVcs } from "./vcs/index.js";
+import { CommitParams, VcsType } from "./vcs/types.js";
 
 const server = new McpServer({
   name: "conductor-vcs",
@@ -18,6 +18,55 @@ function withVcs<T>(repoPath: string, operation: (vcs: any) => T): T {
     throw new Error(`VCS Error: ${error.message}`);
   }
 }
+
+server.tool(
+  "vcs_init_repository",
+  {
+    repo_path: z.string().describe("Path to initialize the repository"),
+    vcs_type: z.enum(["git", "jj"]).describe("VCS type to initialize"),
+  },
+  async ({ repo_path, vcs_type }) => {
+    try {
+      initVcs(repo_path, vcs_type as VcsType);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Initialized ${vcs_type} repository in ${repo_path}`,
+          },
+        ],
+      };
+    } catch (error: any) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Failed to initialize repository: ${error.message}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+);
+
+server.tool(
+  "vcs_is_repository",
+  {
+    repo_path: z.string().describe("Path to check for VCS repository"),
+  },
+  async ({ repo_path }) => {
+    const type = detectVcs(repo_path);
+    return {
+      content: [
+        {
+          type: "text",
+          text: type ? type : "null", // Return "null" string for non-repo
+        },
+      ],
+    };
+  }
+);
 
 server.tool(
   "vcs_get_status",
@@ -68,15 +117,61 @@ server.tool(
     repo_path: z.string().describe("Path to the repository root"),
     limit: z.number().default(10).describe("Number of commits to retrieve"),
     revision_range: z.string().optional().describe("Optional revision range (e.g. 'HEAD~5..HEAD' or 'main')"),
+    file_path: z.string().optional().describe("Optional file path to filter logs by"),
   },
-  async ({ repo_path, limit, revision_range }) => {
+  async ({ repo_path, limit, revision_range, file_path }) => {
     return withVcs(repo_path, (vcs) => {
-      const logs = vcs.get_log(repo_path, limit, revision_range);
+      const logs = vcs.get_log(repo_path, limit, revision_range, file_path);
       return {
         content: [
           {
             type: "text",
             text: JSON.stringify(logs, null, 2),
+          },
+        ],
+      };
+    });
+  }
+);
+
+server.tool(
+  "vcs_search_history",
+  {
+    repo_path: z.string().describe("Path to the repository root"),
+    query: z.string().describe("Search query (message)"),
+    limit: z.number().default(10).describe("Number of matches to retrieve"),
+    file_path: z.string().optional().describe("Optional file path to filter search by"),
+  },
+  async ({ repo_path, query, limit, file_path }) => {
+    return withVcs(repo_path, (vcs) => {
+      const logs = vcs.search_history(repo_path, query, limit, file_path);
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(logs, null, 2),
+          },
+        ],
+      };
+    });
+  }
+);
+
+server.tool(
+  "vcs_revert_commit",
+  {
+    repo_path: z.string().describe("Path to the repository root"),
+    commit_id: z.string().describe("Commit ID to revert"),
+    wait_for_lock: z.boolean().default(false).describe("Wait if repo is locked?"),
+  },
+  async ({ repo_path, commit_id, wait_for_lock }) => {
+    return withVcs(repo_path, (vcs) => {
+      const newHead = vcs.revert_commit(repo_path, commit_id, wait_for_lock);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Revert successful. New HEAD is ${newHead}`,
           },
         ],
       };

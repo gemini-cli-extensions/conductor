@@ -8,6 +8,18 @@ export class JjVcs implements Vcs {
         return "'" + arg.replace(/'/g, "'\\''") + "'";
     }
 
+    private escapeForJjFileset(filePath: string): string {
+        // Escape backslashes, double quotes, AND single quotes for jj fileset
+        // The internal string needs to be valid within double quotes. Backslashes need to be doubled.
+        // Double quotes need to be backslash-escaped. Single quotes within double quotes are literal.
+        // Let's re-check jj fileset documentation for single quote escaping inside double quotes.
+        // The 'Syntax error' suggests that single quotes are not literal within double quotes for fileset.
+        const escapedPath = filePath
+            .replace(/\\/g, '\\\\')   // Escape existing backslashes
+            .replace(/"/g, '\\"');      // Escape existing double quotes
+        return `cwd:"${escapedPath}"`;
+    }
+
     private runCommand(command: string, options?: ExecSyncOptions): string {
         try {
             return (execSync(`jj --color=never ${command}`, { stdio: 'pipe', encoding: 'utf-8', ...options }) as string).trim();
@@ -102,14 +114,22 @@ export class JjVcs implements Vcs {
 
     is_repository(repoPath: string): VcsType | null {
         try {
-            this.runCommand(`status`, { cwd: repoPath });
+            // JJ commands failing often mean not a repo, but we need to be careful.
+            // 'jj root' is a good check.
+            execSync('jj root', {
+                cwd: repoPath,
+                stdio: ['ignore', 'ignore', 'ignore']
+            });
             return VcsType.Jj;
-        } catch (e) {
-            if (e instanceof NotARepositoryError) return null;
-            throw e;
+        } catch (error) {
+            return null;
         }
     }
-    
+
+    init(repoPath: string): void {
+         execSync('jj git init', { cwd: repoPath, stdio: 'pipe' });
+    }
+
     get_root_path(repoPath: string): string {
         return this.runCommand(`root`, { cwd: repoPath });
     }
@@ -469,16 +489,17 @@ export class JjVcs implements Vcs {
         throw new Error('Not implemented: jj backout not supported in this version');
     }
 
-    get_log(repoPath: string, limit: number, revisionRange?: string): { commit_id: string, message: string, date: string, author: string }[] {
+    get_log(repoPath: string, limit: number, revisionRange?: string, filePath?: string): { commit_id: string, message: string, date: string, author: string }[] {
         // Default to ancestors of working copy parent (effectively committed history)
         const range = revisionRange ? ` -r "${revisionRange}"` : ' -r "::@-"';
+        const file = filePath ? ` ${this.escapeForJjFileset(filePath)}` : '';
         const delimiter = '\\0'; 
         const jsDelimiter = '\0';
         
         // Use author.email() as it appears to be a method in this JJ version. 
         // Using timestamp directly usually formats to string, but if issues arise, we might need .format().
         const template = `commit_id ++ "${delimiter}" ++ description.first_line() ++ "${delimiter}" ++ author.timestamp() ++ "${delimiter}" ++ author.email() ++ "\\n"`;
-        const output = this.runCommand(`log -n ${limit}${range} -T '${template}' --no-graph`, { cwd: repoPath });
+        const output = this.runCommand(`log -n ${limit}${range} -T '${template}' --no-graph${file}`, { cwd: repoPath });
         return output.split('\n').filter(Boolean).map(line => {
             const parts = line.split(jsDelimiter);
             if (parts.length < 4) return { commit_id: '', message: '', date: '', author: '' };
@@ -487,12 +508,13 @@ export class JjVcs implements Vcs {
         });
     }
 
-    search_history(repoPath: string, query: string, limit: number): { commit_id: string, message: string, date: string, author: string }[] {
+    search_history(repoPath: string, query: string, limit: number, filePath?: string): { commit_id: string, message: string, date: string, author: string }[] {
         const delimiter = '\\0';
         const jsDelimiter = '\0';
+        const file = filePath ? ` ${this.escapeForJjFileset(filePath)}` : '';
         const template = `commit_id ++ "${delimiter}" ++ description.first_line() ++ "${delimiter}" ++ author.timestamp() ++ "${delimiter}" ++ author.email() ++ "\\n"`;
         // Search within committed history
-        const output = this.runCommand(`log -r "description(~'${query}') & ::@-" -n ${limit} -T '${template}' --no-graph`, { cwd: repoPath });
+        const output = this.runCommand(`log -r "description(~'${query}') & ::@-" -n ${limit} -T '${template}' --no-graph${file}`, { cwd: repoPath });
         return output.split('\n').filter(Boolean).map(line => {
              const parts = line.split(jsDelimiter);
              if (parts.length < 4) return { commit_id: '', message: '', date: '', author: '' };

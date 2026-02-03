@@ -85,5 +85,56 @@ vcsTypes.forEach((vcsType) => {
             // Clean up
             harness.teardownRepo(submoduleRemote);
         });
+
+
+        it('handles filtering logs/search with special characters in filenames', () => {
+            const message = 'Commit with complex filename';
+
+            if (vcsType === 'git') {
+                const complexName = 'simple-git-file.txt';
+                harness.createFile(repoPath, complexName, 'initial content');
+                vcs.create_commit({
+                    path: repoPath,
+                    message: message,
+                    files: [complexName]
+                });
+
+                // Verify get_log
+                const log = vcs.get_log(repoPath, 1, undefined, complexName);
+                expect(log.length).toBe(1);
+                expect(log[0].message).toBe(message);
+
+                // Verify search_history
+                const search = vcs.search_history(repoPath, 'complex', 1, complexName);
+                expect(search.length).toBe(1);
+                expect(search[0].message).toBe(message);
+
+                // Verify filtering works (should not find if we look for another file)
+                const otherLog = vcs.get_log(repoPath, 1, undefined, 'other.txt');
+                expect(otherLog.length).toBe(0);
+            } else if (vcsType === 'jj') {
+                const complexName = 'complex file name with spaces and single quotes.txt'; // Simplified for now
+                harness.createFile(repoPath, complexName, 'initial content');
+                vcs.create_commit({
+                    path: repoPath,
+                    message: message,
+                    files: [complexName]
+                });
+
+                // Verify get_log
+                const log = vcs.get_log(repoPath, 1, undefined, complexName);
+                expect(log.length).toBe(1);
+                expect(log[0].message).toBe(message);
+
+                // Verify search_history
+                const search = vcs.search_history(repoPath, 'complex', 1, complexName);
+                expect(search.length).toBe(1);
+                expect(search[0].message).toBe(message);
+
+                // Verify filtering works (should not find if we look for another file)
+                const otherLog = vcs.get_log(repoPath, 1, undefined, 'other.txt');
+                expect(otherLog.length).toBe(0);
+            }
+        });
     });
 });

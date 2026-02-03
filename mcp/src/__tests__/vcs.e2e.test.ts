@@ -725,6 +725,25 @@ vcsTypes.forEach((vcsType) => {
             const search = vcs.search_history(repoPath, uniqueMessage, 5);
             expect(search.length).toBeGreaterThan(0);
             expect(search[0].message).toContain(uniqueMessage);
+
+            // Test filtering by file path
+            const logFiltered = vcs.get_log(repoPath, 5, undefined, 'log.txt');
+            expect(logFiltered.length).toBeGreaterThan(0);
+            expect(logFiltered[0].message).toContain(uniqueMessage);
+
+            const searchFiltered = vcs.search_history(repoPath, uniqueMessage, 5, 'log.txt');
+            expect(searchFiltered.length).toBeGreaterThan(0);
+            expect(searchFiltered[0].message).toContain(uniqueMessage);
+            
+            // Should not find if filtering by unrelated file
+            harness.createFile(repoPath, 'other.txt', 'other content'); // Just create, don't commit to this message
+            const logUnrelated = vcs.get_log(repoPath, 5, undefined, 'other.txt');
+            // Depending on if other.txt is committed or not. We didn't commit it.
+            // If we commit it with different message, it shouldn't show the uniqueMessage commit.
+            // Let's assume we want to verify uniqueMessage commit is NOT in the log for 'other.txt'
+            // The uniqueMessage commit only touched log.txt.
+            const found = logUnrelated.some((c: any) => c.message.includes(uniqueMessage));
+            expect(found).toBe(false);
         });
 
         it('get_merge_base() finds common ancestor', () => {

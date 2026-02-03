@@ -51,19 +51,19 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 2.0 Project Inception
 1.  **Detect Project Maturity and Execute Workflow:**
-    -   **Classify Project:** First, determine if the project is "Brownfield" (Existing) or "Greenfield" (New) by checking for the presence of ANY of the following in the project root:
-        -   VCS directories: `.jj`, `.git`
-        -   Dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`
-        -   Source code directories: `src/`, `app/`, `lib/`
+    -   **Classify Project:** First, determine if the project is "Brownfield" (Existing) or "Greenfield" (New).
+        - Call `vcs_is_repository` with `repo_path="."`. Store its result as `VCS_TYPE`.
+        - If `VCS_TYPE` is `null`, then it's a "Greenfield" project. Proceed to `If Greenfield` branch.
+        - Otherwise, it's a "Brownfield" project. Proceed to `If ANY of the above indicators are found (Brownfield)` branch, using the detected `VCS_TYPE`.
     -   **Execute Workflow based on Maturity:**
         -   **If ANY of the above indicators are found (Brownfield):**
             -   Announce that an existing project has been detected.
-            -   **VCS Discovery:** Determine the `VCS_TYPE` by checking for `.jj` or `.git`. If a VCS is present, specify the `VCS_TYPE`.
+            -   **VCS Discovery:** The `VCS_TYPE` has already been determined.
             -   **Copy and Parse Workflow:** Copy the corresponding workflow file using `mkdir -p conductor; cp ~/.gemini/extensions/conductor/templates/vcs_workflows/ conductor/vcs_workflow.md`. Then, read and parse it into the `VCS_COMMANDS` map.
             -   Execute `mkdir -p conductor` if it was not already created.
             -   **Initialize Metadata Log:** You MUST create `conductor/metadata.json` as an empty file.
-            -   **Check for Uncommitted Changes:** If `VCS_TYPE` is not "none", execute the `get_repository_status` command from `VCS_COMMANDS`. If the output is not empty, you MUST warn the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
-            -   **Begin Brownfield Project Initialization Protocol:**
+            -   **Check for Uncommitted Changes:** Call `vcs_get_status` with `repo_path="."`. If `status.modified.length > 0` or `status.untracked.length > 0` or `status.conflicted.length > 0`, you MUST warn the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
+            -   **Begin Brownfield Project Initialization Protocol:****
                 -   **1.0 Pre-analysis Confirmation:**
                     1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
                     2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project with the following options using the next structure:
@@ -99,8 +99,13 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Announce that a new project will be initialized.
         -   Proceed to the next step in this file.
 
-3.  **Initialize Git Repository (for Greenfield):**
-    -   If a `.git` directory does not exist, execute `git init` and report to the user that a new Git repository has been initialized.
+3.  **Initialize VCS Repository (for Greenfield):**
+    -   Call `vcs_is_repository` with `repo_path="."`. Store its result as `VCS_EXISTING_TYPE`.
+    -   If `VCS_EXISTING_TYPE` is `null`:
+        -   **Ask the user:** "Which Version Control System would you like to use? (Git/Jujutsu)"
+        -   **If Git:** Call `vcs_init_repository` with `repo_path="."` and `vcs_type="git"`.
+        -   **If Jujutsu:** Call `vcs_init_repository` with `repo_path="."` and `vcs_type="jj"`.
+        -   Report success to the user.
 
 4.  **Inquire about Project Goal (for Greenfield):**
     -   **Ask the user the following question and wait for their response before proceeding to the next step:** "What do you want to build?"
@@ -449,6 +454,20 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 3.4 Final Announcement
 1.  **Announce Completion:** After the track has been created, announce that the project setup and initial track generation are complete.
-2.  **Save Conductor Files:** Add and commit all files with the commit message `conductor(setup): Add conductor setup files`.
+2.  **Save Conductor Files:**
+    -   Call `vcs_create_commit` with:
+        -   `repo_path`: "."
+        -   `message`: "conductor(setup): Add conductor setup files"
+        -   `files`: [
+            "conductor/product.md",
+            "conductor/product-guidelines.md",
+            "conductor/tech-stack.md",
+            "conductor/workflow.md",
+            "conductor/index.md",
+            "conductor/tracks.md",
+            "conductor/tracks/",
+            "conductor/code_styleguides/",
+            "conductor/setup_state.json"
+        ]
 3.  **Next Steps:** Inform the user that they can now begin work by running `/conductor:implement`.
 """

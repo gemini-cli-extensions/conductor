@@ -383,7 +383,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                 message: 'Commit specific files',
                 files: ['file1.txt', 'file2.txt'],
             });
-            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("add 'file1.txt' 'file2.txt'"), expect.any(Object));
+            expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("add -- 'file1.txt' 'file2.txt'"), expect.any(Object));
             expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('commit -m "Commit specific files"'), expect.any(Object));
         });
 
@@ -398,11 +398,12 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
         });
 
         it('should use a temporary index file for transactional safety', () => {
-            let gitIndexFile: string | undefined;
+            let capturedOptions: any;
             mockExecSync.mockImplementation((command: string, options: any) => {
                 if (command.includes('rev-parse --git-dir')) return '/mock/repo/.git';
-                if (command.includes('add') || command.includes('commit')) {
-                    gitIndexFile = '/mock/repo/.git/temp_index_12345'; // Directly set the expected path
+                // Capture options from any command that uses the custom environment
+                if (options?.env?.GIT_INDEX_FILE) {
+                    capturedOptions = options;
                 }
                 if (command.includes('rev-parse HEAD')) return 'test_commit_id';
                 return '';
@@ -410,8 +411,40 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
             // We also need to mock Date.now() to ensure a consistent temp file name for the assertion.
             vi.spyOn(Date, 'now').mockReturnValue(12345);
             vcs.create_commit({ path: '/mock/repo', message: 'Test transactional commit' });
-            expect(gitIndexFile).toBeDefined();
-            expect(gitIndexFile).toBe('/mock/repo/.git/temp_index_12345'); // Exact match now
+            expect(capturedOptions).toBeDefined();
+            expect(capturedOptions.env.GIT_INDEX_FILE).toContain('temp_index_12345'); 
+        });
+
+        it('should handle initial commit on empty repository (regression test)', () => {
+            let commitCalled = false;
+            mockExecSync.mockImplementation((command: string) => {
+                if (command.includes('rev-parse --git-dir')) return '/mock/repo/.git';
+                
+                if (command.includes('rev-parse HEAD')) {
+                    if (!commitCalled) {
+                        throw new Error('fatal: Not a valid object name HEAD');
+                    } else {
+                        return 'new_commit_id';
+                    }
+                }
+                
+                if (command.includes('read-tree')) {
+                    throw new Error('git read-tree HEAD should not be called for initial commit');
+                }
+
+                if (command.includes('commit')) {
+                    commitCalled = true;
+                    return '';
+                }
+
+                if (command.includes('symbolic-ref HEAD')) return 'refs/heads/master';
+
+                return '';
+            });
+
+            const { commit_id } = vcs.create_commit({ path: '/mock/repo', message: 'Initial commit' });
+            expect(commit_id).toBe('new_commit_id');
+            expect(commitCalled).toBe(true);
         });
     });
 
@@ -542,6 +575,12 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                     { commit_id: 'hash2', message: 'msg2', date: '2023-01-02T00:00:00Z', author: 'Author2' }
                 ]);
             });
+
+            it('should filter log by file path', () => {
+                mockExecSync.mockReturnValue('');
+                vcs.get_log('/path/to/repo', 2, undefined, 'file.txt');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("log --pretty=format:\"%H%x00%s%x00%aI%x00%an\" -n 2 -- 'file.txt'"), expect.any(Object));
+            });
         });
 
         describe('search_history()', () => {
@@ -551,6 +590,12 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                 const results = vcs.search_history('/path/to/repo', 'query', 10);
                 expect(results).toHaveLength(1);
                 expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('--grep=query'), expect.any(Object));
+            });
+
+            it('should filter search by file path', () => {
+                mockExecSync.mockReturnValue('');
+                vcs.search_history('/path/to/repo', 'query', 10, 'file.txt');
+                expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining("--grep=query --pretty=format:\"%H%x00%s%x00%aI%x00%an\" -n 10 -- 'file.txt'"), expect.any(Object));
             });
         });
 

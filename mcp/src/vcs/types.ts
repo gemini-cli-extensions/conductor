@@ -49,8 +49,8 @@ export interface Vcs {
     get_diff(repoPath: string, revisionRange: string | undefined, filePath?: string): string | null;
     get_binary_diff_info(repoPath: string, filePath: string, revisionRange?: string): { is_binary: boolean, old_size: number, new_size: number } | null;
     get_changed_files(repoPath: string, revisionRange: string): string[];
-    get_log(repoPath: string, limit: number, revisionRange?: string): { commit_id: string, message: string, date: string, author: string }[];
-    search_history(repoPath: string, query: string, limit: number): { commit_id: string, message: string, date: string, author: string }[];
+    get_log(repoPath: string, limit: number, revisionRange?: string, filePath?: string): { commit_id: string, message: string, date: string, author: string }[];
+    search_history(repoPath: string, query: string, limit: number, filePath?: string): { commit_id: string, message: string, date: string, author: string }[];
     get_merge_base(repoPath: string, revisionA: string, revisionB: string): string | null;
     revert_commit(repoPath: string, commitId: string, waitForLock?: boolean): string;
     get_config(repoPath: string, key: string): string | null;

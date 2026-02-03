@@ -131,19 +131,21 @@ export class GitVcs implements Vcs {
 
     // ... (rest of methods)
 
-    get_log(repoPath: string, limit: number, revisionRange?: string): { commit_id: string, message: string, date: string, author: string }[] {
+    get_log(repoPath: string, limit: number, revisionRange?: string, filePath?: string): { commit_id: string, message: string, date: string, author: string }[] {
         const range = revisionRange ? ` ${revisionRange}` : '';
+        const file = filePath ? ` -- ${this.shellEscape(filePath)}` : '';
         // Use %x00 as delimiter
-        const output = this.runCommand(`git -C "${repoPath}" log --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}${range}`);
+        const output = this.runCommand(`git -C "${repoPath}" log --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}${range}${file}`);
         return output.split('\n').filter(Boolean).map(line => {
             const [commit_id, message, date, author] = line.split('\0');
             return { commit_id, message, date, author };
         });
     }
 
-    search_history(repoPath: string, query: string, limit: number): { commit_id: string, message: string, date: string, author: string }[] {
+    search_history(repoPath: string, query: string, limit: number, filePath?: string): { commit_id: string, message: string, date: string, author: string }[] {
+        const file = filePath ? ` -- ${this.shellEscape(filePath)}` : '';
         // Use %x00 as delimiter
-        const output = this.runCommand(`git -C "${repoPath}" log --grep=${query} --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}`);
+        const output = this.runCommand(`git -C "${repoPath}" log --grep=${query} --pretty=format:"%H%x00%s%x00%aI%x00%an" -n ${limit}${file}`);
         return output.split('\n').filter(Boolean).map(line => {
              const [commit_id, message, date, author] = line.split('\0');
              return { commit_id, message, date, author };
@@ -152,14 +154,21 @@ export class GitVcs implements Vcs {
 
     is_repository(repoPath: string): VcsType | null {
         try {
-            this.runCommand(`git -C "${repoPath}" rev-parse --is-inside-work-tree`);
-            return VcsType.Git;
-        } catch (e) {
-            if (e instanceof NotARepositoryError) return null;
-            throw e;
+            const output = execSync('git rev-parse --is-inside-work-tree', {
+                cwd: repoPath,
+                stdio: ['ignore', 'pipe', 'ignore'], // Suppress stderr
+                encoding: 'utf-8'
+            });
+            return output.trim() === 'true' ? VcsType.Git : null;
+        } catch (error) {
+            return null;
         }
     }
-    
+
+    init(repoPath: string): void {
+        execSync('git init', { cwd: repoPath, stdio: 'pipe' });
+    }
+
     get_root_path(repoPath: string): string {
         return this.runCommand(`git -C "${repoPath}" rev-parse --show-toplevel`);
     }
@@ -198,12 +207,27 @@ export class GitVcs implements Vcs {
         const options: ExecSyncOptions = { cwd: repoPath, stdio: 'pipe', encoding: 'utf-8', env: { ...process.env, GIT_INDEX_FILE: tempIndexFile } };
 
         try {
-            // Initialize the temporary index from the current HEAD
-            this.runCommand('git read-tree HEAD', options);
+            // Check if HEAD is valid (not an empty repo)
+            let hasHead = false;
+            try {
+                this.runCommand(`git rev-parse HEAD`, { ...options, stdio: 'ignore' });
+                hasHead = true;
+            } catch (e) {
+                // HEAD not valid, initial commit
+            }
 
-            const fileList = files ? files.map(f => this.shellEscape(f)).join(' ') : '.';
-            if (fileList.length > 0) {
-                 this.runCommand(`git add ${fileList}`, options);
+            // Initialize the temporary index from the current HEAD if it exists
+            if (hasHead) {
+                this.runCommand('git read-tree HEAD', options);
+            }
+
+            if (files && files.length > 0) {
+                // Use -- to separate paths from revisions to handle files that may be named like revisions
+                const escapedFiles = files.map(f => this.shellEscape(f)).join(' ');
+                this.runCommand(`git add -- ${escapedFiles}`, options);
+            } else if (files === undefined) {
+                 // If files is undefined, it implies adding all changes (git add .)
+                 this.runCommand(`git add .`, options);
             }
             
             const allowEmpty = (files && files.length === 0) ? ' --allow-empty' : '';
@@ -211,8 +235,36 @@ export class GitVcs implements Vcs {
             const commitId = this.runCommand(`git rev-parse HEAD`, options);
 
             // Update the actual branch HEAD
-            const currentBranch = this.runCommand(`git -C "${repoPath}" rev-parse --abbrev-ref HEAD`);
-            this.runCommand(`git update-ref refs/heads/${currentBranch} ${commitId}`, { cwd: repoPath });
+            let currentBranch = 'master'; // Default fallback
+            try {
+                 currentBranch = this.runCommand(`git -C "${repoPath}" rev-parse --abbrev-ref HEAD`);
+            } catch (e) {
+                // Maybe no branch yet? Try symbol ref or just assume master/main if HEAD is unborn
+                // If HEAD is unborn, rev-parse --abbrev-ref HEAD returns "HEAD" or fails depending on git version
+            }
+            
+            // If we are on an unborn branch (initial commit), update-ref might fail if we don't know the branch name.
+            // But we can just use the commitId we just created.
+            // Wait, we committed to a TEMP index. We need to point the current branch to this new commit.
+            // If it's the first commit, we need to create the branch ref.
+            
+            // Actually, if it's the first commit, `git commit` in a temp index might create a root commit.
+            // Then `update-ref` creates the branch.
+            
+            // We need to know the target branch name.
+            if (!hasHead) {
+                 // Try to get the default branch name (e.g. master or main)
+                 // git symbolic-ref HEAD returns "refs/heads/master" usually
+                 try {
+                     const headRef = this.runCommand(`git symbolic-ref HEAD`, options); // e.g., refs/heads/master
+                     this.runCommand(`git update-ref ${headRef} ${commitId}`, { cwd: repoPath });
+                 } catch (e) {
+                     // Fallback
+                     this.runCommand(`git update-ref refs/heads/master ${commitId}`, { cwd: repoPath });
+                 }
+            } else {
+                 this.runCommand(`git update-ref refs/heads/${currentBranch} ${commitId}`, { cwd: repoPath });
+            }
 
             // Reset index to match the new HEAD
             this.runCommand(`git reset --mixed ${commitId}`, { cwd: repoPath });
