@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/vcs.ts",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --reporter=basic"
   },
   "keywords": [],
   "author": "",

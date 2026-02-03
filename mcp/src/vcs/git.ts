@@ -219,8 +219,12 @@ export class GitVcs implements Vcs {
             this.runCommand('git read-tree HEAD', options);
 
             const fileList = files ? files.map(f => this.shellEscape(f)).join(' ') : '.';
-            this.runCommand(`git add ${fileList}`, options);
-            this.runCommand(`git commit -m "${message}"`, options);
+            if (fileList.length > 0) {
+                 this.runCommand(`git add ${fileList}`, options);
+            }
+            
+            const allowEmpty = (files && files.length === 0) ? ' --allow-empty' : '';
+            this.runCommand(`git commit${allowEmpty} -m "${message}"`, options);
             const commitId = this.runCommand(`git rev-parse HEAD`, options);
 
             // Update the actual branch HEAD

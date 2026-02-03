@@ -70,6 +70,19 @@ export class JjVcs implements Vcs {
         for (const line of lines) {
             if (line.length > 2 && line[1] === ' ') {
                 const statusChar = line[0];
+                
+                if (statusChar === 'R') {
+                    let details = line.substring(2).trim();
+                    if (details.startsWith('{') && details.endsWith('}')) {
+                        details = details.slice(1, -1);
+                    }
+                    const parts = details.split(' => ');
+                    if (parts.length === 2) {
+                        status.renamed.push({ from: parts[0], to: parts[1] });
+                    }
+                    continue;
+                }
+
                 const filePath = unquote(line.substring(2));
                 switch (statusChar) {
                     case 'A':
@@ -386,7 +399,7 @@ export class JjVcs implements Vcs {
         try {
             const output = execSync(`git -C "${repoPath}" status --ignored --porcelain`, { stdio: 'pipe', encoding: 'utf-8' });
             return output.split('\n')
-                .filter(line => line.startsWith('!! '))
+                .filter(line => line.startsWith('!! ')) 
                 .map(line => line.substring(3));
         } catch (e) {
             return [];
@@ -467,7 +480,9 @@ export class JjVcs implements Vcs {
         const template = `commit_id ++ "${delimiter}" ++ description.first_line() ++ "${delimiter}" ++ author.timestamp() ++ "${delimiter}" ++ author.email() ++ "\\n"`;
         const output = this.runCommand(`log -n ${limit}${range} -T '${template}' --no-graph`, { cwd: repoPath });
         return output.split('\n').filter(Boolean).map(line => {
-            const [commit_id, message, date, author] = line.split(jsDelimiter);
+            const parts = line.split(jsDelimiter);
+            if (parts.length < 4) return { commit_id: '', message: '', date: '', author: '' };
+            const [commit_id, message, date, author] = parts;
             return { commit_id, message, date, author };
         });
     }
@@ -479,7 +494,9 @@ export class JjVcs implements Vcs {
         // Search within committed history
         const output = this.runCommand(`log -r "description(~'${query}') & ::@-" -n ${limit} -T '${template}' --no-graph`, { cwd: repoPath });
         return output.split('\n').filter(Boolean).map(line => {
-             const [commit_id, message, date, author] = line.split(jsDelimiter);
+             const parts = line.split(jsDelimiter);
+             if (parts.length < 4) return { commit_id: '', message: '', date: '', author: '' };
+             const [commit_id, message, date, author] = parts;
              return { commit_id, message, date, author };
         });
     }}
