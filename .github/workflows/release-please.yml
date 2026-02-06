@@ -19,6 +19,8 @@ jobs:
         with:
           target-branch: ${{ github.ref_name }}
           token: ${{ secrets.BOT_RELEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
       - name: Checkout code
         if: ${{ steps.release.outputs.release_created }}

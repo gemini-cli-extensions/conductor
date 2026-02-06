@@ -1,0 +1,81 @@
+name: Package and Upload Release Assets
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'The tag of the release to upload assets to'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 1. Build conductor-core (PyPI)
+      - name: Build conductor-core
+        run: |
+          cd conductor-core
+          python -m pip install --upgrade build
+          python -m build
+
+      # 2. Build VS Code Extension (VSIX)
+      - name: Build VSIX
+        run: |
+          cd conductor-vscode
+          npm ci
+          npx vsce package -o ../conductor.vsix
+
+      # 3. Create Legacy TAR archive
+      - name: Create TAR archive
+        run: tar -czvf conductor-release.tar.gz --exclude='.git' --exclude='.github' .
+
+      # 4. Upload all assets
+      - name: Ensure GitHub Release Exists
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then TAG="${{ inputs.tag_name }}"; fi
+          if [ -z "$TAG" ]; then TAG="${{ github.ref_name }}"; fi
+          gh release view "$TAG" || gh release create "$TAG" --generate-notes
+
+      - name: Upload assets to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then TAG="${{ inputs.tag_name }}"; fi
+          if [ -z "$TAG" ]; then TAG="${{ github.ref_name }}"; fi
+          gh release upload $TAG \
+            conductor-release.tar.gz \
+            conductor.vsix \
+            conductor-core/dist/*.tar.gz \
+            conductor-core/dist/*.whl
+
+      - name: Publish conductor-core to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: conductor-core/dist

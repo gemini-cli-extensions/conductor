@@ -33,9 +33,9 @@ To find a file (e.g., "**Product Definition**") within a specific context (Proje
 - **Product Guidelines**: `conductor/product-guidelines.md`
 - **Tracks Registry**: `conductor/tracks.md`
 - **Tracks Directory**: `conductor/tracks/`
+- **Ralph Loop State**: `conductor/.ralph-state.json` (optional)
 
 **Standard Default Paths (Track):**
 - **Specification**: `conductor/tracks/<track_id>/spec.md`
 - **Implementation Plan**: `conductor/tracks/<track_id>/plan.md`
 - **Metadata**: `conductor/tracks/<track_id>/metadata.json`
-
