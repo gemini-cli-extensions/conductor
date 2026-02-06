@@ -109,6 +109,24 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     > "Does this plan look correct and cover all the necessary steps based on the spec and our workflow? Please suggest any changes or confirm."
     Await user feedback and revise the `plan.md` content until confirmed.
 
+### 2.3.1 Platform Guide Check (GCP)
+
+1.  **Analyze Context:**
+    *   Check if the **Specification** or **Implementation Plan** mentions "GCP", "Google Cloud", "Cloud Run", "GKE", "App Engine", or "Firebase".
+    *   Check for the existence of `conductor/platform_guides/google-cloud-platform.md`.
+
+2.  **Conditional Offer:**
+    *   **IF** (GCP is mentioned) **AND** (the guide is MISSING):
+        *   Ask the user:
+            > "I noticed this track involves Google Cloud Platform, but the GCP Best Practices guide is missing from your project. Would you like to add it now?
+            > A. Yes, add the guide.
+            > B. No, skip for now.
+            > Please enter your choice (A or B)."
+        *   **If 'A' (Yes):**
+            *   Create the directory `conductor/platform_guides/`.
+            *   Copy `~/.gemini/extensions/conductor/templates/platform_guides/google-cloud-platform.md` to `conductor/platform_guides/google-cloud-platform.md`.
+            *   Announce: "Added GCP Best Practices guide to `conductor/platform_guides/`."
+
 ### 2.4 Create Track Artifacts and Update Main Plan
 
 1.  **Check for existing track name:** Before generating a new Track ID, resolve the **Tracks Directory** using the **Universal File Resolution Protocol**. List all existing track directories in that resolved path. Extract the short names from these track IDs (e.g., ``shortname_YYYYMMDD`` -> `shortname`). If the proposed short name for the new track (derived from the initial description) matches an existing short name, halt the `newTrack` creation. Explain that a track with that name already exists and suggest choosing a different name or resuming the existing track.
