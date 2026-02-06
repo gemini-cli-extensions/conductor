@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "AfterTool": [
+      {
+        "matcher": "ralph_start",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${extensionPath}/hooks/ralph-mode/setup.js",
+            "name": "Ralph Mode Initializer"
+          }
+        ]
+      },
+      {
+        "matcher": "ralph_end",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${extensionPath}/hooks/ralph-mode/controller.js",
+            "name": "Ralph Mode Controller"
+          }
+        ]
+      }
+    ]
+  }
+}
