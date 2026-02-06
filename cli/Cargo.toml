@@ -1,0 +1,20 @@
+[package]
+name = "desiger-cli"
+version = "2.2.3"
+description = "CLI to install UI/UX Pro Max skill for AI coding assistants"
+license = "MIT"
+authors = [""]
+edition = "2021"
+
+[[bin]]
+name = "headdesigner"
+path = "src/main.rs"
+
+[dependencies]
+clap = "4.5"
+colored = "2.1"
+indicatif = "0.17"
+dialoguer = "0.11"
+
+[dev-dependencies]
+tokio = { version = "1.37", features = ["full"] }
