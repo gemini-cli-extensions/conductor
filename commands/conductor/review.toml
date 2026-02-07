@@ -158,4 +158,12 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
             iii. **If no:** Cancel.
         *   **If "C" (Skip):** Leave track as is.
+
+---
+
+## 4.0 POST-EXECUTION ADVICE
+**CRITICAL:** You MUST display the following tip to the user ONLY when the entire command execution is finished and you are about to halt. DO NOT display this tip if you are asking for user input or if the command is still in progress.
+
+"**TIP:** Use `/clear` or `/compress` to reduce context window and latency."
+
 """
