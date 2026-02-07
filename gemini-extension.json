@@ -1,5 +1,17 @@
 {
   "name": "conductor",
   "version": "0.2.0",
-  "contextFileName": "GEMINI.md"
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "aic": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "aic.server"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
 }
