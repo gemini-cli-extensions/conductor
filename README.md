@@ -16,6 +16,7 @@ The philosophy behind Conductor is simple: control your code. By treating contex
 - **Work as a team**: Set project-level context for your product, tech stack, and workflow preferences that become a shared foundation for your team.
 - **Build on existing projects**: Intelligent initialization for both new (Greenfield) and existing (Brownfield) projects.
 - **Smart revert**: A git-aware revert command that understands logical units of work (tracks, phases, tasks) rather than just commit hashes.
+- **Architecture audit**: A re-runnable codebase analysis that generates a living architecture document — capturing directory structure, module boundaries, data flow, API surfaces, security boundaries, and architectural health.
 
 ## Installation
 
@@ -107,6 +108,19 @@ During implementation, you can also:
   /conductor:review
   ```
 
+### 4. Audit the Architecture (Run Anytime)
+
+Run `/conductor:audit` to generate or refresh a comprehensive architecture document for your codebase. This performs a deep analysis covering directory structure, module boundaries, data flow, API surfaces, security boundaries, and architectural health — then writes the results to `conductor/architecture.md`.
+
+The audit is re-runnable: when an existing architecture document is found, it performs a fresh analysis and highlights what has changed since the last audit.
+
+**Generated Artifacts:**
+- `conductor/architecture.md`
+
+```bash
+/conductor:audit
+```
+
 ## Commands Reference
 
 | Command | Description | Artifacts |
@@ -117,6 +131,7 @@ During implementation, you can also:
 | `/conductor:status` | Displays the current progress of the tracks file and active tracks. | Reads `conductor/tracks.md` |
 | `/conductor:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 | `/conductor:review` | Reviews completed work against guidelines and the plan. | Reads `plan.md`, `product-guidelines.md` |
+| `/conductor:audit` | Analyzes the codebase and generates an architecture document. Re-runnable. | `conductor/architecture.md` |
 
 ## Resources
 

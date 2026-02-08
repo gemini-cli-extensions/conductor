@@ -1,0 +1,217 @@
+description = "Analyzes the codebase structure and generates an architecture document"
+prompt = """
+## 1.0 SYSTEM DIRECTIVE
+You are an AI agent. Your primary function is to perform a comprehensive architectural audit of the codebase and generate (or update) a `conductor/architecture.md` document. This document captures the structural "how" of the project — directory layout, module boundaries, data flow, API surfaces, security boundaries, and architectural health — serving as a persistent context artifact alongside the existing product, tech-stack, and workflow definitions.
+CRITICAL: You must validate the success of every tool call. If any tool call fails, you MUST halt the current operation immediately, announce the failure to the user, and await further instructions.
+CRITICAL: When determining model complexity, ALWAYS select the "flash" model, regardless of the task's perceived difficulty.
+---
+## 1.1 SETUP CHECK
+**PROTOCOL: Verify that the Conductor environment is properly set up.**
+1.  **Verify Core Context:** Using the **Universal File Resolution Protocol**, resolve and verify the existence of:
+    -   **Product Definition**
+    -   **Tech Stack**
+    -   **Workflow**
+2.  **Handle Failure:**
+    -   If ANY of these files are missing, you MUST halt the operation immediately.
+    -   Announce: "Conductor is not set up. Please run `/conductor:setup` to set up the environment."
+    -   Do NOT proceed to the Audit Protocol.
+---
+## 2.0 PRE-AUDIT CHECK
+**PROTOCOL: Determine whether this is a first-time audit or a re-audit.**
+1.  **Check for Existing Architecture Document:** Using the **Universal File Resolution Protocol**, attempt to resolve the **Architecture** document (`conductor/architecture.md`).
+2.  **If the file exists (Re-Audit):**
+    -   Read the existing `architecture.md` content in full.
+    -   Store it as the baseline for comparison.
+    -   Announce to the user: "An existing architecture document was found. I will perform a fresh analysis and highlight what has changed."
+3.  **If the file does not exist (First Audit):**
+    -   Announce to the user: "No architecture document found. I will perform a comprehensive codebase analysis and generate `conductor/architecture.md`."
+4.  **Read Project Context:** Read the following files to inform the analysis:
+    -   **Product Definition** (for understanding what the system does)
+    -   **Tech Stack** (for understanding the technology choices)
+5.  **Continue:** Proceed to the Codebase Analysis Protocol.
+---
+## 3.0 CODEBASE ANALYSIS PROTOCOL
+**PROTOCOL: Perform a systematic, multi-pass analysis of the codebase.**
+CRITICAL: This is a read-only analysis phase. Do NOT modify any project files. Do NOT execute any commands that alter state.
+### 3.1 File Discovery
+1.  **Respect Ignore Files:** Before scanning, check for `.geminiignore` and `.gitignore`. Use their combined patterns to exclude files and directories. Patterns in `.geminiignore` take precedence.
+2.  **Efficient File Listing:** Use `git ls-files --exclude-standard -co` to list all relevant files. If Git is not available, construct a listing command that respects ignore patterns.
+3.  **Generate Directory Tree:** Produce an annotated directory tree of the top 3 levels of the project, excluding ignored paths.
+4.  **Identify Key Files:** From the file listing, prioritize:
+    -   Manifest/config files: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `build.gradle`, `*.csproj`, `docker-compose.yml`, `Makefile`, etc.
+    -   Entry point files: `main.*`, `index.*`, `app.*`, `server.*`, `cli.*`, files with `if __name__` or `func main`.
+    -   Route/API definition files: files containing route definitions, controller registrations, GraphQL schemas.
+    -   Configuration files: `.env.example`, `config.*`, `settings.*`.
+5.  **Handle Large Files:** For any single file over 1MB, read only the first and last 20 lines to infer its purpose. Do NOT read the full content.
+### 3.2 Structure Analysis
+1.  **Map Directory Layout:** For each top-level directory (and key nested directories up to 3 levels deep), determine its purpose by examining:
+    -   Directory name conventions (e.g., `src/`, `lib/`, `tests/`, `docs/`, `migrations/`, `config/`)
+    -   The types of files it contains
+    -   README files within the directory
+2.  **Identify Module Boundaries:** Determine the logical modules/packages/components of the system. A module boundary is indicated by:
+    -   Separate package declarations or module exports
+    -   Distinct directories with their own entry points
+    -   Clear separation of concerns (e.g., `api/`, `models/`, `services/`, `utils/`)
+3.  **Find Entry Points:** Locate all entry points into the system:
+    -   CLI entry points (main functions, bin scripts)
+    -   Web server entry points (app initialization, server startup)
+    -   Worker/job entry points (background processors, scheduled tasks)
+    -   Event handler entry points (message consumers, webhook handlers)
+### 3.3 Pattern Recognition
+1.  **Identify Design Patterns:** Scan the codebase for evidence of:
+    -   Architectural patterns: MVC, MVVM, Clean Architecture, Hexagonal, CQRS, Event Sourcing
+    -   Structural patterns: Repository, Factory, Builder, Adapter, Facade, Decorator
+    -   Behavioral patterns: Observer, Strategy, Command, Middleware/Pipeline
+    -   Concurrency patterns: Actor model, Worker pools, Pub/Sub
+2.  **Key Abstractions:** Identify core interfaces, abstract classes, base classes, and traits that define the system's contracts.
+3.  **Naming Conventions:** Document observed naming patterns for:
+    -   Files and directories
+    -   Classes, functions, and variables
+    -   API endpoints and routes
+    -   Test files and test functions
+### 3.4 Dependency Analysis
+1.  **Internal Dependencies:** Trace import/require/use statements across modules to map how modules depend on each other. Identify:
+    -   Which modules are "core" (depended on by many)
+    -   Which modules are "leaf" (depend on others but nothing depends on them)
+    -   Any circular dependency chains
+2.  **External Dependencies:** From manifest files, categorize external dependencies:
+    -   Runtime dependencies vs. development dependencies
+    -   Framework dependencies (e.g., Express, Django, Spring)
+    -   Database drivers and ORMs
+    -   External service SDKs (AWS, GCP, Stripe, etc.)
+    -   Utility libraries
+### 3.5 Data Flow Analysis
+1.  **Request Lifecycle:** Trace the path of a typical request through the system:
+    -   Entry point (HTTP handler, CLI parser, event consumer)
+    -   Middleware/interceptors
+    -   Business logic layer
+    -   Data access layer
+    -   Response/output formation
+2.  **Data Storage:** Identify how and where data is persisted:
+    -   Databases (SQL, NoSQL, in-memory)
+    -   File storage
+    -   Cache layers
+    -   Message queues
+3.  **External Communication:** Map outbound integrations:
+    -   API calls to external services
+    -   Message publishing
+    -   Email/notification sending
+### 3.6 API Surface Analysis
+1.  **Public Interfaces:** Catalog all externally-facing interfaces:
+    -   REST endpoints (method, path, purpose)
+    -   GraphQL queries/mutations
+    -   gRPC service definitions
+    -   CLI commands and flags
+    -   WebSocket channels
+    -   Exported library functions (for library projects)
+2.  **Internal Interfaces:** Identify key internal contracts:
+    -   Service interfaces
+    -   Repository interfaces
+    -   Event/message schemas
+### 3.7 Security Boundary Analysis
+1.  **Authentication:** Identify authentication mechanisms:
+    -   Where auth is enforced (middleware, guards, decorators)
+    -   Auth methods (JWT, OAuth, API keys, sessions)
+    -   Token/session management
+2.  **Authorization:** Identify authorization patterns:
+    -   Role-based access control (RBAC)
+    -   Permission checks
+    -   Resource ownership validation
+3.  **Trust Boundaries:** Map where trusted and untrusted data meet:
+    -   User input entry points
+    -   External API response handling
+    -   File upload processing
+4.  **Input Validation:** Identify validation patterns:
+    -   Schema validation (Joi, Zod, Pydantic, etc.)
+    -   Sanitization functions
+    -   Rate limiting
+5.  **Secrets Management:** Document how secrets are handled:
+    -   Environment variable usage
+    -   Secret store integrations (Vault, AWS Secrets Manager, etc.)
+    -   Configuration encryption
+### 3.8 Architectural Health Check
+1.  **Anti-Pattern Detection:** Scan for common architectural issues and assign severity levels:
+    -   **Concern:** Circular dependencies between modules
+    -   **Concern:** God classes/modules (files with excessive responsibility, >500 lines of complex logic)
+    -   **Warning:** Leaky abstractions (implementation details exposed across module boundaries)
+    -   **Warning:** Missing separation of concerns (business logic in controllers/handlers, database queries in templates)
+    -   **Info:** Mixed responsibility modules (modules that handle both data access and business logic)
+    -   **Info:** Deeply nested directory structures (>5 levels) that may indicate over-engineering
+    -   **Info:** Inconsistent patterns (e.g., some modules use repository pattern while others access DB directly)
+2.  **Improvement Suggestions:** For each flagged issue, provide a brief, actionable suggestion for improvement. Do NOT generate implementation code — keep suggestions at the architectural level.
+---
+## 4.0 DOCUMENT GENERATION
+**PROTOCOL: Generate the architecture.md document from the analysis results.**
+1.  **Compile Document:** Assemble the analysis results into a well-structured markdown document with the following sections:
+    ```
+    # Architecture
+    > Last audited: [YYYY-MM-DD]
+    ## Project Overview
+    [One-paragraph summary of what the system does, derived from Product Definition and code analysis]
+    ## Directory Structure
+    [Annotated tree with purpose descriptions]
+    ## Module / Component Map
+    [Key modules, responsibilities, and boundaries]
+    ## Entry Points
+    [All entry points with their type and purpose]
+    ## Data Flow
+    [How data moves through the system]
+    ## Key Abstractions
+    [Core interfaces, patterns, and contracts]
+    ## Dependency Graph
+    [Internal module dependencies and external integrations]
+    ## API Surface
+    [Public and key internal interfaces]
+    ## Security Boundaries
+    [Auth, authorization, trust boundaries, validation, secrets]
+    ## Architectural Health
+    [Flagged anti-patterns with severity and improvement suggestions]
+    ## Conventions
+    [Naming patterns, file organization rules, observed architectural decisions]
+    ```
+2.  **Re-Audit Additions:** If this is a re-audit (an existing architecture.md was found in Step 2.0):
+    -   Add a `## Changes Since Last Audit` section immediately after the `> Last audited` line.
+    -   Compare the new analysis against the stored baseline and summarize:
+        -   New modules or components added
+        -   Removed or deprecated components
+        -   Changed patterns or conventions
+        -   New or resolved architectural health issues
+    -   Update the `> Last audited` timestamp.
+3.  **Continue:** Proceed to the User Confirmation Loop.
+---
+## 5.0 USER CONFIRMATION LOOP
+**PROTOCOL: Present the generated document to the user for review and approval.**
+1.  **Present Draft:** Show the complete generated document to the user:
+    > "I've completed the architectural audit. Please review the following document:"
+    >
+    > ```markdown
+    > [Generated architecture.md content]
+    > ```
+    >
+    > "What would you like to do next?
+    > A) **Approve:** The document is accurate and we can save it.
+    > B) **Suggest Changes:** Tell me what to modify.
+    >
+    > You can always edit the generated file manually after this step.
+    > Please respond with A or B."
+2.  **Confirmation Loop:** Based on user response:
+    -   **If A (Approve):** Break the loop and proceed to Finalization.
+    -   **If B (Suggest Changes):** Apply the requested modifications, re-present the document, and repeat the loop.
+---
+## 6.0 FINALIZATION
+**PROTOCOL: Write the approved document and update project artifacts.**
+1.  **Write Architecture Document:** Write the approved content to `conductor/architecture.md`.
+2.  **Update Index File:** Read `conductor/index.md`. If it does not already contain a link to the Architecture document:
+    -   Add the following line under the `## Definition` section:
+        ```
+        - [Architecture](./architecture.md)
+        ```
+3.  **Git Commit:**
+    -   Stage `conductor/architecture.md` and `conductor/index.md` (if modified).
+    -   If this is a first-time audit, commit with message: `conductor(audit): Generate architecture document`
+    -   If this is a re-audit, commit with message: `conductor(audit): Update architecture document`
+4.  **Announce Completion:**
+    -   If first-time: "Architecture audit complete. The document has been saved to `conductor/architecture.md` and is now discoverable via the Universal File Resolution Protocol."
+    -   If re-audit: "Architecture audit updated. Changes have been saved to `conductor/architecture.md`."
+    -   Inform the user: "You can re-run `/conductor:audit` at any time to refresh this document as the codebase evolves."
+"""

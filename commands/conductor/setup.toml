@@ -329,6 +329,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         - [Product Definition](./product.md)
         - [Product Guidelines](./product-guidelines.md)
         - [Tech Stack](./tech-stack.md)
+        - [Architecture](./architecture.md)
 
         ## Workflow
         - [Workflow](./workflow.md)
