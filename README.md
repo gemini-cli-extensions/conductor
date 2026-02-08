@@ -16,13 +16,14 @@ The philosophy behind Header is simple: control your code. By treating context a
 - **Work as a team**: Set project-level context for your product, tech stack, and workflow preferences that become a shared foundation for your team.
 - **Build on existing projects**: Intelligent initialization for both new (Greenfield) and existing (Brownfield) projects.
 - **Smart revert**: A git-aware revert command that understands logical units of work (tracks, phases, tasks) rather than just commit hashes.
+- **Interactive exploration**: Guided codebase discovery with the explore command to understand architecture and design patterns.
 
 ## Installation
 
 Install the Header extension by running the following command from your terminal:
 
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/header --auto-update
+gemini extensions install https://github.com/billlzzz18/header --auto-update
 ```
 
 The `--auto-update` is optional: if specified, it will update to new versions as they are released.
@@ -103,6 +104,12 @@ During implementation, you can also:
   /header:status
   ```
 
+- **Explore codebase**: Interactively understand how components work.
+
+  ```bash
+  /header:explore "How does the track implementation work?"
+  ```
+
 - **Revert work**: Undo a feature or a specific task if needed.
 
   ```bash
@@ -123,6 +130,7 @@ During implementation, you can also:
 | `/header:newTrack` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`. | `header/tracks/<id>/spec.md`, `header/tracks/<id>/plan.md`, `header/tracks.md` |
 | `/header:implement` | Executes the tasks defined in the current track's plan. | `header/tracks.md`, `header/tracks/<id>/plan.md` |
 | `/header:status` | Displays the current progress of the tracks file and active tracks. | Reads `header/tracks.md` |
+| `/header:explore` | Interactive codebase exploration with guided discovery. | Read-only analysis |
 | `/header:revert` | Reverts a track, phase, or task by analyzing git history. | Reverts git history |
 | `/header:review` | Reviews completed work against guidelines and the plan. | Reads `plan.md`, `product-guidelines.md` |
 

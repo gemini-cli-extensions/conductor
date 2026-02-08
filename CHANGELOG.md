@@ -1,5 +1,33 @@
 # Changelog
 
+> **Note:** This project was renamed from "conductor" to "header" in version 0.3.0. Historical links below reference the old repository name.
+
+## [0.3.0](https://github.com/billlzzz18/header/compare/v0.2.0...v0.3.0) (2026-02-08)
+
+### ⚠ BREAKING CHANGES
+
+* **Project renamed from "conductor" to "header"**
+  - All commands changed from `/conductor:*` to `/header:*`
+  - Directory structure changed from `conductor/` to `header/`
+  - Extension name changed in all configurations
+
+### Features
+
+* **header:** Add explore command for interactive code discovery ([212d750](https://github.com/billlzzz18/header/commit/212d750b9a4eaf119bc59099da68d9dc38d3dfe6))
+* **status:** Add emoji indicators for better status visualization ([212d750](https://github.com/billlzzz18/header/commit/212d750b9a4eaf119bc59099da68d9dc38d3dfe6))
+
+### Bug Fixes
+
+* **release:** Update release artifact name from conductor to header
+* **implement:** Fix archive directory path reference
+* **revert:** Update command examples and commit message format
+
+### Documentation
+
+* Update README with new header branding and commands
+* Enhance workflow.md with improved formatting and examples
+* Update Rust styleguide with additional details
+
 ## [0.2.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.1.1...conductor-v0.2.0) (2026-01-14)
 
 

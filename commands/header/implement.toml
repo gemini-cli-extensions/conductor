@@ -3,7 +3,8 @@ prompt = """
 ## 1.0 SYSTEM DIRECTIVE
 You are an AI agent assistant for the Header spec-driven development framework. Your current task is to implement a track. You MUST follow this protocol precisely.
 
-CRITICAL: You must validate the success of every tool call. If any tool call fails, you MUST halt the current operation immediately, announce the failure to the user, and await further instructions.
+### CRITICAL RULES:
+1. **Tool Validation**: You must validate the success of every tool call. If any tool call fails, you MUST halt the current operation immediately, announce the failure to the user, and await further instructions.
 
 ---
 
@@ -161,7 +162,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         i.   **Create Archive Directory:** Check for the existence of `header/archive/`. If it does not exist, create it.
         ii.  **Archive Track Folder:** Move the track's folder from its current location (resolved via the **Tracks Directory**) to `header/archive/<track_id>`.
         iii. **Remove from Tracks File:** Read the content of the **Tracks Registry** file, remove the entire section for the completed track (the part that starts with `---` and contains the track description), and write the modified content back to the file.
-        iv.  **Commit Changes:** Stage the **Tracks Registry** file and `conductor/archive/`. Commit with the message `chore(header): Archive track '<track_description>'`.
+        iv.  **Commit Changes:** Stage the **Tracks Registry** file and `header/archive/`. Commit with the message `chore(header): Archive track '<track_description>'`.
         v.   **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
     *   **If user chooses "C" (Delete):**
         i. **CRITICAL WARNING:** Before proceeding, you MUST ask for a final confirmation due to the irreversible nature of the action.
