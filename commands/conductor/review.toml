@@ -50,6 +50,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   Read `product-guidelines.md` and `tech-stack.md`.
     -   **CRITICAL:** Check for the existence of `conductor/code_styleguides/` directory.
         -   If it exists, list and read ALL `.md` files within it. These are the **Law**. Violations here are **High** severity.
+    -   **CRITICAL:** Check for the existence of `conductor/platform_guides/` directory.
+        -   If it exists, list and read ALL `.md` files within it. Ensure code adheres to these platform best practices.
 2.  **Load Track Context (if reviewing a track):**
     -   Read the track's `plan.md`.
     -   **Extract Commits:** Parse `plan.md` to find recorded git commit hashes (usually in the "Completed" tasks or "History" section).
@@ -76,6 +78,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 2.  **Style Compliance:**
     -   Does it follow `product-guidelines.md`?
     -   Does it strictly follow `conductor/code_styleguides/*.md`?
+    -   Does it adhere to `conductor/platform_guides/*.md` (if applicable)?
 3.  **Correctness & Safety:**
     -   Look for bugs, race conditions, null pointer risks.
     -   **Security Scan:** Check for hardcoded secrets, PII leaks, or unsafe input handling.
