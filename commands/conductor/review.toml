@@ -75,7 +75,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 **Perform the following checks on the retrieved diff:**
 
 1.  **Intent Verification:** Does the code actually implement what the `plan.md` (and `spec.md` if available) asked for?
-2.  **Style Compliance:**
+2.  **Guides Compliance:**
     -   Does it follow `product-guidelines.md`?
     -   Does it strictly follow `conductor/code_styleguides/*.md`?
     -   Does it adhere to `conductor/platform_guides/*.md` (if applicable)?
@@ -97,7 +97,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ## Verification Checks
 - [ ] **Plan Compliance**: [Yes/No/Partial] - [Comment]
-- [ ] **Style Compliance**: [Pass/Fail]
+- [ ] **Guides Compliance**: [Pass/Fail]
 - [ ] **New Tests**: [Yes/No]
 - [ ] **Test Coverage**: [Yes/No/Partial]
 - [ ] **Test Results**: [Passed/Failed] - [Summary of failing tests or 'All passed']
