@@ -23,7 +23,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - If `STEP` is "2.1_product_guide", announce "Resuming setup: The Product Guide (`product.md`) is already complete. Next, we will create the Product Guidelines." and proceed to **Section 2.2**.
     - If `STEP` is "2.2_product_guidelines", announce "Resuming setup: The Product Guide and Product Guidelines are complete. Next, we will define the Technology Stack." and proceed to **Section 2.3**.
     - If `STEP` is "2.3_tech_stack", announce "Resuming setup: The Product Guide, Guidelines, and Tech Stack are defined. Next, we will select Code Styleguides." and proceed to **Section 2.4**.
-    - If `STEP` is "2.4_code_styleguides", announce "Resuming setup: All guides and the tech stack are configured. Next, we will define the project workflow." and proceed to **Section 2.5**.
+    - If `STEP` is "2.4_project_guides", announce "Resuming setup: All guides and the tech stack are configured. Next, we will define the project workflow." and proceed to **Section 2.5**.
     - If `STEP` is "2.5_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Phase 2 (3.0)**.
     - If `STEP` is "3.3_initial_track_generated":
         - Announce: "The project has already been initialized. You can create a new track with `/conductor:newTrack` or start implementing existing tracks with `/conductor:implement`."
@@ -306,7 +306,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 -   Copy `~/.gemini/extensions/conductor/templates/platform_guides/google-cloud-platform.md` to `conductor/platform_guides/google-cloud-platform.md`.
                 -   Announce: "Added GCP Best Practices guide to `conductor/platform_guides/`."
     -   **Commit State:** After handling the guides (Code Style + Platform), you MUST immediately write to `conductor/setup_state.json` with the exact content:
-        `{"last_successful_step": "2.4_code_styleguides"}`
+        `{"last_successful_step": "2.4_project_guides"}`
     -   **Continue:** Proceed to the next section.
 ### 2.5 Select Workflow (Interactive)
 1.  **Copy Initial Workflow:**
