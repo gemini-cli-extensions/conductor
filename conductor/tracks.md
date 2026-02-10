@@ -71,4 +71,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Incorporate synchronization improvements and additional recommended improvements into the Conductor workflow.**
-*Link: [./tracks/maintenance_sync_improvement_20260210/](./tracks/maintenance_sync_improvement_20260210/)*
+*Link: [./tracks/archive/maintenance_sync_improvement_20260210/](./tracks/archive/maintenance_sync_improvement_20260210/)*
