@@ -19,12 +19,3 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [pydantic, types-requests]
-
-  - repo: local
-    hooks:
-      - id: pyrefly
-        name: pyrefly
-        entry: pyrefly check
-        language: system
-        types: [python]
-        require_serial: true

@@ -18,7 +18,7 @@ vcsTypes.forEach((vcsType) => {
             remoteRepoPath = harness.setupRemoteRepo(vcsType);
             repoPath = harness.setupRepo(vcsType, remoteRepoPath);
             vcs = harness.getVcs(repoPath);
-            
+
             if (vcsType === 'git') {
                 harness.runCmd('git config user.email "test@example.com"', repoPath);
                 harness.runCmd('git config user.name "Test User"', repoPath);
@@ -66,8 +66,8 @@ vcsTypes.forEach((vcsType) => {
             gitHarness.runCmd('git push origin main', secondRepoPath);
             gitHarness.teardownRepo(secondRepoPath);
 
-            vcs.pull(repoPath); 
-            
+            vcs.pull(repoPath);
+
             if (vcsType === 'git') {
                 expect(fs.existsSync(path.join(repoPath, 'remote-pull.txt'))).toBe(true);
                 const log = harness.runCmd('git log --oneline -1', repoPath);
@@ -88,7 +88,7 @@ vcsTypes.forEach((vcsType) => {
                 // Move 'main' to the current commit (@).
                 harness.runCmd('jj bookmark set main -r @', repoPath);
             }
-            
+
             vcs.push(repoPath);
 
             const gitHarness = await getHarness('git');
@@ -156,13 +156,13 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('git add initial.txt', repoPath);
                 harness.runCmd('git commit -m "Initial file for rename" ', repoPath);
                 harness.runCmd('git mv initial.txt renamed-e2e.txt', repoPath);
-                harness.runCmd('git add -A', repoPath); 
+                harness.runCmd('git add -A', repoPath);
             } else {
                 harness.runCmd('jj commit -m "Initial file for rename"', repoPath);
                 // JJ rename: move file, then JJ detects it via diff
                 fs.renameSync(path.join(repoPath, 'initial.txt'), path.join(repoPath, 'renamed-e2e.txt'));
             }
-            
+
             const status = vcs.get_status(repoPath);
             if (vcsType === 'jj' && status.renamed.length === 0) {
                  // JJ might report as delete+add depending on detection
@@ -174,7 +174,7 @@ vcsTypes.forEach((vcsType) => {
                  // Also ensure it's not in added/deleted
                  expect(status.added).not.toContain('renamed-e2e.txt');
             }
-            
+
             // Revert rename for subsequent tests
             if (vcsType === 'git') {
                 harness.runCmd('git mv renamed-e2e.txt initial.txt', repoPath);
@@ -201,9 +201,9 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('jj bookmark create side2', repoPath);
 
                 // Rebase side1 onto side2 to create conflict
-                harness.runCmd('jj new side1', repoPath); 
-                harness.runCmd('jj rebase -d side2', repoPath); 
-                
+                harness.runCmd('jj new side1', repoPath);
+                harness.runCmd('jj rebase -d side2', repoPath);
+
                 const status = vcs.get_status(repoPath);
                 expect(status.conflicted).toEqual(['conflict.txt']);
                 return;
@@ -239,7 +239,7 @@ vcsTypes.forEach((vcsType) => {
             harness.createFile(repoPath, 'merge.txt', 'main content');
             harness.runCmd('git add merge.txt', repoPath);
             harness.runCmd('git commit -m "Main commit"', repoPath);
-            harness.runCmd('git merge feature-branch || true', repoPath); 
+            harness.runCmd('git merge feature-branch || true', repoPath);
             const status = vcs.get_status(repoPath);
             expect(status.is_operation_in_progress).toEqual({ type: 'merge' });
             harness.runCmd('git merge --abort', repoPath);
@@ -271,7 +271,7 @@ vcsTypes.forEach((vcsType) => {
                 if (vcsType === 'git') harness.runCmd('git add test.txt', repoPath);
                 expect(vcs.is_binary(repoPath, 'test.txt')).toBe(false);
             });
-        
+
             it('returns true for a file defined as binary in .gitattributes', () => {
                 harness.createFile(repoPath, 'test.bin', 'this is text but should be treated as binary');
                 if (vcsType === 'git') harness.runCmd('git add test.bin', repoPath);
@@ -299,7 +299,7 @@ vcsTypes.forEach((vcsType) => {
             fs.mkdirSync(subDirPath);
             expect(vcs.get_root_path(subDirPath)).toBe(repoPath);
         });
-        
+
         it('is_ignored() returns true for an ignored file', () => {
             fs.writeFileSync(path.join(repoPath, '.gitignore'), 'ignored.txt');
             harness.createFile(repoPath, 'ignored.txt', 'this should be ignored');
@@ -313,7 +313,7 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('jj bookmark create new-branch', repoPath);
                 harness.runCmd('jj new new-branch', repoPath); // Moves to child of new-branch
                 // We want to be ON the branch for this test, so we move the bookmark to the new head
-                harness.runCmd('jj bookmark set new-branch -r @', repoPath); 
+                harness.runCmd('jj bookmark set new-branch -r @', repoPath);
             }
             const ref = vcs.get_current_reference(repoPath);
             expect(ref.name).toBe('new-branch');
@@ -323,8 +323,8 @@ vcsTypes.forEach((vcsType) => {
         it('get_current_reference() returns correct tag name when on a tag', () => {
             harness.runCmd(vcsType === 'git' ? 'git commit --allow-empty -m "Second commit"' : 'jj commit -m "Second commit"', repoPath);
             const commitId = harness.runCmd(vcsType === 'git' ? 'git rev-parse HEAD' : 'jj log -r @ -T commit_id', repoPath);
-            harness.runCmd('git tag -a v1.0.0 -m "Test tag"', repoPath); 
-            if (vcsType === 'jj') vcs.fetch(repoPath); 
+            harness.runCmd('git tag -a v1.0.0 -m "Test tag"', repoPath);
+            if (vcsType === 'jj') vcs.fetch(repoPath);
 
             if (vcsType === 'git') {
                 harness.runCmd('git checkout v1.0.0', repoPath);
@@ -351,7 +351,7 @@ vcsTypes.forEach((vcsType) => {
                 expect(buffer).toEqual({ ahead: 0, behind: 0 });
             } else {
                 // jj harness has divergence initially
-                expect(buffer.behind).toBeGreaterThanOrEqual(0); 
+                expect(buffer.behind).toBeGreaterThanOrEqual(0);
             }
 
             harness.createFile(repoPath, 'local-commit.txt', 'local content');
@@ -363,7 +363,7 @@ vcsTypes.forEach((vcsType) => {
                 // Move main to the new commit so we can measure ahead/behind of 'main'
                 harness.runCmd('jj bookmark set main -r @', repoPath);
             }
-            
+
             vcs.fetch(repoPath);
             buffer = vcs.get_upstream_buffer(repoPath);
             if (vcsType === 'git') {
@@ -385,7 +385,7 @@ vcsTypes.forEach((vcsType) => {
                 // Move main to the new commit so we can measure ahead/behind of 'main'
                 harness.runCmd('jj bookmark set main -r @', repoPath);
             }
-            
+
             vcs.fetch(repoPath);
             buffer = vcs.get_upstream_buffer(repoPath);
             if (vcsType === 'git') {
@@ -403,7 +403,7 @@ vcsTypes.forEach((vcsType) => {
             gitHarness.runCmd('git commit -m "Remote commit"', secondRepoPath);
             gitHarness.runCmd('git push origin main', secondRepoPath);
             gitHarness.teardownRepo(secondRepoPath);
-            
+
             vcs.fetch(repoPath);
             buffer = vcs.get_upstream_buffer(repoPath);
             if (vcsType === 'git') {
@@ -425,7 +425,7 @@ vcsTypes.forEach((vcsType) => {
             if (vcsType === 'jj') {
                 harness.runCmd('jj new -m "initial commit"', repoPath);
                 harness.createFile(repoPath, 'conflict.txt', 'initial content');
-                harness.runCmd('jj commit -m "initial file"', repoPath); 
+                harness.runCmd('jj commit -m "initial file"', repoPath);
 
                 harness.runCmd('jj new -m "side1"', repoPath);
                 harness.createFile(repoPath, 'conflict.txt', 'side1 content');
@@ -437,7 +437,7 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('jj commit -m "side2 commit"', repoPath);
                 harness.runCmd('jj bookmark create side2', repoPath);
 
-                harness.runCmd('jj new side1', repoPath); 
+                harness.runCmd('jj new side1', repoPath);
                 harness.runCmd('jj rebase -d side2', repoPath);
             } else {
                 harness.runCmd('git checkout -b conflict-branch', repoPath);
@@ -466,8 +466,8 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('jj new -m "Commit to be undone"', repoPath);
                 harness.createFile(repoPath, 'abort.txt', 'main content');
                 const commitIdBefore = harness.runCmd('jj log -r @ -T commit_id', repoPath);
-                
-                vcs.abort_operation(repoPath); 
+
+                vcs.abort_operation(repoPath);
                 const commitIdAfter = harness.runCmd('jj log -r @ -T commit_id', repoPath);
                 expect(commitIdAfter).not.toBe(commitIdBefore);
                 expect(fs.existsSync(path.join(repoPath, 'abort.txt'))).toBe(false);
@@ -489,7 +489,7 @@ vcsTypes.forEach((vcsType) => {
             vcs.abort_operation(repoPath);
             expect(vcs.get_status(repoPath).is_operation_in_progress).toEqual({ type: 'none' });
         });
-        
+
         it('switch_reference() successfully switches with a clean directory', () => {
             const commitMessage = "Clean switch commit";
             let newBranchCommitId: string;
@@ -507,7 +507,7 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('jj new branch-a', repoPath);
                 harness.runCmd('jj bookmark create branch-b', repoPath); // branch-b on top of branch-a's empty child
                 harness.runCmd('jj bookmark set branch-b -r @', repoPath);
-                
+
                 harness.runCmd('jj new branch-b', repoPath);
                 harness.createFile(repoPath, 'clean-switch.txt', 'clean content');
                 harness.runCmd(`jj describe -m "${commitMessage}"`, repoPath);
@@ -539,10 +539,10 @@ vcsTypes.forEach((vcsType) => {
 
             vcs.switch_reference({ path: repoPath, reference: newBranchCommitId });
             const currentRef = vcs.get_current_reference(repoPath);
-            
+
             if (vcsType === 'git') {
                 expect(currentRef.commit_id).toBe(newBranchCommitId);
-                // In git detached head, name matches commit id or is null/HEAD? 
+                // In git detached head, name matches commit id or is null/HEAD?
                 // Implementation returns name only if branch match or tag match.
                 // So name should be null or similar.
             } else {
@@ -596,7 +596,7 @@ vcsTypes.forEach((vcsType) => {
             harness.createFile(repoPath, 'ignored-1.txt', 'ignored');
             harness.createFile(repoPath, 'ignored-2.txt', 'ignored');
             harness.createFile(repoPath, 'not-ignored.txt', 'not ignored');
-            
+
             // Depending on implementation, might need to track .gitignore first
             if (vcsType === 'git') {
                 harness.runCmd('git add .gitignore', repoPath);
@@ -633,10 +633,10 @@ vcsTypes.forEach((vcsType) => {
             expect(contentV1).toBe('version 1');
             const contentHead = vcs.get_file_content(repoPath, 'HEAD', 'content.txt'); // HEAD works for both usually, or use @ for JJ
             // Note: Implementation of get_file_content for JJ uses 'jj file show -r <rev>'. 'HEAD' might not work in JJ native, strictly '@'.
-            // But spec mapping says `git show <rev>:<path>` vs `jj file show -r <rev> <path>`. 
+            // But spec mapping says `git show <rev>:<path>` vs `jj file show -r <rev> <path>`.
             // We'll use the specific commit ID to be safe or rely on abstraction handling HEAD mapping if it does (it likely doesn't map HEAD to @ automatically in string).
             // Let's use the commit ID or a safe rev.
-            
+
             const contentCurrent = vcs.get_file_content(repoPath, vcsType === 'jj' ? '@' : 'HEAD', 'content.txt');
             expect(contentCurrent).toBe('version 2');
         });
@@ -649,12 +649,12 @@ vcsTypes.forEach((vcsType) => {
             } else {
                 harness.runCmd('jj commit -m "Base"', repoPath);
             }
-            
+
             harness.createFile(repoPath, 'diff.txt', 'line 1\nline 2 modified');
-            
+
             // Diff working copy vs HEAD/@
             // Spec: get_diff(revision_range, file_path). passing undefined for range means working copy vs HEAD.
-            const diff = vcs.get_diff(repoPath, undefined, 'diff.txt'); 
+            const diff = vcs.get_diff(repoPath, undefined, 'diff.txt');
             expect(diff).toContain('line 2 modified');
         });
 
@@ -668,7 +668,7 @@ vcsTypes.forEach((vcsType) => {
              } else {
                  harness.runCmd('jj commit -m "Add binary"', repoPath);
              }
-             
+
              // Modify binary file
              harness.createFile(repoPath, 'image.png', Buffer.from([0, 1, 2, 3, 4, 5]));
              // Check working copy vs HEAD
@@ -698,12 +698,12 @@ vcsTypes.forEach((vcsType) => {
             }
 
             const changed = vcs.get_changed_files(repoPath, `${rev1}..HEAD`); // HEAD for git, @ for jj?
-            // JJ range syntax is different: `x..y`. 
-            // Abstraction user is expected to provide valid range string for the VCS? 
+            // JJ range syntax is different: `x..y`.
+            // Abstraction user is expected to provide valid range string for the VCS?
             // Or abstraction normalizes? Spec says "The range of revisions... (e.g. HEAD~1..HEAD)".
             // Spec mapping for JJ: `jj diff --name-only -r <range>`. JJ supports `x..y` mostly.
             // Let's use `rev1` and current.
-            
+
             const range = vcsType === 'git' ? `${rev1}..HEAD` : `${rev1}..@`;
             const files = vcs.get_changed_files(repoPath, range);
             expect(files).toContain('change2.txt');
@@ -734,7 +734,7 @@ vcsTypes.forEach((vcsType) => {
             const searchFiltered = vcs.search_history(repoPath, uniqueMessage, 5, 'log.txt');
             expect(searchFiltered.length).toBeGreaterThan(0);
             expect(searchFiltered[0].message).toContain(uniqueMessage);
-            
+
             // Should not find if filtering by unrelated file
             harness.createFile(repoPath, 'other.txt', 'other content'); // Just create, don't commit to this message
             const logUnrelated = vcs.get_log(repoPath, 5, undefined, 'other.txt');
@@ -755,7 +755,7 @@ vcsTypes.forEach((vcsType) => {
                  harness.createFile(repoPath, 'mb1.txt', '1');
                  harness.runCmd('git add mb1.txt', repoPath);
                  harness.runCmd('git commit -m "mb1"', repoPath);
-                 
+
                  harness.runCmd('git checkout main', repoPath); // back to base
                  harness.runCmd('git checkout -b branch-mb-2', repoPath);
                  harness.createFile(repoPath, 'mb2.txt', '2');
@@ -767,7 +767,7 @@ vcsTypes.forEach((vcsType) => {
              } else {
                  baseRev = harness.runCmd('jj log -r @ -T commit_id --no-graph', repoPath);
                  harness.runCmd('jj bookmark create main-mb', repoPath);
-                 
+
                  harness.runCmd('jj new main-mb', repoPath);
                  harness.createFile(repoPath, 'mb1.txt', '1');
                  harness.runCmd('jj commit -m "mb1"', repoPath);
@@ -792,7 +792,7 @@ vcsTypes.forEach((vcsType) => {
                 harness.runCmd('git add revert_me.txt', repoPath);
                 harness.runCmd('git commit -m "To be reverted"', repoPath);
                 const commitToRevert = harness.runCmd('git rev-parse HEAD', repoPath);
-                
+
                 vcs.revert_commit(repoPath, commitToRevert);
                 const log = harness.runCmd('git log -1 --pretty=%s', repoPath);
                 expect(log).toContain('Revert "To be reverted"');
@@ -800,7 +800,7 @@ vcsTypes.forEach((vcsType) => {
             } else {
                 harness.runCmd('jj commit -m "To be reverted"', repoPath);
                 const commitToRevert = harness.runCmd('jj log -r @- -T commit_id --no-graph', repoPath);
-                
+
                 vcs.revert_commit(repoPath, commitToRevert);
                 // jj backout creates a new child commit that reverses changes.
                 // Depending on if it commits it or leaves it open (usually open working copy in jj)

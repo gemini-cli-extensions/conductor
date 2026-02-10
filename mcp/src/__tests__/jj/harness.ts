@@ -9,7 +9,7 @@ import { harness as gitHarness } from '../git/harness';
 
 function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
     const repoPath = fs.mkdtempSync(path.join(tmpdir(), 'mcp-jj-test-repo-'));
-    
+
     execSync('git init', { cwd: repoPath });
     // Harden environment
     execSync('git config core.autocrlf false', { cwd: repoPath });
@@ -19,7 +19,7 @@ function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
     execSync('git config user.name "Test JJ User"', { cwd: repoPath });
 
     execSync('jj git init', { cwd: repoPath });
-    
+
     // Set JJ config explicitly for the repo
     try {
         execSync('jj config set --repo user.email "test-jj@example.com"', { cwd: repoPath });

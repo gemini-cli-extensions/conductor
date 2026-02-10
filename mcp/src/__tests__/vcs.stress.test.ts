@@ -30,7 +30,7 @@ vcsTypes.forEach((vcsType) => {
             }
 
             // get_status should handle the output
-            // Note: execSync default buffer is 1MB. 2000 lines * ~20 chars = 40KB. 
+            // Note: execSync default buffer is 1MB. 2000 lines * ~20 chars = 40KB.
             // We might need more files to hit the limit, or verify logic scales.
             // 2000 is a good "stress" start. If the implementation uses standard execSync, it handles 1MB.
             // A truly massive repo (100k files) might break it. But let's test if it handles a non-trivial load.
@@ -38,7 +38,7 @@ vcsTypes.forEach((vcsType) => {
             // In git, untracked files are shown. In jj, untracked are filtered/shown.
             // Check count.
             const untrackedCount = status.untracked.length + status.added.length; // JJ might auto-add? No, untracked logic.
-            // JJ harness might not auto-track new files unless told? 
+            // JJ harness might not auto-track new files unless told?
             // JJ status shows untracked files if not ignored.
             expect(untrackedCount).toBeGreaterThanOrEqual(fileCount);
         }, 30000); // Increase timeout
@@ -61,10 +61,10 @@ vcsTypes.forEach((vcsType) => {
         }, 30000);
 
         it('handles filtering logs in large history', () => {
-            const commitCount = 20; 
+            const commitCount = 20;
             const targetFile = 'filter-target.txt';
             harness.createFile(repoPath, targetFile, 'initial');
-            
+
             if (vcsType === 'git') {
                 harness.runCmd(`git add ${targetFile}`, repoPath);
                 harness.runCmd('git commit -m "Initial target"', repoPath);
@@ -105,7 +105,7 @@ vcsTypes.forEach((vcsType) => {
         it('handles filenames with spaces, quotes, and weird characters', () => {
             const weirdName = 'weird "name" with spaces and \'quotes\'.txt';
             harness.createFile(repoPath, weirdName, 'weird content');
-            
+
             if (vcsType === 'git') {
                 // Git requires quoting for such files on command line if not careful
                 // Harness runCmd uses execSync. We need to escape properly in harness or verify vcs handles it.
@@ -115,13 +115,13 @@ vcsTypes.forEach((vcsType) => {
                 // But first, `get_status` should see it.
                 const status = vcs.get_status(repoPath);
                 expect(status.untracked).toContain(weirdName);
-                
+
                 vcs.create_commit({
                     path: repoPath,
                     message: 'Add weird file',
                     files: [weirdName]
                 });
-                
+
                 const statusAfter = vcs.get_status(repoPath);
                 expect(statusAfter.untracked).not.toContain(weirdName);
             } else {
@@ -146,7 +146,7 @@ vcsTypes.forEach((vcsType) => {
         it('handles commit messages with delimiter characters', () => {
             const delimiter = '|||';
             const message = `Fix: ${delimiter} broken parser ${delimiter}`;
-            
+
             if (vcsType === 'git') {
                 harness.createFile(repoPath, 'delimiter.txt', 'content');
                 vcs.create_commit({

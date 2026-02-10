@@ -1,0 +1,16 @@
+name: conductor
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - jinja2
+  - pydantic
+  - gitpython
+  - ruff
+  - mypy
+  - pytest
+  - pytest-cov
+  - pip
+  - pip:
+    - gemini-cli-extension-api

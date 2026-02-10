@@ -42,9 +42,7 @@ def main() -> None:
     ext_js_path = ROOT / "conductor-vscode" / "out" / "extension.js"
     if ext_js_path.exists():
         content = ext_js_path.read_text()
-        if "conductor.agent" in content and (
-            "runConductorCommandAsync" in content or "runConductorCommand" in content
-        ):
+        if "conductor.agent" in content and ("runConductorCommandAsync" in content or "runConductorCommand" in content):
             pass
         else:
             all_passed = False

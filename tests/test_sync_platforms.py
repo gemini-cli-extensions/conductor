@@ -1,17 +1,17 @@
 import json
-import os
-from pathlib import Path
+
 import scripts.sync_skills as sync_module
+
 
 def test_sync_aix_and_skillshare(tmp_path, monkeypatch):
     repo_root = tmp_path
     (repo_root / "skills").mkdir()
     (repo_root / "conductor-vscode").mkdir()
-    
+
     aix_dir = tmp_path / "aix"
     skillshare_dir = tmp_path / "skillshare"
     copilot_dir = tmp_path / "copilot"
-    
+
     manifest_data = {
         "manifest_version": 1,
         "tools": {},
@@ -23,14 +23,14 @@ def test_sync_aix_and_skillshare(tmp_path, monkeypatch):
                 "name": "conductor-test",
                 "description": "Test skill",
                 "commands": {"aix": "/conductor-test", "skillshare": "/conductor-test"},
-                "enabled": {"aix": True, "skillshare": True}
+                "enabled": {"aix": True, "skillshare": True},
             }
         ],
     }
-    
+
     manifest_path = repo_root / "skills" / "manifest.json"
     manifest_path.write_text(json.dumps(manifest_data))
-    
+
     templates_dir = repo_root / "conductor-core" / "src" / "conductor_core" / "templates"
     templates_dir.mkdir(parents=True)
     (templates_dir / "test.j2").write_text("Test template content")
@@ -50,15 +50,15 @@ def test_sync_aix_and_skillshare(tmp_path, monkeypatch):
     monkeypatch.setattr(sync_module, "CLAUDE_DIR", tmp_path / "claude")
     monkeypatch.setattr(sync_module, "OPENCODE_DIR", tmp_path / "opencode")
     monkeypatch.setattr(sync_module, "validate_manifest", lambda *args, **kwargs: None)
-    
+
     # Ensure env var is set to avoid repo-only mode
     monkeypatch.setenv("CONDUCTOR_SYNC_REPO_ONLY", "0")
-    
+
     sync_module.sync_skills()
-    
+
     # Check SkillShare output
     assert (skillshare_dir / "conductor-test" / "SKILL.md").exists()
-    
+
     # Check AIX output
     assert (aix_dir / "conductor.md").exists()
     aix_content = (aix_dir / "conductor.md").read_text()

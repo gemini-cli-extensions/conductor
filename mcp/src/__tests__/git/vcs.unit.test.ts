@@ -341,7 +341,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                 .toThrow(DirtyWorkingDirectoryError);
         });
     });
-    
+
     describe('list_conflicts()', () => {
         it('should return conflicted files', () => {
             const porcelainOutput = `u UU N 0 0 0 0 0 0 0 file1.txt\nu UU N 0 0 0 0 0 0 0 file2.txt`;
@@ -356,7 +356,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
             expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('add file1.txt file2.txt'), expect.any(Object));
         });
     });
-    
+
     describe('abort_operation()', () => {
         it('should abort a merge', () => {
             vi.spyOn(vcs, 'get_status').mockReturnValue({ is_operation_in_progress: { type: 'merge' } } as any);
@@ -412,14 +412,14 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
             vi.spyOn(Date, 'now').mockReturnValue(12345);
             vcs.create_commit({ path: '/mock/repo', message: 'Test transactional commit' });
             expect(capturedOptions).toBeDefined();
-            expect(capturedOptions.env.GIT_INDEX_FILE).toContain('temp_index_12345'); 
+            expect(capturedOptions.env.GIT_INDEX_FILE).toContain('temp_index_12345');
         });
 
         it('should handle initial commit on empty repository (regression test)', () => {
             let commitCalled = false;
             mockExecSync.mockImplementation((command: string) => {
                 if (command.includes('rev-parse --git-dir')) return '/mock/repo/.git';
-                
+
                 if (command.includes('rev-parse HEAD')) {
                     if (!commitCalled) {
                         throw new Error('fatal: Not a valid object name HEAD');
@@ -427,7 +427,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                         return 'new_commit_id';
                     }
                 }
-                
+
                 if (command.includes('read-tree')) {
                     throw new Error('git read-tree HEAD should not be called for initial commit');
                 }
@@ -453,7 +453,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
             mockExecSync.mockImplementation(() => { throw { stderr: '.git/index.lock' }; });
             expect(() => vcs.get_root_path('/path/to/repo')).toThrow(VCSRepositoryLockedError);
         });
-        
+
         it('should throw NotARepositoryError when command fails for non-repo with specific error', () => {
             mockExecSync.mockImplementation(() => {
                 throw { stderr: 'fatal: not a git repository (or any of the parent directories)', status: 128 };
@@ -540,7 +540,7 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
 
         describe('get_binary_diff_info()', () => {
              it('should return binary info', () => {
-                // Mocking underlying calls. 
+                // Mocking underlying calls.
                 // Implementation might check attributes and size.
                 // We assume it might use 'git cat-file -s' for size.
                 mockExecSync.mockImplementation((cmd: string) => {
@@ -548,9 +548,9 @@ describe('VCS Abstraction Layer - Unit Tests', () => {
                     if (cmd.includes('cat-file -s')) return '1024';
                     return '';
                 });
-                
+
                 const info = vcs.get_binary_diff_info('/path/to/repo', 'file.bin', 'HEAD~1..HEAD');
-                expect(info).toEqual({ is_binary: true, old_size: 1024, new_size: 1024 }); 
+                expect(info).toEqual({ is_binary: true, old_size: 1024, new_size: 1024 });
                 // Note: The logic for old_size/new_size in git might require two calls.
                 // We just check basic structure here.
             });

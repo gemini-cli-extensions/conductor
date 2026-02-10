@@ -8,7 +8,7 @@ import { Vcs as VcsInterface } from '../../vcs/types';
 
 function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
     const repoPath = fs.mkdtempSync(path.join(tmpdir(), 'mcp-test-repo-'));
-    
+
     if (remoteUrl) {
         execSync(`git clone ${remoteUrl} .`, { cwd: repoPath });
     } else {
@@ -19,7 +19,7 @@ function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
         execSync('git config init.defaultBranch main', { cwd: repoPath });
         execSync('git config user.email "test@example.com"', { cwd: repoPath });
         execSync('git config user.name "Test User"', { cwd: repoPath });
-        
+
         // Setup .gitattributes
         fs.writeFileSync(path.join(repoPath, '.gitattributes'), '*.bin binary');
         execSync('git add .gitattributes', { cwd: repoPath });
@@ -32,7 +32,7 @@ function setupRepo(vcsType: 'git' | 'jj', remoteUrl?: string): string {
         execSync('git add second.txt', { cwd: repoPath });
         execSync('git commit -m "Second commit"', { cwd: repoPath });
     }
-    
+
     return repoPath;
 }
 
@@ -49,7 +49,7 @@ function setupRemoteRepo(vcsType: 'git' | 'jj'): string {
     execSync('git init', { cwd: workingRepoPath });
     execSync('git config user.email "test-remote@example.com"', { cwd: workingRepoPath });
     execSync('git config user.name "Test Remote User"', { cwd: workingRepoPath });
-    
+
     // Setup .gitattributes for the remote repo
     fs.writeFileSync(path.join(workingRepoPath, '.gitattributes'), '*.bin binary');
     execSync('git add .gitattributes', { cwd: workingRepoPath });
@@ -65,7 +65,7 @@ function setupRemoteRepo(vcsType: 'git' | 'jj'): string {
 
     execSync(`git remote add origin ${bareRepoPath}`, { cwd: workingRepoPath });
     execSync('git push -u origin main', { cwd: workingRepoPath });
-    
+
     teardownRepo(workingRepoPath);
     return bareRepoPath;
 }

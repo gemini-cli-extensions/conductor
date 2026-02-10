@@ -38,7 +38,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             if (command.includes('jj --color=never root')) return '/path/to/repo';
             if (command.includes('git -C')) {
                 // Mock for is_ignored which uses git check-ignore
-                if (command.includes('ignored-file.txt')) return ''; 
+                if (command.includes('ignored-file.txt')) return '';
                 if (command.includes('status --ignored')) return '!! ignored1.txt\n!! ignored2.log';
                 throw { status: 1, stderr: 'not ignored' };
             }
@@ -54,7 +54,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             expect(vcs.is_repository('/path/to/repo')).toBe('jj');
             expect(mockExecSync).toHaveBeenCalledWith(
                 expect.stringContaining('jj root'), // Updated to expect 'jj root'
-                expect.objectContaining({ 
+                expect.objectContaining({
                     cwd: '/path/to/repo',
                     stdio: ['ignore', 'ignore', 'ignore'] // Updated to match jj.ts implementation
                 })
@@ -62,10 +62,10 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
         });
 
         it('should return null if not a repository', () => {
-            mockExecSync.mockImplementation(() => { 
+            mockExecSync.mockImplementation(() => {
                 const err = new Error('Command failed');
                 (err as any).stderr = 'There is no jj repo in .';
-                throw err; 
+                throw err;
             });
             expect(vcs.is_repository('/path/to/repo')).toBeNull();
         });
@@ -107,7 +107,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             vi.spyOn(vcs as any, 'getAllFilesInDir').mockReturnValue(['untracked.txt']);
             vi.spyOn(vcs as any, 'is_ignored').mockReturnValue(false);
             vi.spyOn(vcs as any, 'list_conflicts').mockReturnValue([]);
-            
+
             const status = vcs.get_status('/path/to/repo');
 
             expect(status.modified).toEqual(['modified.txt']);
@@ -160,7 +160,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             expect(change_id).toBe('change_id');
         });
     });
-    
+
     describe('get_current_reference()', () => {
         it('should return branch info if on a branch', () => {
             currentTest = 'branch';
@@ -195,7 +195,7 @@ describe('VCS Abstraction Layer - Jujutsu Unit Tests', () => {
             });
         });
     });
-    
+
     describe('get_parent_ids()', () => {
         it('should return a single parent ID for a normal commit', () => {
             mockExecSync.mockReturnValue('parent_abc');

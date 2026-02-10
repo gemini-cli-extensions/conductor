@@ -43,7 +43,7 @@ def render_skill_content(skill: dict, templates_dir: Path) -> str:
     # Normalize skill data to match template expectations
     # Include all commands from all platforms as triggers
     triggers = list(skill.get("commands", {}).values())
-    
+
     # Ensure unique triggers
     triggers = sorted(list(set(triggers)))
 
@@ -63,13 +63,13 @@ def render_skill_content(skill: dict, templates_dir: Path) -> str:
         skill_data["triggers"] = skill["triggers"]
 
     summary = template.render(skill=skill_data)
-    
+
     # Append the actual instruction template content
     template_file = templates_dir / f"{skill['template']}.j2"
     if template_file.exists():
         instructions = template_file.read_text(encoding="utf-8")
         return f"{summary}\n\n## Instructions\n\n{instructions}"
-    
+
     return summary
 
 

@@ -1,5 +1,7 @@
 from pathlib import Path
-import scripts.sync_skills as sync_skills
+
+from scripts import sync_skills
+
 
 def test_sync_skills_constants_exist():
     assert hasattr(sync_skills, "AIX_DIR")

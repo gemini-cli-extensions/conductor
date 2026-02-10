@@ -259,7 +259,15 @@ cd conductor-core && PYTHONPATH=src pytest
 cd conductor-gemini && PYTHONPATH=src:../conductor-core/src pytest
 ```
 
-### Skill Sync Checks
+### Synchronization and Validation
+
+To synchronize all platform artifacts (Gemini TOMLs, Claude MDs, global Agent Skills, etc.) from the core templates, run the unified sync script:
+
+```bash
+python scripts/sync_all.py
+```
+
+This script replaces the need to run `sync_skills.py` and `validate_platforms.py --sync` separately.
 
 Verify generated skill artifacts match the manifest and templates:
 

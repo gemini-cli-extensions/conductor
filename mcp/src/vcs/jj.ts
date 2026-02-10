@@ -46,7 +46,7 @@ export class JjVcs implements Vcs {
 
             const commitId = this.runCommand(`log -r "${revision}" --no-graph -T commit_id`, { cwd: repoPath });
             if (!commitId) return 0;
-            
+
             // Use git cat-file -s which is reliable for size
             const output = (execSync(`git -C "${repoPath}" cat-file -s ${commitId}:${this.shellEscape(filePath)}`, { stdio: 'pipe', encoding: 'utf-8' }) as string).trim();
             return parseInt(output, 10);
@@ -56,13 +56,13 @@ export class JjVcs implements Vcs {
     }
 
     private parseStatus(output: string): VcsStatus {
-        const status: VcsStatus = { 
-            modified:[], 
-            untracked:[], 
-            added:[], 
-            deleted:[], 
-            conflicted:[], 
-            renamed:[], 
+        const status: VcsStatus = {
+            modified:[],
+            untracked:[],
+            added:[],
+            deleted:[],
+            conflicted:[],
+            renamed:[],
             is_operation_in_progress:{type:'none'}
         };
         if (!output) return status;
@@ -82,7 +82,7 @@ export class JjVcs implements Vcs {
         for (const line of lines) {
             if (line.length > 2 && line[1] === ' ') {
                 const statusChar = line[0];
-                
+
                 if (statusChar === 'R') {
                     let details = line.substring(2).trim();
                     if (details.startsWith('{') && details.endsWith('}')) {
@@ -147,13 +147,13 @@ export class JjVcs implements Vcs {
         const status = this.parseStatus(statusOutput);
 
         status.conflicted = this.list_conflicts(repoPath);
-        
+
         try {
             const diffOutput = this.runCommand('diff --git -r @-', { cwd: repoPath });
             const lines = diffOutput.split('\n');
             let currentFrom: string | null = null;
             let currentTo: string | null = null;
-            
+
             for (const line of lines) {
                 if (line.startsWith('diff --git')) {
                     if (currentFrom && currentTo) {
@@ -185,14 +185,14 @@ export class JjVcs implements Vcs {
 
         const trackedFilesOutput = this.runCommand(`file list`, { cwd: repoPath });
         const trackedFiles = trackedFilesOutput.split('\n').filter(Boolean);
-        
+
         const allFilesInWorkingDir = this.getAllFilesInDir(repoPath);
 
         status.untracked = allFilesInWorkingDir.filter(file => {
             if (trackedFiles.includes(file)) return false;
-            
-            const isReportedByStatus = status.modified.includes(file) || 
-                                       status.added.includes(file) || 
+
+            const isReportedByStatus = status.modified.includes(file) ||
+                                       status.added.includes(file) ||
                                        status.deleted.includes(file) ||
                                        status.conflicted.includes(file) ||
                                        status.renamed.some((r: any) => r.to === file);
@@ -259,7 +259,7 @@ export class JjVcs implements Vcs {
         const template = `commit_id ++ "${separator}" ++ change_id ++ "${separator}" ++ bookmarks ++ "${separator}" ++ tags`;
         const output = this.runCommand(`log -r @ --no-graph -T '${template}'`, { cwd: repoPath });
         const parts = output.split(separator);
-        
+
         const commit_id = parts[0] ? parts[0].trim() : '';
         const change_id = parts[1] ? parts[1].trim() : '';
         const bookmarksStr = parts[2] ? parts[2].trim() : '';
@@ -298,17 +298,17 @@ export class JjVcs implements Vcs {
         if (!branchName) {
              const parentBookmarks = this.runCommand('log -r @- --no-graph -T "bookmarks"', {cwd: repoPath});
              if (parentBookmarks && parentBookmarks.trim()) {
-                 branchName = parentBookmarks.trim().split(' ')[0]; 
+                 branchName = parentBookmarks.trim().split(' ')[0];
              }
         }
 
         if (!branchName) {
             return { ahead: 0, behind: 0 };
         }
-        
+
         const output = this.runCommand('bookmark list', { cwd: repoPath });
         const lines = output.split('\n');
-        
+
         let foundBranch = false;
         for (const line of lines) {
             if (line.startsWith(branchName)) {
@@ -322,7 +322,7 @@ export class JjVcs implements Vcs {
                 }
                 continue;
             }
-            
+
             if (foundBranch) {
                 if (line.startsWith(' ') || line.startsWith('\t')) {
                      const aheadMatch = line.match(/ahead by (\d+)/);
@@ -337,7 +337,7 @@ export class JjVcs implements Vcs {
                 }
             }
         }
-        
+
         return { ahead: 0, behind: 0 };
     }
 
@@ -365,7 +365,7 @@ export class JjVcs implements Vcs {
         this.runCommand(`git push`, { cwd: repoPath });
     }
 
-    list_conflicts(repoPath: string): string[] { 
+    list_conflicts(repoPath: string): string[] {
         try {
             const output = this.runCommand('resolve --list', { cwd: repoPath });
             if (!output) {
@@ -392,7 +392,7 @@ export class JjVcs implements Vcs {
         }
     }
 
-    abort_operation(repoPath: string): void { 
+    abort_operation(repoPath: string): void {
         this.runCommand('undo', { cwd: repoPath });
     }
 
@@ -419,7 +419,7 @@ export class JjVcs implements Vcs {
         try {
             const output = (execSync(`git -C "${repoPath}" status --ignored --porcelain`, { stdio: 'pipe', encoding: 'utf-8' }) as string);
             return output.split('\n')
-                .filter(line => line.startsWith('!! ')) 
+                .filter(line => line.startsWith('!! '))
                 .map(line => line.substring(3));
         } catch (e) {
             return [];
@@ -433,7 +433,7 @@ export class JjVcs implements Vcs {
 
     get_diff(repoPath: string, revisionRange: string | undefined, filePath?: string): string | null {
         if (filePath && this.is_binary(repoPath, filePath)) return null;
-        const rangeArg = revisionRange ? `-r "${revisionRange}"` : ''; 
+        const rangeArg = revisionRange ? `-r "${revisionRange}"` : '';
         const fileArg = filePath ? ` ${this.shellEscape(filePath)}` : '';
         try {
             return this.runCommand(`diff ${rangeArg}${fileArg}`, { cwd: repoPath });
@@ -453,14 +453,14 @@ export class JjVcs implements Vcs {
                  oldRev = parts[0] || '@-';
                  newRev = parts[1] || '@';
              } else {
-                 oldRev = revisionRange; 
+                 oldRev = revisionRange;
                  newRev = '@';
              }
          }
-         
+
          if (oldRev === 'HEAD') oldRev = '@';
          if (newRev === 'HEAD') newRev = '@';
-         
+
          try {
              const oldSize = this.getSize(repoPath, oldRev, filePath);
              const newSize = this.getSize(repoPath, newRev, filePath);
@@ -493,10 +493,10 @@ export class JjVcs implements Vcs {
         // Default to ancestors of working copy parent (effectively committed history)
         const range = revisionRange ? ` -r "${revisionRange}"` : ' -r "::@-"';
         const file = filePath ? ` ${this.escapeForJjFileset(filePath)}` : '';
-        const delimiter = '\\0'; 
+        const delimiter = '\\0';
         const jsDelimiter = '\0';
-        
-        // Use author.email() as it appears to be a method in this JJ version. 
+
+        // Use author.email() as it appears to be a method in this JJ version.
         // Using timestamp directly usually formats to string, but if issues arise, we might need .format().
         const template = `commit_id ++ "${delimiter}" ++ description.first_line() ++ "${delimiter}" ++ author.timestamp() ++ "${delimiter}" ++ author.email() ++ "\\n"`;
         const output = this.runCommand(`log -n ${limit}${range} -T '${template}' --no-graph${file}`, { cwd: repoPath });

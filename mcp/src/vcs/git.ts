@@ -1,11 +1,11 @@
 import { execSync, ExecSyncOptions } from 'child_process';
-import { 
-    NotARepositoryError, 
-    DirtyWorkingDirectoryError, 
-    GenericVCSError, 
-    VCSRepositoryLockedError, 
-    AuthenticationError, 
-    MergeConflictError, 
+import {
+    NotARepositoryError,
+    DirtyWorkingDirectoryError,
+    GenericVCSError,
+    VCSRepositoryLockedError,
+    AuthenticationError,
+    MergeConflictError,
     VCSNotFoundError,
     VcsStatus,
     CommitParams,
@@ -63,7 +63,7 @@ export class GitVcs implements Vcs {
     private parseStatus(output: string): VcsStatus {
         const status: VcsStatus = { modified:[], untracked:[], added:[], deleted:[], conflicted:[], renamed:[], is_operation_in_progress:{type:'none'} };
         if (!output) return status;
-        
+
         const unquote = (str: string): string => {
             if (str.startsWith('"') && str.endsWith('"')) {
                 // Git quotes C-style. Simple JSON.parse might work for standard chars, but robust unescaping is needed.
@@ -83,7 +83,7 @@ export class GitVcs implements Vcs {
             const lineCode = line[0];
             const xy = line.substring(2, 4);
             // const rest = line.substring(line.indexOf(' ', 5) + 1);
-            
+
             // Renamed/Copied have 2 paths
             if (lineCode === '2' && (xy[0] === 'R' || xy[1] === 'R')) {
                  let idx = 0;
@@ -91,13 +91,13 @@ export class GitVcs implements Vcs {
                      idx = line.indexOf(' ', idx) + 1;
                  }
                  const content = line.substring(idx);
-                 
+
                  if (xy[0] === 'R' || xy[1] === 'R') {
                      const scoreEnd = content.indexOf(' ');
                      const pathsPart = content.substring(scoreEnd + 1);
                      const [to, from] = pathsPart.split('\t');
                      status.renamed.push({ from: unquote(from), to: unquote(to) });
-                 } 
+                 }
                  // Removing redundant else block that contained the conflicting check
             } else if (lineCode === '1') {
                 // 1 XY sub mH mI mW hH hI path
@@ -118,7 +118,7 @@ export class GitVcs implements Vcs {
                  // u XY sub m1 m2 m3 mW h1 h2 h3 path
                  // const fields = line.split(' ');
                  let idx = 0;
-                 for(let i=0; i<10; i++) { // u has more fields? 
+                 for(let i=0; i<10; i++) { // u has more fields?
                      // u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
                      idx = line.indexOf(' ', idx) + 1;
                  }
@@ -196,7 +196,7 @@ export class GitVcs implements Vcs {
 
         return status;
     }
-    
+
     switch_reference({ path: repoPath, reference }: { path: string, reference: string }): void {
         this.runCommand(`git -C "${repoPath}" checkout ${reference}`);
     }
@@ -229,7 +229,7 @@ export class GitVcs implements Vcs {
                  // If files is undefined, it implies adding all changes (git add .)
                  this.runCommand(`git add .`, options);
             }
-            
+
             const allowEmpty = (files && files.length === 0) ? ' --allow-empty' : '';
             this.runCommand(`git commit${allowEmpty} -m "${message}"`, options);
             const commitId = this.runCommand(`git rev-parse HEAD`, options);
@@ -242,15 +242,15 @@ export class GitVcs implements Vcs {
                 // Maybe no branch yet? Try symbol ref or just assume master/main if HEAD is unborn
                 // If HEAD is unborn, rev-parse --abbrev-ref HEAD returns "HEAD" or fails depending on git version
             }
-            
+
             // If we are on an unborn branch (initial commit), update-ref might fail if we don't know the branch name.
             // But we can just use the commitId we just created.
             // Wait, we committed to a TEMP index. We need to point the current branch to this new commit.
             // If it's the first commit, we need to create the branch ref.
-            
+
             // Actually, if it's the first commit, `git commit` in a temp index might create a root commit.
             // Then `update-ref` creates the branch.
-            
+
             // We need to know the target branch name.
             if (!hasHead) {
                  // Try to get the default branch name (e.g. master or main)
@@ -384,7 +384,7 @@ export class GitVcs implements Vcs {
         this.runCommand(`git -C "${repoPath}" push`);
     }
 
-    list_conflicts(repoPath: string): string[] { 
+    list_conflicts(repoPath: string): string[] {
         return this.get_status(repoPath).conflicted;
      }
 
@@ -392,7 +392,7 @@ export class GitVcs implements Vcs {
         this.runCommand(`git -C "${repoPath}" add ${files.join(' ')}`);
     }
 
-    abort_operation(repoPath: string): void { 
+    abort_operation(repoPath: string): void {
         const status = this.get_status(repoPath);
         if(status.is_operation_in_progress.type === 'merge') {
             this.runCommand(`git -C "${repoPath}" merge --abort`);
@@ -441,7 +441,7 @@ export class GitVcs implements Vcs {
 
     get_diff(repoPath: string, revisionRange: string | undefined, filePath?: string): string | null {
         if (filePath && this.is_binary(repoPath, filePath)) return null;
-        const range = revisionRange || ''; 
+        const range = revisionRange || '';
         const file = filePath ? ` -- ${this.shellEscape(filePath)}` : '';
         try {
             return this.runCommand(`git -C "${repoPath}" diff ${range}${file}`);
@@ -452,9 +452,9 @@ export class GitVcs implements Vcs {
 
     get_binary_diff_info(repoPath: string, filePath: string, revisionRange?: string): { is_binary: boolean, old_size: number, new_size: number } | null {
         if (!this.is_binary(repoPath, filePath)) return null;
-        
+
         let oldRev = 'HEAD';
-        let newRev: string | null = null; 
+        let newRev: string | null = null;
 
         if (revisionRange) {
             if (revisionRange.includes('..')) {
@@ -470,7 +470,7 @@ export class GitVcs implements Vcs {
             const escapedPath = this.shellEscape(filePath);
             const oldSize = parseInt(this.runCommand(`git -C "${repoPath}" cat-file -s ${oldRev}:${escapedPath}`));
             let newSize = 0;
-            if (newRev && newRev !== 'HEAD') { // If newRev is explicit and not working copy (simplified assumption: only HEAD or range) 
+            if (newRev && newRev !== 'HEAD') { // If newRev is explicit and not working copy (simplified assumption: only HEAD or range)
                  // If range is HEAD~1..HEAD, newRev is HEAD.
                  // If newRev is HEAD, use cat-file.
                  // If newRev is not provided (null), use stat.
