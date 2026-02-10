@@ -75,14 +75,16 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 **Perform the following checks on the retrieved diff:**
 
 1.  **Intent Verification:** Does the code actually implement what the `plan.md` (and `spec.md` if available) asked for?
-2.  **Code Style Compliance:**
+2.  **Product Guidelines Compliance:**
+    -   Does it follow `product-guidelines.md`?
+3.  **Code Style Compliance:**
     -   Does it strictly follow `conductor/code_styleguides/*.md`?
-3.  **Platform Guide Compliance:**
+4.  **Platform Guide Compliance:**
     -   Does it adhere to `conductor/platform_guides/*.md` (if exists and is applicable)?
-4.  **Correctness & Safety:**
+5.  **Correctness & Safety:**
     -   Look for bugs, race conditions, null pointer risks.
     -   **Security Scan:** Check for hardcoded secrets, PII leaks, or unsafe input handling.
-5.  **Testing:**
+6.  **Testing:**
     -   Are there new tests?
     -   Do the changes look like they are covered by existing tests?
     -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`). Run it. Analyze the output for failures.
@@ -97,6 +99,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ## Verification Checks
 - [ ] **Plan Compliance**: [Yes/No/Partial] - [Comment]
+- [ ] **Product Guidelines Compliance**: [Pass/Fail]
 - [ ] **Code Style Compliance**: [Pass/Fail]
 - [ ] **Platform Guide Compliance**: [Pass/Fail/NA]
 - [ ] **New Tests**: [Yes/No]
