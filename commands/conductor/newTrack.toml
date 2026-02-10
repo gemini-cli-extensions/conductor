@@ -148,7 +148,10 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *Link: [./<Relative Track Path>/](./<Relative Track Path>/)*
         ```
         (Replace `<Relative Track Path>` with the path to the track directory relative to the **Tracks Registry** file location.)
-7.  **Announce Completion:** Inform the user:
+7.  **Commit Code Changes:**
+    -   **Announce:** Inform the user you are committing the **Tracks Registry** changes.
+    -   **Commit Changes:** Stage the **Tracks Registry** files and commit with the message `chore(conductor): Add new track '<track_description>'`.
+8.  **Announce Completion:** Inform the user:
     > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
 ```
 """
