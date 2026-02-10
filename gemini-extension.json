@@ -1,11 +1,5 @@
 {
   "name": "conductor",
   "version": "0.2.0",
-  "contextFileName": "GEMINI.md",
-  "mcpServers": {
-    "conductorServer": {
-      "command": "node",
-      "args": ["${extensionPath}/mcp-server/dist/index.js"]
-    }
-  }
+  "contextFileName": "GEMINI.md"
 }

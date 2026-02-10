@@ -34,12 +34,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         *   **Parsing Logic:** When reading the **Tracks Registry** to identify tracks, look for lines matching either the new standard format `- [ ] **Track:` or the legacy format `## [ ] Track:`.
     -   For each track, resolve and read its **Implementation Plan** (using **Universal File Resolution Protocol** via the track's index file).
 
-### 2.2 Check Environment State
-1.  **VCS Status:**
-    - Call the tool `vcs_get_status` with `repo_path="."`.
-    - If there are modified, untracked, or conflicted files, note this in the summary (e.g., "Working directory has uncommitted changes").
-
-### 2.3 Parse and Summarize Plan
+### 2.2 Parse and Summarize Plan
 1.  **Parse Content:**
     -   Identify major project phases/sections (e.g., top-level markdown headings).
     -   Identify individual tasks and their current status (e.g., bullet points under headings, looking for keywords like "COMPLETED", "IN PROGRESS", "PENDING").
