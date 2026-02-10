@@ -53,18 +53,20 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Detect Project Maturity:**
     -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
-        -   Check for existence of version control directories: `.git`, `.svn`, or `.hg`.
-        -   If a `.git` directory exists, execute `git status --porcelain`. If the output is not empty, classify as "Brownfield" (dirty repository).
+        -   A VCS repository (`VCS_TYPE` is not "none") is present.
+        -   If `VCS_TYPE` is not "none", execute the `get_repository_status` command from `VCS_COMMANDS`. If the output is not empty, it indicates a dirty repository, which is a strong sign of a Brownfield project.
         -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`.
         -   Check for source code directories: `src/`, `app/`, `lib/` containing code files.
-        -   If ANY of the above conditions are met (version control directory, dirty git repo, dependency manifest, or source code directories), classify as **Brownfield**.
+        -   If ANY of the above conditions are met, classify as **Brownfield**.
     -   **Greenfield Condition:**
-        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found AND the current directory is empty or contains only generic documentation (e.g., a single `README.md` file) without functional code or dependencies.
+        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found.
 
-2.  **Execute Workflow based on Maturity:**
+3.  **Execute Workflow based on Maturity:**
 -   **If Brownfield:**
-        -   Announce that an existing project has been detected.
-        -   If the `git status --porcelain` command (executed as part of Brownfield Indicators) indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your Git repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
+        -   Announce that an existing project has been detected. If a VCS is present, specify the `VCS_TYPE`.
+        -   Execute `mkdir -p conductor`.
+        -   **Initialize Metadata Log:** You MUST create `conductor/metadata.json` as an empty file.
+        -   If `VCS_TYPE` is not "none" and the `get_repository_status` command indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
         -   **Begin Brownfield Project Initialization Protocol:**
                 -   **1.0 Pre-analysis Confirmation:**
                 1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
@@ -98,10 +100,17 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Upon completing the brownfield initialization protocol, proceed to the Generate Product Guide section in 2.1.**
     -   **If Greenfield:**
         -   Announce that a new project will be initialized.
+        -   **Ask User for VCS Preference:**
+            > "Which Version Control System would you like to use for this project?
+            > A) Git (Recommended)
+            > B) Mercurial
+            > C) Jujutsu
+            > D) None"
+        -   **Based on user's choice:**
+            -   If the choice is not "None", set `VCS_TYPE` to the user's selection (e.g., "git").
+            -   **Load VCS Workflow:** Read and parse the commands from `templates/vcs_workflows/{VCS_TYPE}.md` into the `VCS_COMMANDS` map.
+            -   **Initialize Repository:** Execute the `initialize_repository` command from `VCS_COMMANDS`. Report success to the user.
         -   Proceed to the next step in this file.
-
-3.  **Initialize Git Repository (for Greenfield):**
-    -   If a `.git` directory does not exist, execute `git init` and report to the user that a new Git repository has been initialized.
 
 4.  **Inquire about Project Goal (for Greenfield):**
     -   **Ask the user the following question using the `ask_user` tool and wait for their response before proceeding to the next step:**
