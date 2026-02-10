@@ -57,10 +57,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 >
                 > 4) A different Track, Task, or Phase."
         3.  **Process User's Choice:**
-            *   If the user's response is **A** or **B**, set this as the `target_intent` and proceed directly to Phase 2.
-            *   If the user's response is **C** or another value that does not match A or B, you must engage in a dialogue to find the correct target. Ask clarifying questions like:
-                * "What is the name or ID of the track you are looking for?"
-                * "Can you describe the task you want to revert?"
+            *   If the user selects a specific item from the list, set this as the `target_intent` and proceed directly to Phase 2.
+            *   If the user selects "Other" (automatically added for "choice") or the explicit "Other" option provided, you must engage in a dialogue to find the correct target using `ask_user` tool with `type: "text"`.
                 * Once a target is identified, loop back to Path A for final confirmation.
 
 ---
