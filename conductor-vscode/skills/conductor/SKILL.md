@@ -1,4 +1,61 @@
 ---
+id: conductor
+name: conductor
+description: Context-driven development methodology. Understands projects set up with Conductor (via Gemini CLI or Claude Code). Use when working with conductor/ directories, tracks, specs, plans, or when user mentions context-driven development.
+triggers: ["$conductor-info", "/conductor-info", "/conductor:info", "@conductor /info"]
+version: 0.1.0
+engine_compatibility: >=0.2.0
+---
+
+# conductor
+
+Context-driven development methodology. Understands projects set up with Conductor (via Gemini CLI or Claude Code). Use when working with conductor/ directories, tracks, specs, plans, or when user mentions context-driven development.
+
+## Triggers
+This skill is activated by the following phrases:
+
+- "$conductor-info"
+
+- "/conductor-info"
+
+- "/conductor:info"
+
+- "@conductor /info"
+
+
+## Usage
+To use this skill, simply type one of the triggers or ask the agent to "conductor".
+
+## Platform-Specific Commands
+
+- **Gemini:** `/conductor:info`
+
+- **Qwen:** `/conductor:info`
+
+- **Claude:** `/conductor-info`
+
+- **Codex:** `$conductor-info`
+
+- **Opencode:** `/conductor-info`
+
+- **Antigravity:** `@conductor /info`
+
+- **Vscode:** `@conductor /info`
+
+- **Copilot:** `/conductor-info`
+
+- **Aix:** `/conductor-info`
+
+- **Skillshare:** `/conductor-info`
+
+
+## Capabilities Required
+
+
+
+## Instructions
+
+﻿---
 name: conductor
 description: Context-driven development methodology. Understands projects set up with Conductor (via Gemini CLI or Claude Code). Use when working with conductor/ directories, tracks, specs, plans, or when user mentions context-driven development.
 license: Apache-2.0
@@ -61,18 +118,18 @@ When you see this structure, the project uses Conductor:
 
 ```
 conductor/
-├── product.md              # Product vision, users, goals
-├── product-guidelines.md   # Brand/style guidelines (optional)
-├── tech-stack.md           # Technology choices
-├── workflow.md             # Development standards (TDD, commits, coverage)
-├── tracks.md               # Master track list with status markers
-├── setup_state.json        # Setup progress tracking
-├── code_styleguides/       # Language-specific style guides
-└── tracks/
-    └── <track_id>/         # Format: shortname_YYYYMMDD
-        ├── metadata.json   # Track type, status, dates
-        ├── spec.md         # Requirements and acceptance criteria
-        └── plan.md         # Phased task list with status
+â”œâ”€â”€ product.md              # Product vision, users, goals
+â”œâ”€â”€ product-guidelines.md   # Brand/style guidelines (optional)
+â”œâ”€â”€ tech-stack.md           # Technology choices
+â”œâ”€â”€ workflow.md             # Development standards (TDD, commits, coverage)
+â”œâ”€â”€ tracks.md               # Master track list with status markers
+â”œâ”€â”€ setup_state.json        # Setup progress tracking
+â”œâ”€â”€ code_styleguides/       # Language-specific style guides
+â””â”€â”€ tracks/
+    â””â”€â”€ <track_id>/         # Format: shortname_YYYYMMDD
+        â”œâ”€â”€ metadata.json   # Track type, status, dates
+        â”œâ”€â”€ spec.md         # Requirements and acceptance criteria
+        â””â”€â”€ plan.md         # Phased task list with status
 ```
 
 ## Status Markers
@@ -96,7 +153,7 @@ When working in a Conductor project:
 
 When implementing tasks, follow `conductor/workflow.md` which typically specifies:
 
-1. **TDD Cycle:** Write failing test → Implement → Pass → Refactor
+1. **TDD Cycle:** Write failing test â†’ Implement â†’ Pass â†’ Refactor
 2. **Coverage Target:** Usually >80%
 3. **Commit Strategy:** Conventional commits (`feat:`, `fix:`, `test:`, etc.)
 4. **Task Updates:** Mark `[~]` when starting, `[x]` when done + commit SHA

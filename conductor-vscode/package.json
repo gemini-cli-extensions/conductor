@@ -55,6 +55,11 @@
     ],
     "commands": [
       {
+        "command": "conductor.conductor",
+        "title": "Conductor: Conductor",
+        "category": "Conductor"
+      },
+      {
         "command": "conductor.implement",
         "title": "Conductor: Implement",
         "category": "Conductor"

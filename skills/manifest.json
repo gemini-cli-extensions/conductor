@@ -76,6 +76,36 @@
   },
   "skills": [
     {
+      "id": "conductor",
+      "template": "conductor",
+      "name": "conductor",
+      "description": "Context-driven development methodology. Understands projects set up with Conductor (via Gemini CLI or Claude Code). Use when working with conductor/ directories, tracks, specs, plans, or when user mentions context-driven development.",
+      "commands": {
+        "gemini": "/conductor:info",
+        "qwen": "/conductor:info",
+        "claude": "/conductor-info",
+        "codex": "$conductor-info",
+        "opencode": "/conductor-info",
+        "antigravity": "@conductor /info",
+        "vscode": "@conductor /info",
+        "copilot": "/conductor-info",
+        "aix": "/conductor-info",
+        "skillshare": "/conductor-info"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
       "id": "setup",
       "template": "setup",
       "name": "conductor-setup",

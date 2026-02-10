@@ -17,6 +17,7 @@ def run_validation() -> None:
 
     # Gemini TOMLs
     gemini_mappings = {
+        "commands/conductor/conductor.toml": "conductor.j2",
         "commands/conductor/setup.toml": "setup.j2",
         "commands/conductor/newTrack.toml": "new_track.j2",
         "commands/conductor/implement.toml": "implement.j2",
@@ -26,6 +27,7 @@ def run_validation() -> None:
 
     # Claude MDs
     claude_mappings = {
+        "commands/conductor-info.md": "conductor.j2",
         ".claude/commands/conductor-setup.md": "setup.j2",
         ".claude/commands/conductor-newtrack.md": "new_track.j2",
         ".claude/commands/conductor-implement.md": "implement.j2",
