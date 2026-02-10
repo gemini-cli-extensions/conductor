@@ -66,7 +66,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Announce that an existing project has been detected.
         -   If the `git status --porcelain` command (executed as part of Brownfield Indicators) indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your Git repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
         -   **Begin Brownfield Project Initialization Protocol:**
-            -   **1.0 Pre-analysis Confirmation:**
+                -   **1.0 Pre-analysis Confirmation:**
                 1.  **Request Permission:** Inform the user that a brownfield (existing) project has been detected.
                 2.  **Ask for Permission:** Request permission for a read-only scan to analyze the project using the `ask_user` tool:
                     - **header:** "Permission"
@@ -74,7 +74,6 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                     - **type:** "yesno"
                 3.  **Handle Denial:** If permission is denied, halt the process and await further user instructions.
                 4.  **Confirmation:** Upon confirmation, proceed to the next step.
-
             -   **2.0 Code Analysis:**
                 1.  **Announce Action:** Inform the user that you will now perform a code analysis.
                 2.  **Prioritize README:** Begin by analyzing the `README.md` file, if it exists.
@@ -225,16 +224,9 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Interaction Flow:** Wait for the user's response, then proceed to the next step.
 
         *   **3. Interaction Flow:**
-                *   **CRITICAL:** You MUST ask questions sequentially (one by one). Do not ask multiple questions in a single turn. Wait for the user's response after each question.
-            *   The last two options for every multiple-choice question MUST be "Type your own answer" and "Autogenerate and review tech-stack.md".
-            *   Confirm your understanding by summarizing before moving on.
-        - **Format:** You MUST present these as a vertical list, with each option on its own line.
-        - **Structure:**
-            A) [Option A]
-            B) [Option B]
-            C) [Option C]
-            D) [Type your own answer]
-            E) [Autogenerate and review tech-stack.md]
+            *   Wait for the user's response after each `ask_user` tool call.
+            *   If the user selects "Autogenerate", stop asking questions and proceed to drafting.
+            *   If the user provides "Other" for a choice, follow up with a "text" type question if necessary.
     -   **FOR EXISTING PROJECTS (BROWNFIELD):**
             -   **CRITICAL WARNING:** Your goal is to document the project's *existing* tech stack, not to propose changes.
             -   **State the Inferred Stack:** Based on the code analysis, you MUST state the technology stack that you have inferred. Do not present any other options.
@@ -292,10 +284,15 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
     -   **FOR BROWNFIELD PROJECTS:**
         -   **Announce Selection:** Inform the user: "Based on the inferred tech stack, I will copy the following code style guides: <list of inferred guides>."
-        -   **Ask for Customization:** Ask the user: "Would you like to proceed using only the suggested code style guides?"
-            - Ask the user for a simple confirmation to proceed with options like:
-                    A) Yes, I want to proceed with the suggested code style guides.
-                    B) No, I want to add more code style guides.
+        -   **Ask for Customization:** Ask the user if they'd like to proceed using the `ask_user` tool:
+            - **header:** "Confirm"
+            - **question:** "Would you like to proceed using only the suggested code style guides?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "Yes"
+                - Label: "Add More"
+            - **Handle Selection:** If the user chooses "Add More", present the full list using `ask_user` tool with `multiSelect: true`.
     -   **Action:** Construct and execute a command to create the directory and copy all selected files. For example: `mkdir -p conductor/code_styleguides && cp ~/.gemini/extensions/conductor/templates/code_styleguides/python.md ~/.gemini/extensions/conductor/templates/code_styleguides/javascript.md conductor/code_styleguides/`
     -   **Commit State:** After handling the code style guides, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.4_code_styleguides"}`
@@ -321,23 +318,40 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Copy Initial Workflow:**
     -   Copy `~/.gemini/extensions/conductor/templates/workflow.md` to `conductor/workflow.md`.
 2.  **Customize Workflow:**
-    -   Ask the user: "Do you want to use the default workflow or customize it?"
-        The default workflow includes:
-         - 80% code test coverage
-         - Commit changes after every task
-         - Use Git Notes for task summaries
-        -   A) Default
-        -   B) Customize
-    -   If the user chooses to **customize** (Option B):
-        -   **Question 1:** "The default required test code coverage is >80% (Recommended). Do you want to change this percentage?"
-            -   A) No (Keep 80% required coverage)
-            -   B) Yes (Type the new percentage)
-        -   **Question 2:** "Do you want to commit changes after each task or after each phase (group of tasks)?"
-            -   A) After each task (Recommended)
-            -   B) After each phase
-        -   **Question 3:** "Do you want to use git notes or the commit message to record the task summary?"
-            -   A) Git Notes (Recommended)
-            -   B) Commit Message
+    -   Ask the user if they want to customize the workflow using the `ask_user` tool:
+        - **header:** "Workflow"
+        - **question:** "Do you want to use the default workflow or customize it?"
+        - **type:** "choice"
+        - **multiSelect:** `false`
+        - **options:**
+            - Label: "Default"
+            - Label: "Customize"
+    -   If the user chooses "Customize":
+        -   **Question 1:** Use `ask_user` tool.
+            - **header:** "Coverage"
+            - **question:** "The default required test code coverage is >80%. Do you want to change this percentage?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "No"
+                - Label: "Yes"
+            - If "Yes", use `ask_user` tool with `type: "text"` to get the value.
+        -   **Question 2:** Use `ask_user` tool.
+            - **header:** "Commits"
+            - **question:** "Do you want to commit changes after each task or after each phase (group of tasks)?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "Per Task"
+                - Label: "Per Phase"
+        -   **Question 3:** Use `ask_user` tool.
+            - **header:** "Summaries"
+            - **question:** "Do you want to use git notes or the commit message to record the task summary?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "Git Notes"
+                - Label: "Commits"
         -   **Action:** Update `conductor/workflow.md` based on the user's responses.
     -   **Commit State:** After the `workflow.md` file is successfully copied or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.5_workflow"}`
