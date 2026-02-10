@@ -1,0 +1,29 @@
+{
+  "name": "conductor-vcs-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for VCS abstraction (Git/JJ)",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run --reporter=basic"
+  },
+  "keywords": [
+    "mcp",
+    "vcs",
+    "git",
+    "jj"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.31",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  }
+}

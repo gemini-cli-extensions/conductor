@@ -965,7 +965,21 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 
 ### 3.4 Final Announcement
 1.  **Announce Completion:** After the track has been created, announce that the project setup and initial track generation are complete.
-2.  **Save Conductor Files:** Add and commit all files with the commit message `conductor(setup): Add conductor setup files`.
+2.  **Save Conductor Files:**
+    -   Call `vcs_create_commit` with:
+        -   `repo_path`: "."
+        -   `message`: "conductor(setup): Add conductor setup files"
+        -   `files`: [
+            "conductor/product.md",
+            "conductor/product-guidelines.md",
+            "conductor/tech-stack.md",
+            "conductor/workflow.md",
+            "conductor/index.md",
+            "conductor/tracks.md",
+            "conductor/tracks/",
+            "conductor/code_styleguides/",
+            "conductor/setup_state.json"
+        ]
 3.  **Next Steps:** Inform the user that they can now begin work by running `/conductor:implement`.
 
 ---
