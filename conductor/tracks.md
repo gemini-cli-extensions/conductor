@@ -70,5 +70,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Incorporate synchronization improvements and additional recommended improvements into the Conductor workflow.**
-*Link: [./tracks/archive/maintenance_sync_improvement_20260210/](./tracks/archive/maintenance_sync_improvement_20260210/)*
+- [~] **Track: Repository Excellence & Pipeline Hardening**
+*Link: [./tracks/repository_excellence_20260210/](./tracks/repository_excellence_20260210/)*

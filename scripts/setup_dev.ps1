@@ -1,5 +1,5 @@
 Write-Host "Installing development dependencies..."
-pip install mypy ruff pre-commit pytest-cov pyrefly
+pip install mypy ruff pre-commit pytest-cov
 
 Write-Host "Installing project in editable mode..."
 pip install -e .

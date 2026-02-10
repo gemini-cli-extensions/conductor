@@ -7,10 +7,15 @@ dependencies:
   - jinja2
   - pydantic
   - gitpython
+  - click
+  - pygls
+  - lsprotocol
   - ruff
   - mypy
   - pytest
   - pytest-cov
+  - pyyaml
   - pip
   - pip:
     - gemini-cli-extension-api
+    - types-PyYAML

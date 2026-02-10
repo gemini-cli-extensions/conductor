@@ -10,7 +10,7 @@ This document summarizes key rules and best practices from the Google Python Sty
 - **Comprehensions:** Use for simple cases. Avoid for complex logic where a full loop is more readable.
 - **Default Argument Values:** Do not use mutable objects (like `[]` or `{}`) as default values.
 - **True/False Evaluations:** Use implicit false (e.g., `if not my_list:`). Use `if foo is None:` to check for `None`.
-- **Type Annotations:** MANDATORY for ALL code. We use `mypy --strict` and `pyrefly`.
+- **Type Annotations:** MANDATORY for ALL code. We use `mypy --strict`.
 - **Code Coverage:** 100% coverage required for `conductor-core`, 99%+ for adapters.
 
 ## 2. Python Style Rules

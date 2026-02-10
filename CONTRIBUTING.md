@@ -43,7 +43,7 @@ This project enforces the "Elite Code Quality" standard to ensure maximum reliab
 
 #### 2. Strict Static Typing
 - All Python code MUST pass `mypy --strict`.
-- `pyrefly` is used as a secondary, complementary type checker and must pass.
+- `mypy` is used for strict type checking and must pass.
 
 #### 3. Linting and Formatting
 - We use `ruff` for both linting and formatting.

@@ -47,8 +47,3 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-
-[tool.pyrefly]
-# Pyrefly configuration
-targets = ["src"]
-strict = true

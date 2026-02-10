@@ -30,5 +30,5 @@
 ## Development Tools
 -   **Linting/Formatting:** `ruff` (fast, unified Python linter/formatter, enforcing comprehensive rule sets).
 -   **Testing:** `pytest` with `pytest-cov` (Enforcing 100% coverage for `conductor-core` and 99% for adapters).
--   **Type Checking:** `mypy` (Strict mode) and `pyrefly` (complementary static analysis).
+-   **Type Checking:** `mypy` (Strict mode).
 -   **Automation:** `pre-commit` hooks for local checks; GitHub Actions for CI/CD matrix (3.9-3.12) and automated monorepo releases (`release-please`).

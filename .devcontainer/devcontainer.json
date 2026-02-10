@@ -1,0 +1,19 @@
+{
+	"name": "Conductor Dev Environment",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"charliermarsh.ruff",
+				"ms-python.mypy-vscode",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	},
+	"remoteUser": "vscode"
+}
