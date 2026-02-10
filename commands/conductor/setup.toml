@@ -25,7 +25,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - If `STEP` is "2.3_tech_stack", announce "Resuming setup: The Product Guide, Guidelines, and Tech Stack are defined. Next, we will select Code Styleguides." and proceed to **Section 2.4**.
     - If `STEP` is "2.4_code_styleguides", announce "Resuming setup: Code Styleguides are configured. Next, we will check for Platform Guides." and proceed to **Section 2.5**.
     - If `STEP` is "2.5_platform_guides", announce "Resuming setup: Platform Guides are checked. Next, we will define the project workflow." and proceed to **Section 2.6**.
-    - If `STEP` is "2.6_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Phase 2 (3.0)**.
+    - If `STEP` is "2.6_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Section 2.7**.
     - If `STEP` is "3.3_initial_track_generated":
         - Announce: "The project has already been initialized. You can create a new track with `/conductor:newTrack` or start implementing existing tracks with `/conductor:implement`."
         - Halt the `setup` process.
