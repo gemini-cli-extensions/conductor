@@ -94,6 +94,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                     -   Programming Language
                     -   Frameworks (frontend and backend)
                     -   Database Drivers
+                    -   Cloud Providers (e.g., Google Cloud, AWS)
                 3.  **Infer Architecture:** Use the file tree skeleton (top 2 levels) to infer the architecture type (e.g., Monorepo, Microservices, MVC).
                 4.  **Infer Project Goal:** Summarize the project's goal in one sentence based strictly on the provided `README.md` header or `package.json` description.
         -   **Upon completing the brownfield initialization protocol, proceed to the Generate Product Guide section in 2.1.**
@@ -220,7 +221,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 2.  **Ask Questions Sequentially:** Ask one question at a time. Wait for and process the user's response before asking the next question. Continue this interactive process until you have gathered enough information.
     -   **CONSTRAINT:** Limit your inquiry to a maximum of 5 questions.
     -   **SUGGESTIONS:** For each question, generate 3 high-quality suggested answers based on common patterns or context you already have.
-    -   **Example Topics:** programming languages, frameworks, databases, etc
+    -   **Example Topics:** programming languages, frameworks, databases, cloud providers (GCP, AWS, Azure), etc
     *   **General Guidelines:**
         *   **1. Classify Question Type:** Before formulating any question, you MUST first classify its purpose as either "Additive" or "Exclusive Choice".
             *   Use **Additive** for brainstorming and defining scope (e.g., users, goals, features, project guidelines). These questions allow for multiple answers.
@@ -273,8 +274,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     `{"last_successful_step": "2.3_tech_stack"}`
 8.  **Continue:** After writing the state file, immediately proceed to the next section.
 
-### 2.4 Select Guides (Interactive)
-1.  **Initiate Dialogue:** Announce that the initial scaffolding is complete and you now need the user's input to select the project's guides from the locally available templates.
+### 2.4 Select Code Style Guides (Interactive)
+1.  **Initiate Dialogue:** Announce that the initial scaffolding is complete and you now need the user's input to select the project's CODE STYLE guides from the locally available templates.
 2.  **Select Code Style Guides:**
     -   List the available style guides by running `ls ~/.gemini/extensions/conductor/templates/code_styleguides/`.
     -   For new projects (greenfield):
@@ -292,10 +293,27 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                     A) Yes, I want to proceed with the suggested code style guides.
                     B) No, I want to add more code style guides.
     -   **Action:** Construct and execute a command to create the directory and copy all selected files. For example: `mkdir -p conductor/code_styleguides && cp ~/.gemini/extensions/conductor/templates/code_styleguides/python.md ~/.gemini/extensions/conductor/templates/code_styleguides/javascript.md conductor/code_styleguides/`
-    -   **Commit State:** Upon successful completion of the copy command, you MUST immediately write to `conductor/setup_state.json` with the exact content:
+    -   **Commit State:** After handling the code style guides, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.4_code_styleguides"}`
+    -   **Continue:** Proceed to the next section.
 
-### 2.5 Select Workflow (Interactive)
+### 2.5 Detect and Select Platform Guides (Interactive)
+1.  **Detect and Select Platform Guides (GCP):**
+    -   **Check Context:** Analyze the `tech-stack.md` and `products.md` contents or the `setup` conversation history to check if Google Cloud Platform (GCP), Google Cloud, or related services are mentioned.
+    -   **Conditional Logic:**
+        -   **IF GCP DETECTED:**
+            -   Announce: "I noticed this project involves Google Cloud Platform. I have a GCP Best Practices template available."
+            -   Ask: "Would you like to include the GCP Best Practices guide?"
+                A) Yes, include it.
+                B) No, skip it.
+            -   **If 'Yes':**
+                -   Create the directory `conductor/platform_guides/`.
+                -   Copy `~/.gemini/extensions/conductor/templates/platform_guides/google-cloud-platform.md` to `conductor/platform_guides/google-cloud-platform.md`.
+                -   Announce: "Added GCP Best Practices guide to `conductor/platform_guides/`."
+    -   **Commit State:** After handling the platform guides, you MUST immediately write to `conductor/setup_state.json` with the exact content:
+            `{"last_successful_step": "2.5_platform_guides"}`
+    -   **Continue:** Proceed to the next section.
+### 2.6 Select Workflow (Interactive)
 1.  **Copy Initial Workflow:**
     -   Copy `~/.gemini/extensions/conductor/templates/workflow.md` to `conductor/workflow.md`.
 2.  **Customize Workflow:**
@@ -320,7 +338,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     -   **Commit State:** After the `workflow.md` file is successfully copied or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.5_workflow"}`
 
-### 2.6 Finalization
+### 2.7 Finalization
 1.  **Generate Index File:**
     -   Create `conductor/index.md` with the following content:
         ```markdown
