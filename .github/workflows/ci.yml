@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Mamba
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yml
+          activate-environment: conductor
+          mamba-version: "*"
+          channels: conda-forge,defaults
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install JS dependencies
+        run: cd conductor-vscode && npm ci
+
+      - name: Run Core Tests
+        shell: bash -l {0}
+        run: |
+          cd conductor-core && pytest --cov=conductor_core --cov-report=xml --cov-fail-under=100
+
+      - name: Run Gemini Tests
+        shell: bash -l {0}
+        run: |
+          cd conductor-gemini && pytest --cov=conductor_gemini --cov-report=xml --cov-fail-under=99
+
+      - name: Run VS Code Tests
+        run: |
+          cd conductor-vscode && npm test
+
+      - name: Static Analysis
+        shell: bash -l {0}
+        run: |
+          ruff check .
+          ruff format --check .
+          cd conductor-core && mypy --strict src
+          cd ../conductor-gemini && mypy --strict src
+
+      - name: Run Smoke Test
+        shell: bash -l {0}
+        run: |
+          python scripts/smoke_test.py
+
+      - name: Build Core
+        shell: bash -l {0}
+        run: |
+          ./scripts/build_core.sh
+
+      - name: Build VS Code Extension
+        run: |
+          ./scripts/build_vsix.sh
+
+      - name: Validate Artifacts
+        shell: bash -l {0}
+        run: |
+          python scripts/conductor_dev.py verify --require-vsix

@@ -1,0 +1,29 @@
+name: Publish to Marketplace
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.event.release.prerelease == false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: cd conductor-vscode && npm ci
+
+      - name: Build VSIX
+        run: ./scripts/build_vsix.sh
+
+      - name: Publish to VS Code Marketplace
+        run: cd conductor-vscode && npx vsce publish -p ${{ secrets.VSCE_TOKEN }}
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}

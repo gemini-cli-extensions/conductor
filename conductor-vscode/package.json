@@ -1,0 +1,110 @@
+{
+  "name": "conductor",
+  "displayName": "Conductor",
+  "description": "Context-Driven Development for VS Code",
+  "version": "0.2.0",
+  "publisher": "gemini-cli-extensions",
+  "extensionKind": [
+    "workspace"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gemini-cli-extensions/conductor"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other",
+    "AI",
+    "Chat"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "conductor.agent",
+        "name": "conductor",
+        "description": "Context-Driven Development assistant",
+        "isDefault": false,
+        "commands": [
+          {
+            "name": "setup",
+            "description": "Initialize project context"
+          },
+          {
+            "name": "newtrack",
+            "description": "Create a new track"
+          },
+          {
+            "name": "status",
+            "description": "Show project status"
+          },
+          {
+            "name": "implement",
+            "description": "Implement current track"
+          },
+          {
+            "name": "revert",
+            "description": "Revert work"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "conductor.conductor",
+        "title": "Conductor: Conductor",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.implement",
+        "title": "Conductor: Implement",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.newTrack",
+        "title": "Conductor: New Track"
+      },
+      {
+        "command": "conductor.new_track",
+        "title": "Conductor: New Track",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.revert",
+        "title": "Conductor: Revert",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.setup",
+        "title": "Conductor: Setup",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.status",
+        "title": "Conductor: Status",
+        "category": "Conductor"
+      },
+      {
+        "command": "conductor.test-skill",
+        "title": "Conductor: Test-Skill",
+        "category": "Conductor"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.5",
+    "@vscode/vsce": "^2.15.0"
+  }
+}

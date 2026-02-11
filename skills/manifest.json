@@ -1,0 +1,259 @@
+{
+  "manifest_version": 1,
+  "tools": {
+    "gemini": {
+      "artifact": "commands/conductor/*.toml",
+      "command_style": "slash-colon",
+      "example": "/conductor:setup",
+      "needs_confirmation": false
+    },
+    "qwen": {
+      "artifact": "commands/conductor/*.toml",
+      "command_style": "slash-colon",
+      "example": "/conductor:setup",
+      "needs_confirmation": true
+    },
+    "claude": {
+      "artifact": ".claude/commands/*.md and .claude-plugin/*",
+      "command_style": "slash-dash",
+      "example": "/conductor-setup",
+      "needs_confirmation": false
+    },
+    "codex": {
+      "artifact": "~/.codex/skills/<skill>/SKILL.md",
+      "command_style": "dollar-dash",
+      "example": "$conductor-setup",
+      "needs_confirmation": true
+    },
+    "opencode": {
+      "artifact": "~/.opencode/skill/<skill>/SKILL.md",
+      "command_style": "slash-dash",
+      "example": "/conductor-setup",
+      "needs_confirmation": true
+    },
+    "antigravity": {
+      "artifact": ".agent/workflows/<skill>.md and ~/.gemini/antigravity/global_workflows/<skill>.md",
+      "command_style": "at-mention + slash",
+      "example": "@conductor /setup",
+      "needs_confirmation": true
+    },
+    "vscode": {
+      "artifact": "conductor-vscode/skills/<skill>/SKILL.md",
+      "command_style": "at-mention + slash",
+      "example": "@conductor /setup",
+      "needs_confirmation": true
+    },
+    "copilot": {
+      "artifact": "~/.config/github-copilot/conductor.md",
+      "command_style": "slash-dash",
+      "example": "/conductor-setup",
+      "needs_confirmation": true
+    },
+    "aix": {
+      "artifact": "~/.config/aix/conductor.md",
+      "command_style": "slash-dash",
+      "example": "/conductor-setup",
+      "needs_confirmation": true
+    },
+    "skillshare": {
+      "artifact": "~/.config/skillshare/skills/<skill>/SKILL.md",
+      "command_style": "slash-dash",
+      "example": "/conductor-setup",
+      "needs_confirmation": true
+    }
+  },
+  "extensions": {
+    "gemini": {
+      "name": "conductor",
+      "version": "0.2.0",
+      "contextFileName": "GEMINI.md"
+    },
+    "qwen": {
+      "name": "conductor",
+      "version": "0.2.0",
+      "contextFileName": "GEMINI.md"
+    }
+  },
+  "skills": [
+    {
+      "id": "conductor",
+      "template": "conductor",
+      "name": "conductor",
+      "description": "Context-driven development methodology. Understands projects set up with Conductor (via Gemini CLI or Claude Code). Use when working with conductor/ directories, tracks, specs, plans, or when user mentions context-driven development.",
+      "commands": {
+        "gemini": "/conductor:info",
+        "qwen": "/conductor:info",
+        "claude": "/conductor-info",
+        "codex": "$conductor-info",
+        "opencode": "/conductor-info",
+        "antigravity": "@conductor /info",
+        "vscode": "@conductor /info",
+        "copilot": "/conductor-info",
+        "aix": "/conductor-info",
+        "skillshare": "/conductor-info"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
+      "id": "setup",
+      "template": "setup",
+      "name": "conductor-setup",
+      "description": "Initialize project with Conductor context-driven development. Sets up product.md, tech-stack.md, and workflow.md.",
+      "commands": {
+        "gemini": "/conductor:setup",
+        "qwen": "/conductor:setup",
+        "claude": "/conductor-setup",
+        "codex": "$conductor-setup",
+        "opencode": "/conductor-setup",
+        "antigravity": "@conductor /setup",
+        "vscode": "@conductor /setup",
+        "copilot": "/conductor-setup",
+        "aix": "/conductor-setup",
+        "skillshare": "/conductor-setup"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
+      "id": "new_track",
+      "template": "new_track",
+      "name": "conductor-newtrack",
+      "description": "Create a new feature/bug track with spec and plan.",
+      "commands": {
+        "gemini": "/conductor:newTrack",
+        "qwen": "/conductor:newTrack",
+        "claude": "/conductor-newtrack",
+        "codex": "$conductor-newtrack",
+        "opencode": "/conductor-newtrack",
+        "antigravity": "@conductor /newTrack",
+        "vscode": "@conductor /newTrack",
+        "copilot": "/conductor-newtrack",
+        "aix": "/conductor-newtrack",
+        "skillshare": "/conductor-newtrack"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
+      "id": "implement",
+      "template": "implement",
+      "name": "conductor-implement",
+      "description": "Execute tasks from a track's plan following the TDD workflow.",
+      "commands": {
+        "gemini": "/conductor:implement",
+        "qwen": "/conductor:implement",
+        "claude": "/conductor-implement",
+        "codex": "$conductor-implement",
+        "opencode": "/conductor-implement",
+        "antigravity": "@conductor /implement",
+        "vscode": "@conductor /implement",
+        "copilot": "/conductor-implement",
+        "aix": "/conductor-implement",
+        "skillshare": "/conductor-implement"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
+      "id": "status",
+      "template": "status",
+      "name": "conductor-status",
+      "description": "Display project progress overview.",
+      "commands": {
+        "gemini": "/conductor:status",
+        "qwen": "/conductor:status",
+        "claude": "/conductor-status",
+        "codex": "$conductor-status",
+        "opencode": "/conductor-status",
+        "antigravity": "@conductor /status",
+        "vscode": "@conductor /status",
+        "copilot": "/conductor-status",
+        "aix": "/conductor-status",
+        "skillshare": "/conductor-status"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    },
+    {
+      "id": "revert",
+      "template": "revert",
+      "name": "conductor-revert",
+      "description": "Git-aware revert of tracks, phases, or tasks.",
+      "commands": {
+        "gemini": "/conductor:revert",
+        "qwen": "/conductor:revert",
+        "claude": "/conductor-revert",
+        "codex": "$conductor-revert",
+        "opencode": "/conductor-revert",
+        "antigravity": "@conductor /revert",
+        "vscode": "@conductor /revert",
+        "copilot": "/conductor-revert",
+        "aix": "/conductor-revert",
+        "skillshare": "/conductor-revert"
+      },
+      "enabled": {
+        "gemini": true,
+        "qwen": true,
+        "claude": true,
+        "codex": true,
+        "opencode": true,
+        "antigravity": true,
+        "vscode": true,
+        "copilot": true,
+        "aix": true,
+        "skillshare": true
+      }
+    }
+  ]
+}

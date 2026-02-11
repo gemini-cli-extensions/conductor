@@ -41,8 +41,15 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 2.  **Auto-Detect Scope:**
     -   If no input, read the **Tracks Registry**.
     -   Look for a track marked as `[~] In Progress`.
-    -   If one exists, ask the user: "Do you want to review the in-progress track '<track_name>'? (yes/no)"
-    -   If no track is in progress, or user says "no", ask: "What would you like to review? (Enter a track name, or typing 'current' for uncommitted changes)"
+    -   If one exists, ask the user using the `ask_user` tool:
+        - **header:** "Review Track"
+        - **question:** "Do you want to review the in-progress track '<track_name>'?"
+        - **type:** "yesno"
+    -   If no track is in progress, or user says "no", ask using the `ask_user` tool:
+        - **header:** "Select Scope"
+        - **question:** "What would you like to review?"
+        - **type:** "text"
+        - **placeholder:** "Enter track name, or 'current' for uncommitted changes"
 3.  **Confirm Scope:** Ensure you and the user agree on what is being reviewed.
 
 ### 2.2 Retrieve Context
@@ -50,18 +57,23 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   Read `product-guidelines.md` and `tech-stack.md`.
     -   **CRITICAL:** Check for the existence of `conductor/code_styleguides/` directory.
         -   If it exists, list and read ALL `.md` files within it. These are the **Law**. Violations here are **High** severity.
+    -   **CRITICAL:** Check for the existence of `conductor/platform_guides/` directory.
+        -   If it exists, list and read ALL `.md` files within it. Ensure code adheres to these platform best practices.
 2.  **Load Track Context (if reviewing a track):**
     -   Read the track's `plan.md`.
     -   **Extract Commits:** Parse `plan.md` to find recorded git commit hashes (usually in the "Completed" tasks or "History" section).
     -   **Determine Revision Range:** Identify the start (first commit parent) and end (last commit).
 3.  **Load and Analyze Changes (Smart Chunking):**
-    -   **Volume Check:** Run `git diff --shortstat <revision_range>` first.
+    -   **Volume Check:** Call `vcs_get_status` first to see the list of modified files. If a revision range is determined, call `vcs_get_diff(repo_path=".", revision_range="<range>")`.
     -   **Strategy Selection:**
         -   **Small/Medium Changes (< 300 lines):**
             -   Run `git diff <revision_range>` to get the full context in one go.
             -   Proceed to "Analyze and Verify".
         -   **Large Changes (> 300 lines):**
-            -   **Announce:** "Use 'Iterative Review Mode' due to change size."
+            -   **Confirm:** Use the `ask_user` tool to confirm before proceeding with a large review:
+                - **header:** "Large Review"
+                - **question:** "This review involves >300 lines of changes. I will use 'Iterative Review Mode' which may take longer. Proceed?"
+                - **type:** "yesno"
             -   **List Files:** Run `git diff --name-only <revision_range>`.
             -   **Iterate:** For each source file (ignore locks/assets):
                 1.  Run `git diff <revision_range> -- <file_path>`.
@@ -73,16 +85,24 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 **Perform the following checks on the retrieved diff:**
 
 1.  **Intent Verification:** Does the code actually implement what the `plan.md` (and `spec.md` if available) asked for?
-2.  **Style Compliance:**
+2.  **Product Guidelines Compliance:**
     -   Does it follow `product-guidelines.md`?
+3.  **Code Style Compliance:**
     -   Does it strictly follow `conductor/code_styleguides/*.md`?
-3.  **Correctness & Safety:**
+4.  **Platform Guide Compliance:**
+    -   Does it adhere to `conductor/platform_guides/*.md` (if exists and is applicable)?
+5.  **Correctness & Safety:**
     -   Look for bugs, race conditions, null pointer risks.
     -   **Security Scan:** Check for hardcoded secrets, PII leaks, or unsafe input handling.
-4.  **Testing:**
+6.  **Testing:**
     -   Are there new tests?
     -   Do the changes look like they are covered by existing tests?
-    -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`). Run it. Analyze the output for failures.
+    -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`).
+        -   If the test command is ambiguous or cannot be inferred, ask the user using the `ask_user` tool:
+            - **header:** "Test Command"
+            - **question:** "I couldn't infer the test command. Please provide the command to run tests."
+            - **type:** "text"
+    -   Run it. Analyze the output for failures.
 
 ### 2.4 Output Findings
 **Format your output strictly as follows:**
@@ -94,7 +114,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ## Verification Checks
 - [ ] **Plan Compliance**: [Yes/No/Partial] - [Comment]
-- [ ] **Style Compliance**: [Pass/Fail]
+- [ ] **Product Guidelines Compliance**: [Pass/Fail]
+- [ ] **Code Style Compliance**: [Pass/Fail]
+- [ ] **Platform Guide Compliance**: [Pass/Fail/NA]
 - [ ] **New Tests**: [Yes/No]
 - [ ] **Test Coverage**: [Yes/No/Partial]
 - [ ] **Test Results**: [Passed/Failed] - [Summary of failing tests or 'All passed']
@@ -114,85 +136,64 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ---
 
 ## 3.0 COMPLETION PHASE
+1.  **Review Decision:**
+    -   **Determine Recommendation and announce it to the user:**
+        -   If **Critical** or **High** issues found:
+            > "I recommend we fix the important issues I found before moving forward."
+        -   If only **Medium/Low** issues found:
+            > "The changes look good overall, but I have a few suggestions to improve them."
+        -   If no issues found:
+            > "Everything looks great! I don't see any issues."
+    -   **Action:**
+        -   **If issues found:** Ask using the `ask_user` tool:
+            - **header:** "Decision"
+            - **question:** "How would you like to proceed with the findings?"
+            - **type:** "choice"
+            - **multiSelect:** `false`
+            - **options:**
+                - Label: "Apply Fixes"
+                - Label: "Manual Fix"
+                - Label: "Complete Track"
+            -   **If "Apply Fixes":** Apply the code modifications suggested in the findings using file editing tools. Then Proceed to next step.
+            -   **If "Manual Fix":** Terminate operation to allow user to edit code.
+            -   **If "Complete Track":** Proceed to the next step.
+        -   **If no issues found:** Proceed to the next step.
 
-### 3.1 Review Decision
-1.  **Determine Recommendation and announce it to the user:**
-    -   If **Critical** or **High** issues found:
-        > "I recommend we fix the important issues I found before moving forward."
-    -   If only **Medium/Low** issues found:
-        > "The changes look good overall, but I have a few suggestions to improve them."
-    -   If no issues found:
-        > "Everything looks great! I don't see any issues."
-2.  **Action:**
-    -   **If issues found:** Ask:
-        > "Do you want me to apply the suggested fixes, fix them manually yourself, or proceed to complete the track?
-        > A. **Apply Fixes:** Automatically apply the suggested code changes.
-        > B. **Manual Fix:** Stop so you can fix issues yourself.
-        > C. **Complete Track:** Ignore warnings and proceed to cleanup.
-        > Please enter your choice (A, B, or C)."
-        -   **If "A" (Apply Fixes):** Apply the code modifications suggested in the findings using file editing tools. Then Proceed to next step.
-        -   **If "B" (Manual Fix):** Terminate operation to allow user to edit code.
-        -   **If "C" (Complete Track):** Proceed to the next step.
-    -   **If no issues found:** Proceed to the next step.
+2.  **Track Cleanup:**
+    **PROTOCOL: Offer to archive or delete the reviewed track.**
 
-### 3.2 Commit Review Changes
-**PROTOCOL: Ensure all review-related changes are committed and tracked in the plan.**
+    a.  **Context Check:** If you are NOT reviewing a specific track (e.g., just reviewing current changes without a track context), SKIP this entire section.
 
-1.  **Check for Changes:** Use `git status --porcelain` to check for any uncommitted changes (staged or unstaged) in the repository.
-2.  **Condition for Action:**
-    -   If NO changes are detected, proceed to '3.3 Track Cleanup'.
-    -   If changes are detected:
-        a. **Check for Track Context:**
-            - If you are NOT reviewing a specific track (i.e., you don't have a `plan.md` in context), simply offer to commit the changes:
-                > "I've detected uncommitted changes. Should I commit them? (yes/no)"
-                - If 'yes', stage all changes and commit with `fix(conductor): Apply review suggestions <brief description of changes>`.
-                - Proceed to '3.3 Track Cleanup'.
-        b. **Handle Track-Specific Changes:**
-            i.   **Confirm with User:**
-                > "I've detected uncommitted changes from the review process. Should I commit these and update the track's plan? (yes/no)"
-            ii.  **If Yes:**
-                 - **Update Plan (Add Review Task):**
-                   - Read the track's `plan.md`.
-                   - Append a new phase (if it doesn't exist) and task to the end of the file.
-                   - **Format:**
-                     ```markdown
-                     ## Phase: Review Fixes
-                     - [~] Task: Apply review suggestions
-                     ```
-                 - **Commit Code:**
-                   - Stage all code changes related to the track (excluding `plan.md`).
-                   - Commit with message: `fix(conductor): Apply review suggestions for track '<track_name>'`.
-                 - **Record SHA:**
-                   - Get the short SHA (first 7 characters) of the commit.
-                   - Update the task in `plan.md` to: `- [x] Task: Apply review suggestions <sha>`.
-                 - **Commit Plan Update:**
-                   - Stage `plan.md`.
-                   - Commit with message: `conductor(plan): Mark task 'Apply review suggestions' as complete`.
-                 - **Announce Success:** "Review changes committed and tracked in the plan."
-            iii. **If No:** Skip the commit and plan update. Proceed to '3.3 Track Cleanup'.
+    b.  **Ask for User Choice:** Prompt the user with the available options for the reviewed track using the `ask_user` tool:
+        - **header:** "Cleanup"
+        - **question:** "Review complete. What would you like to do with track '<track_name>'?"
+        - **type:** "choice"
+        - **multiSelect:** `false`
+        - **options:**
+            - Label: "Archive"
+            - Label: "Delete"
+            - Label: "Skip"
 
-### 3.3 Track Cleanup
-**PROTOCOL: Offer to archive or delete the reviewed track.**
+    c.  **Handle User Response:**
+        *   **If "Archive":**
+            i.   **Setup:** Ensure `conductor/archive/` exists.
+            ii.  **Move:** Move track folder to `conductor/archive/<track_id>`.
+            iii. **Update Registry:** Remove track section from **Tracks Registry**.
+            iv.  **Commit:** Call `vcs_create_commit(repo_path=".", message="chore(conductor): Archive track '<track_name>'", files=["<path_to_registry>", "conductor/archive/<track_id>"])`.
+            v.   **Announce:** "Track '<track_name>' archived."
+        *   **If "Delete":**
+            i.   **Confirm:** Ask for final confirmation using the `ask_user` tool:
+                - **header:** "Confirm"
+                - **question:** "WARNING: This is an irreversible deletion. Do you want to proceed?"
+                - **type:** "yesno"
+            ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
+            iii. **If no:** Cancel.
+        *   **If "Skip":** Leave track as is.
 
-1.  **Context Check:** If you are NOT reviewing a specific track (e.g., just reviewing current changes without a track context), SKIP this entire section.
+---
 
-2.  **Ask for User Choice:**
-    > "Review complete. What would you like to do with track '<track_name>'?
-    > A.  **Archive:** Move to `conductor/archive/` and update registry.
-    > B.  **Delete:** Permanently remove from system.
-    > C.  **Skip:** Leave as is.
-    > Please enter your choice (A, B, or C)."
+## 4.0 POST-EXECUTION ADVICE
+**CRITICAL:** You MUST display the following tip to the user ONLY when the entire command execution is finished and you are about to halt. DO NOT display this tip if you are asking for user input or if the command is still in progress.
 
-3.  **Handle User Response:**
-    *   **If "A" (Archive):**
-        i.   **Setup:** Ensure `conductor/archive/` exists.
-        ii.  **Move:** Move track folder to `conductor/archive/<track_id>`.
-        iii. **Update Registry:** Remove track section from **Tracks Registry**.
-        iv.  **Commit:** Stage registry and archive. Commit: `chore(conductor): Archive track '<track_name>'`.
-        v.   **Announce:** "Track '<track_name>' archived."
-    *   **If "B" (Delete):**
-        i.   **Confirm:** "WARNING: Irreversible deletion. Proceed? (yes/no)"
-        ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
-        iii. **If no:** Cancel.
-    *   **If "C" (Skip):** Leave track as is.
+"**TIP:** Use `/clear` or `/compress` to reduce context window and latency."
 """

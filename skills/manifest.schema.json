@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gemini-cli-extensions.github.io/conductor/skills/manifest.schema.json",
+  "title": "Conductor Skills Manifest",
+  "type": "object",
+  "required": ["manifest_version", "tools", "skills"],
+  "properties": {
+    "manifest_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["artifact", "command_style", "example", "needs_confirmation"],
+        "properties": {
+          "artifact": { "type": "string", "minLength": 1 },
+          "command_style": { "type": "string", "minLength": 1 },
+          "example": { "type": "string", "minLength": 1 },
+          "needs_confirmation": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "version", "contextFileName"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "contextFileName": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "template", "name", "description", "commands", "enabled"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "template": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "commands": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "enabled": {
+            "type": "object",
+            "additionalProperties": { "type": "boolean" }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

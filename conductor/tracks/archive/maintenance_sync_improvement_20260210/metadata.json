@@ -1,0 +1,8 @@
+{
+  "track_id": "maintenance_sync_improvement_20260210",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-10T20:15:00Z",
+  "updated_at": "2026-02-10T20:15:00Z",
+  "description": "Consolidate sync scripts, improve context hygiene, fix pre-commit hooks, and add formal dependency management."
+}

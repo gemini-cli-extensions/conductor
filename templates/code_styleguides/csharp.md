@@ -104,7 +104,7 @@ Class member ordering:
   ```csharp
   // Bad
   DecimalNumber product = CalculateProduct(values, 7, false, null);
-  
+
   // Good
   var options = new ProductOptions { PrecisionDecimals = 7, UseCache = CacheUsage.DontUseCache };
   DecimalNumber product = CalculateProduct(values, options, completionDelegate: null);

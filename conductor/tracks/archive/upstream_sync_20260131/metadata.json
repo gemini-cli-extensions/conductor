@@ -1,0 +1,8 @@
+{
+  "track_id": "upstream_sync_20260131",
+  "type": "refactor",
+  "status": "new",
+  "created_at": "2026-01-31T00:00:00Z",
+  "updated_at": "2026-01-31T00:00:00Z",
+  "description": "Upstream Sync & Cross-Platform Skill Abstraction"
+}

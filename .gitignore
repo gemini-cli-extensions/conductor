@@ -32,6 +32,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# Node
+node_modules/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -207,5 +210,10 @@ __marimo__/
 
 # Conductor
 tmp/
-
 /.gemini/tmp/
+*.vsix
+*.tar.gz
+.tmp_test.txt
+out/
+dist/
+node_modules/
