@@ -15,7 +15,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **Tech Stack**
     -   **Workflow**
 
-2.  **Handle Failure:** If ANY of these are missing (or their resolved paths do not exist), Announce: "Conductor is not set up. Please run `/conductor:setup`." and HALT.
+2.  **Handle Failure:** If ANY of these are missing (or their resolved paths do not exist):
+    -   If in Ralph Mode: Call `ralph_end` with `status='FAILURE'` and `message='Conductor is not set up.'`.
+    -   Otherwise: Announce: "Conductor is not set up. Please run `/conductor:setup`." and HALT.
 
 
 ---
@@ -28,7 +30,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 2.  **Locate and Parse Tracks Registry:**
     -   Resolve the **Tracks Registry**.
     -   Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section. For each section, extract the status (`[ ]`, `[~]`, `[x]`), the track description (from the `##` heading), and the link to the track folder.
-    -   **CRITICAL:** If no track sections are found after parsing, announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
+    -   **CRITICAL:** If no track sections are found after parsing:
+        -   If in Ralph Mode: Call `ralph_end` with `status='FAILURE'` and `message='Tracks file is empty or malformed.'`.
+        -   Otherwise: Announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
 
 3.  **Continue:** Immediately proceed to the next step to select a track.
 
@@ -43,8 +47,8 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             -   Announce: "No track name provided. Automatically selecting the next incomplete track: '<track_description>'."
             -   Proceed with this track.
         3.  **If no incomplete tracks are found:**
-            -   Announce: "No incomplete tracks found in the tracks file. All tasks are completed!"
-            -   Halt the process and await further user instructions.
+            -   If in Ralph Mode: Call `ralph_end` with `status='SUCCESS'` and `message='All tracks completed.'`.
+            -   Otherwise: Announce: "No incomplete tracks found in the tracks file. All tasks are completed!" and halt.
 
 5.  **Handle No Selection:** If no track is selected, inform the user and await further instructions.
 
@@ -64,18 +68,56 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     b. **Read Files:**
         -   **Track Context:** Using the **Universal File Resolution Protocol**, resolve and read the **Specification** and **Implementation Plan** for the selected track.
         -   **Workflow:** Resolve **Workflow** (via the **Universal File Resolution Protocol** using the project's index file).
-    c. **Error Handling:** If you fail to read any of these files, you MUST stop and inform the user of the error.
+    c. **Error Handling:** If you fail to read any of these files:
+        -   If in Ralph Mode: Call `ralph_end` with `status='FAILURE'` and `message='Failed to read track context files.'`.
+        -   Otherwise: Stop and inform the user of the error.
 
-4.  **Execute Tasks and Update Track Plan:**
-    a. **Announce:** State that you will now execute the tasks from the track's **Implementation Plan** by following the procedures in the **Workflow**.
-    b. **Iterate Through Tasks:** You MUST now loop through each task in the track's **Implementation Plan** one by one.
-    c. **For Each Task, You MUST:**
-        i. **Defer to Workflow:** The **Workflow** file is the **single source of truth** for the entire task lifecycle. You MUST now read and execute the procedures defined in the "Task Workflow" section of the **Workflow** file you have in your context. Follow its steps for implementation, testing, and committing precisely.
+---
+
+## 3.1 RALPH ARCHITECT PHASE
+**PROTOCOL: If autonomous mode is requested, refine the plan before execution.**
+
+1.  **Check for Ralph Flag:** Check if the user provided the `--ralph` flag in their command.
+2.  **Execute Architect Loop:** If (and ONLY if) the `--ralph` flag is present:
+    -   **Announce:** "Entering Ralph Architect Mode to refine the plan..."
+    -   **Start Loop:** Call `ralph_start` with the following arguments:
+        - `prompt`: "Analyze and refine the Implementation Plan based on the Specification. Ensure 100% coverage, atomic tasks, and correct dependencies."
+        - `maxIterations`: The value of the `--max-iterations` flag if provided, otherwise 10.
+    -   **CRITICAL:** Do NOT proceed to the Execution Phase until this tool call returns successfully.
+
+---
+
+## 3.2 EXECUTION PHASE (CONDUCTOR STANDARD)
+**PROTOCOL: Execute the tasks from the finalized plan.**
+
+1.  **Announce:** State that you will now execute the tasks from the track's **Implementation Plan** by following the procedures in the **Workflow**.
+2.  **Tool usage:** Do NOT call `ralph_start` or `ralph_end` during this phase. Standard text output is sufficient to communicate progress. These tools are reserved for the Architect Phase only.
+3.  **Autonomy Directive:**
+    -   **If `--ralph` is present:** You MUST execute the tasks **autonomously** and **sequentially**. Do NOT stop for user confirmation between tasks unless a task is explicitly marked with `(REQUIRES USER INPUT)` or a critical error occurs.
+    -   **Re-planning (Default):** If you encounter a fundamental blocker or determine the future plan is invalid:
+        -   If the `--manual-replan` flag is NOT provided: **Autonomously** announce the issue and re-trigger Section 3.1 (Ralph Architect Phase) by calling `ralph_start` to fix the plan.
+        -   If the `--manual-replan` flag IS provided: **PAUSE** and ask: "I'm stuck. The plan seems invalid given [reason]. Do you want to re-enter the Architect Phase to refine the plan?"
+    -   **If `--ralph` is NOT present:** Follow the standard interactive workflow, prompting the user for confirmation as needed.
+3.  **Iterate Through Tasks:** You MUST now loop through each task in the track's **Implementation Plan** one by one.
+4.  **For Each Task, You MUST:**
+    i. **Defer to Workflow:** The **Workflow** file is the **single source of truth** for the entire task lifecycle. You MUST now read and execute the procedures defined in the "Task Workflow" section of the **Workflow** file you have in your context. Follow its steps for implementation, testing, and committing precisely.
 
 5.  **Finalize Track:**
     -   After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status in the **Tracks Registry**.
     -   This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
     -   **Commit Changes:** Stage the **Tracks Registry** file and commit with the message `chore(conductor): Mark track '<track_description>' as complete`.
+    -   **Verification Summary:** Announce completion by providing a detailed summary in the following format:
+        
+        **Automated Verification:**
+        - [Result 1 (e.g., Tests: X% coverage)]
+        - [Result 2 (e.g., Build: Successful)]
+        - [Result 3 (e.g., Execution: Command X works as expected)]
+
+        **Manual Verification Steps:**
+        1. [Step 1]
+        2. [Step 2]
+        3. [Expected Outcome]
+    
     -   Announce that the track is fully complete and the tracks file has been updated.
 
 ---
@@ -146,7 +188,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
 
-2.  **Ask for User Choice:** You MUST prompt the user with the available options for the completed track.
+2.  **Ask for User Choice:** This step is NOT autonomous. Even in Ralph Mode, you MUST PAUSE and prompt the user with the available options for the completed track.
     > "Track '<track_description>' is now complete. What would you like to do?
     > A.  **Review (Recommended):** Run the review command to verify changes before finalizing.
     > B.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
