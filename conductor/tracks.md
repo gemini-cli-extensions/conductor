@@ -72,3 +72,30 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [~] **Track: Repository Excellence & Pipeline Hardening**
 *Link: [./tracks/repository_excellence_20260210/](./tracks/repository_excellence_20260210/)*
+
+---
+
+- [ ] **Track: Universal Installer via Mise**
+*Link: [./tracks/universal_installer_20260214/](./tracks/universal_installer_20260214/)*
+- **Purpose:** One-click installer for all conductor components using mise
+- **Deliverables:** mise.toml, install.sh, install.ps1, conductor_install.py
+- **Key Features:** install.cat integration, cross-platform support, automated updates
+
+---
+
+- [ ] **Track: Upstream Sync Bot & Issue Triage**
+*Link: [./tracks/upstream_sync_bot_20260214/](./tracks/upstream_sync_bot_20260214/)*
+- **Purpose:** Automated sync from upstream repos and GitHub issue triage
+- **Deliverables:** sync_upstream.py, triage_issues.py, GitHub Actions workflow
+- **Key Issues:** #113, #112, #105, #115, #108, #103, #97, #96
+- **Note:** Includes repository rename (conductor → conductor-next)
+
+---
+
+- [ ] **Track: Documentation Standards & Style Guides**
+*Link: [./tracks/documentation_standards_20260214/](./tracks/documentation_standards_20260214/)*
+- **Purpose:** Define and enforce consistent documentation standards
+- **Style guides for:** Markdown, Mermaid, D3.js, DOCX, CSL-JSON
+- **CI/CD integration:** Automated doc validation in GitHub Actions
+- **Pre-commit hooks:** Automated checking before commits
+- **Deliverables:** markdownlint config, validation scripts, workflow updates

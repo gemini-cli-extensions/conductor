@@ -1,0 +1,100 @@
+name: Upstream Sync
+
+on:
+  schedule:
+    # Run daily at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Upstream source to sync (gemini-cli-extensions or jnorthrup)'
+        required: false
+        default: ''
+        type: string
+      dry_run:
+        description: 'Dry run (preview changes only)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    name: Sync from Upstream
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Sync from upstream
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            DRY_RUN_FLAG="--dry-run"
+          else
+            DRY_RUN_FLAG=""
+          fi
+
+          if [ -n "${{ github.event.inputs.source }}" ]; then
+            SOURCE_FLAG="--source ${{ github.event.inputs.source }}"
+          else
+            SOURCE_FLAG=""
+          fi
+
+          python scripts/sync_upstream.py $DRY_RUN_FLAG $SOURCE_FLAG --save-state
+
+      - name: Create PR if changes detected
+        if: steps.sync.outcome == 'success' && github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: sync from upstream repositories'
+          title: 'Sync from upstream repositories'
+          body: |
+            This PR contains automated sync from upstream repositories:
+            - gemini-cli-extensions/conductor
+            - jnorthrup/conductor2
+
+            Please review the changes before merging.
+          branch: upstream-sync-${{ github.run_id }}
+          delete-branch: true
+
+      - name: Upload sync state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-state
+          path: .upstream-sync-state.json
+          retention-days: 30
+
+  notify:
+    runs-on: ubuntu-latest
+    name: Notify Results
+    needs: sync-upstream
+    if: always()
+    steps:
+      - name: Notify on success
+        if: needs.sync-upstream.result == 'success'
+        run: |
+          echo "✅ Upstream sync completed successfully"
+          echo "Check the Actions tab for details"
+
+      - name: Notify on failure
+        if: needs.sync-upstream.result == 'failure'
+        run: |
+          echo "❌ Upstream sync failed"
+          echo "Please check the Actions tab for error details"

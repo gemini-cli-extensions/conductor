@@ -3,8 +3,8 @@ id: new_track
 name: conductor-newtrack
 description: Create a new feature/bug track with spec and plan.
 triggers: ["$conductor-newtrack", "/conductor-newtrack", "/conductor:newTrack", "@conductor /newTrack"]
-version: 0.1.0
-engine_compatibility: >=0.2.0
+version: "0.1.0"
+engine_compatibility: ">=0.2.0"
 ---
 
 # conductor-newtrack
@@ -206,3 +206,4 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 7.  **Announce Completion:** Inform the user:
     > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
 ```
+

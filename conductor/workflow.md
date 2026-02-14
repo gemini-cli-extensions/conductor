@@ -137,6 +137,49 @@ Before marking any task complete, verify:
 - [ ] Documentation updated if needed
 - [ ] No security vulnerabilities introduced
 
+## Documentation Standards
+
+All project documentation must follow the established style guides:
+
+### Style Guides Reference
+- **[Markdown](templates/code_styleguides/markdown.md)** - Documentation formatting and structure
+- **[Mermaid](templates/code_styleguides/mermaid.md)** - Diagram creation and syntax
+- **[D3.js](templates/code_styleguides/d3js.md)** - Data visualization code
+- **[DOCX](templates/code_styleguides/docx.md)** - Word document generation
+- **[CSL-JSON](templates/code_styleguides/csl-json.md)** - Bibliographic references and citations
+
+### Documentation Validation
+
+Before committing documentation changes, run validation:
+
+```bash
+# Validate all documentation
+python scripts/validate_docs.py
+
+# Or use pre-commit hooks (recommended)
+pre-commit run --all-files
+```
+
+### Documentation Quality Gates
+
+All documentation must pass:
+- [ ] Markdown linting (markdownlint)
+- [ ] Mermaid diagram validation (if applicable)
+- [ ] CSL-JSON format validation (if applicable)
+- [ ] No broken internal links
+- [ ] Proper heading hierarchy (H1 first)
+- [ ] Code blocks have language specifiers
+- [ ] Images have alt text
+
+### Creating New Documentation
+
+When creating new documentation:
+1. Choose the appropriate format (Markdown, Mermaid, DOCX)
+2. Follow the relevant style guide
+3. Include proper frontmatter for Markdown files
+4. Run validation before committing
+5. Update table of contents if needed
+
 ## Development Commands
 
 **AI AGENT INSTRUCTION: This section should be adapted to the project's specific language, framework, and build tools.**

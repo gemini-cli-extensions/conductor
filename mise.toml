@@ -1,0 +1,54 @@
+[tools]
+python = "3.12"
+node = "20"
+uv = "latest"
+
+[tasks]
+# Sync tasks
+sync-upstream = { run = "python scripts/sync_upstream.py" }
+sync-gemini = { run = "python scripts/sync_upstream.py --source gemini-cli-extensions" }
+sync-conductor2 = { run = "python scripts/sync_upstream.py --source jnorthrup" }
+
+# Build tasks
+build-all = { depends = ["build-core", "build-gemini", "build-vscode"], run = "echo 'All builds complete'" }
+build-core = { run = "cd conductor-core && uv build" }
+build-gemini = { run = "cd conductor-gemini && uv build" }
+build-vscode = { run = "cd conductor-vscode && npm run compile && npm run package" }
+
+# Install tasks
+install-all = { depends = ["install-core", "install-gemini", "install-vscode", "install-claude"], run = "echo 'All components installed'" }
+install-core = { run = "pip install ./conductor-core" }
+install-gemini = { run = "pip install ./conductor-gemini" }
+install-vscode = { run = "code --install-extension conductor.vsix || echo 'VS Code not available, skipping'" }
+install-claude = { run = "bash -c 'cp -r .claude ~/.claude 2>/dev/null || echo \"Claude Code not available, skipping\"'" }
+
+# Update tasks
+update-all = { run = "python scripts/conductor_update.py" }
+check-updates = { run = "python scripts/conductor_update.py --check-only" }
+
+# Verification
+verify = { run = "python scripts/verify_installation.py" }
+verify-docs = { run = "python scripts/validate_docs.py" }
+
+# Development
+dev-setup = { depends = ["install-dev-deps"], run = "echo 'Development environment ready'" }
+install-dev-deps = { run = "pip install -e conductor-core -e conductor-gemini && npm install --prefix conductor-vscode" }
+test = { run = "pytest && cd conductor-vscode && npm test" }
+lint = { run = "ruff check . && cd conductor-vscode && npm run lint" }
+format = { run = "ruff format . && cd conductor-vscode && npm run format" }
+
+# Documentation
+docs-build = { run = "python scripts/validate_docs.py && echo 'Documentation validation complete'" }
+docs-serve = { run = "echo 'Serving documentation...' && python -m http.server 8080" }
+
+[env]
+CONDUCTOR_VERSION = "0.2.0"
+CONDUCTOR_HOME = "{{cwd}}"
+PYTHONPATH = "{{cwd}}/conductor-core/src:{{cwd}}/conductor-gemini/src"
+
+[settings]
+experimental = true
+python_compile = true
+
+[plugins]
+# Add any custom plugins here if needed

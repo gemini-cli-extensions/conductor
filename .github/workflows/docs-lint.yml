@@ -1,0 +1,186 @@
+name: Documentation Lint
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - '**.md'
+      - '**.mmd'
+      - '**/csl-json/**'
+      - '.markdownlint.json'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - '**.md'
+      - '**.mmd'
+      - '**/csl-json/**'
+      - '.markdownlint.json'
+  workflow_dispatch:
+
+jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+    name: Lint Markdown Files
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: markdownlint '**/*.md' --config .markdownlint.json
+
+  mermaid-validate:
+    runs-on: ubuntu-latest
+    name: Validate Mermaid Diagrams
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install @mermaid-js/mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Find and validate Mermaid files
+        run: |
+          echo "Checking Mermaid diagram files..."
+          find . -name "*.mmd" -o -name "*.mermaid" | while read file; do
+            echo "Validating: $file"
+            mmdc -i "$file" -o /dev/null || exit 1
+          done
+          echo "✓ All Mermaid files validated"
+
+  csl-validate:
+    runs-on: ubuntu-latest
+    name: Validate CSL-JSON Files
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install jsonschema
+
+      - name: Validate CSL-JSON files
+        run: |
+          echo "Checking CSL-JSON reference files..."
+          find . -name "references.json" -o -name "*.csl.json" | while read file; do
+            if [ -f "$file" ]; then
+              echo "Validating: $file"
+              python -c "
+import json
+import sys
+with open('$file') as f:
+    try:
+        data = json.load(f)
+        if 'references' not in data:
+            print(f'Error: {file} missing references array')
+            sys.exit(1)
+        print(f'✓ {file} is valid JSON with {len(data.get(\"references\", []))} references')
+    except json.JSONDecodeError as e:
+        print(f'Error: {file} is invalid JSON: {e}')
+        sys.exit(1)
+              "
+            fi
+          done
+          echo "✓ All CSL-JSON files validated"
+
+  docs-standards:
+    runs-on: ubuntu-latest
+    name: Check Documentation Standards
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run documentation validation
+        run: |
+          if [ -f scripts/validate_docs.py ]; then
+            python scripts/validate_docs.py
+          else
+            echo "⚠️  validate_docs.py not found, skipping detailed validation"
+          fi
+
+      - name: Check for documentation style guide compliance
+        run: |
+          echo "Checking documentation style guide compliance..."
+          
+          # Check for proper heading hierarchy
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
+            # Check that files don't start with h2 or lower
+            first_heading=$(grep -m 1 "^##" "$file" | head -1)
+            if [[ $first_heading =~ ^##[^#] ]]; then
+              echo "⚠️  $file starts with H2 instead of H1"
+            fi
+          done
+          
+          echo "✓ Documentation standards check complete"
+
+  generate-report:
+    runs-on: ubuntu-latest
+    name: Generate Documentation Quality Report
+    needs: [markdown-lint, mermaid-validate, csl-validate, docs-standards]
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate quality report
+        run: |
+          echo "# Documentation Quality Report" > docs-report.md
+          echo "" >> docs-report.md
+          echo "Generated: $(date)" >> docs-report.md
+          echo "" >> docs-report.md
+          
+          echo "## Markdown Files" >> docs-report.md
+          echo "" >> docs-report.md
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l | xargs echo "- Total files:" >> docs-report.md
+          echo "" >> docs-report.md
+          
+          echo "## Mermaid Diagrams" >> docs-report.md
+          echo "" >> docs-report.md
+          find . -name "*.mmd" -o -name "*.mermaid" | wc -l | xargs echo "- Total files:" >> docs-report.md
+          echo "" >> docs-report.md
+          
+          echo "## Status" >> docs-report.md
+          echo "" >> docs-report.md
+          echo "- Markdown Lint: ${{ needs.markdown-lint.result }}" >> docs-report.md
+          echo "- Mermaid Validation: ${{ needs.mermaid-validate.result }}" >> docs-report.md
+          echo "- CSL Validation: ${{ needs.csl-validate.result }}" >> docs-report.md
+          echo "- Documentation Standards: ${{ needs.docs-standards.result }}" >> docs-report.md
+          echo "" >> docs-report.md
+          
+          echo "## Style Guides" >> docs-report.md
+          echo "" >> docs-report.md
+          echo "Documentation follows these style guides:" >> docs-report.md
+          echo "- [Markdown](templates/code_styleguides/markdown.md)" >> docs-report.md
+          echo "- [Mermaid](templates/code_styleguides/mermaid.md)" >> docs-report.md
+          echo "- [CSL-JSON](templates/code_styleguides/csl-json.md)" >> docs-report.md
+          
+          cat docs-report.md
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-quality-report
+          path: docs-report.md

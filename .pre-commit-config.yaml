@@ -19,3 +19,20 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [pydantic, types-requests]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+      - id: markdownlint
+        args: [--fix, --config, .markdownlint.json]
+        files: \.md$
+
+  - repo: local
+    hooks:
+      - id: validate-docs
+        name: Validate Documentation Standards
+        entry: python scripts/validate_docs.py
+        language: python
+        files: \.(md|mmd|json)$
+        pass_filenames: false
+        always_run: true

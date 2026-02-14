@@ -3,8 +3,8 @@ id: setup
 name: conductor-setup
 description: Initialize project with Conductor context-driven development. Sets up product.md, tech-stack.md, and workflow.md.
 triggers: ["$conductor-setup", "/conductor-setup", "/conductor:setup", "@conductor /setup"]
-version: 0.1.0
-engine_compatibility: >=0.2.0
+version: "0.1.0"
+engine_compatibility: ">=0.2.0"
 ---
 
 # conductor-setup
@@ -509,3 +509,4 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Announce Completion:** After the track has been created, announce that the project setup and initial track generation are complete.
 2.  **Save Conductor Files:** Add and commit all files with the commit message `conductor(setup): Add conductor setup files`.
 3.  **Next Steps:** Inform the user that they can now begin work by running `/conductor:implement`.
+

@@ -1,0 +1,50 @@
+name: Upstream Sync
+description: Request sync from upstream repositories
+title: "[UPSTREAM] Sync from "
+labels: ["upstream"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request a sync from upstream repositories.
+        
+  - type: dropdown
+    id: source
+    attributes:
+      label: Upstream Source
+      description: Which upstream repository?
+      options:
+        - gemini-cli-extensions/conductor
+        - jnorthrup/conductor2
+        - Both
+    validations:
+      required: true
+      
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changes to Include
+      description: What specific changes should be synced?
+      placeholder: |
+        - PR #123
+        - Issue #456 fix
+        - New feature X
+    validations:
+      required: true
+      
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why do these changes need to be synced?
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I've reviewed the upstream changes
+        - label: These changes don't conflict with existing work
+        - label: I'm willing to help test the sync
