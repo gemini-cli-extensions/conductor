@@ -52,6 +52,7 @@ status: draft
 ## Lists
 
 ### Unordered Lists
+
 - Use `-` (hyphen) as the bullet marker
 - Indent nested items with 2 spaces
 - Maintain consistent punctuation (periods at end or none)
@@ -65,6 +66,7 @@ status: draft
 ```
 
 ### Ordered Lists
+
 - Use `1.` for all items (auto-numbering)
 - Or use sequential numbers `1.`, `2.`, `3.` for fixed order
 - Indent nested items with 3 spaces
@@ -92,6 +94,7 @@ def hello_world():
 ```javascript
 console.log('Hello, World!');
 ```
+
 ```
 
 ## Links
@@ -104,12 +107,14 @@ console.log('Hello, World!');
 ```
 
 ### External Links
+
 ```markdown
 [External link](https://example.com)
 [External link with title](https://example.com "Title")
 ```
 
 ### Anchor Links
+
 - Convert headings to lowercase
 - Replace spaces with hyphens
 - Remove special characters
@@ -179,6 +184,7 @@ Configure `.markdownlint.json`:
 ```
 
 Common rules:
+
 - **MD013**: Line length (configure 80-120 chars)
 - **MD024**: No duplicate headings
 - **MD033**: Inline HTML (disable if needed)
@@ -196,6 +202,7 @@ Common rules:
 ## Documentation Templates
 
 ### README Template
+
 ```markdown
 # Project Name
 
@@ -224,6 +231,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 ## License
 
 [MIT](./LICENSE)
+
 ```
 
 ### API Documentation Template
@@ -251,6 +259,7 @@ Returns list of resources.
   "total": 100
 }
 ```
+
 ```
 
 ## Best Practices

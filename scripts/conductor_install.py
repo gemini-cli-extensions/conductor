@@ -12,14 +12,12 @@ Usage:
 """
 
 import argparse
-import json
-import os
 import platform
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Optional
 
 
 class Colors:
@@ -35,12 +33,12 @@ class Colors:
 class ConductorInstaller:
     """Installs conductor components"""
 
-    def __init__(self, base_path: Path = Path(".")):
+    def __init__(self, base_path: Path = Path()) -> None:
         self.base_path = base_path.resolve()
         self.os_name = platform.system().lower()
-        self.errors: List[str] = []
-        self.installed: List[str] = []
-        self.skipped: List[str] = []
+        self.errors: list[str] = []
+        self.installed: list[str] = []
+        self.skipped: list[str] = []
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -74,7 +72,7 @@ class ConductorInstaller:
         """Check if a command is available"""
         return shutil.which(command) is not None
 
-    def run_command(self, cmd: List[str], cwd: Optional[Path] = None, check: bool = True) -> Tuple[int, str, str]:
+    def run_command(self, cmd: list[str], cwd: Optional[Path] = None, check: bool = True) -> tuple[int, str, str]:
         """Run a shell command"""
         try:
             result = subprocess.run(
@@ -92,7 +90,7 @@ class ConductorInstaller:
 
     def install_component(self, component: str, force: bool = False) -> bool:
         """Install a specific component"""
-        self.log(f"\n📦 Installing {component}...", Colors.BLUE)
+        self.log(f"\n[PKG] Installing {component}...", Colors.BLUE)
 
         installers = {
             "core": self._install_core,
@@ -102,18 +100,18 @@ class ConductorInstaller:
         }
 
         if component not in installers:
-            self.log(f"❌ Unknown component: {component}", Colors.RED)
+            self.log(f"[FAIL] Unknown component: {component}", Colors.RED)
             return False
 
         try:
             success = installers[component](force)
             if success:
                 self.installed.append(component)
-                self.log(f"✅ {component} installed successfully", Colors.GREEN)
+                self.log(f"[PASS] {component} installed successfully", Colors.GREEN)
             return success
         except Exception as e:
             self.errors.append(f"{component}: {e}")
-            self.log(f"❌ Failed to install {component}: {e}", Colors.RED)
+            self.log(f"[FAIL] Failed to install {component}: {e}", Colors.RED)
             return False
 
     def _install_core(self, force: bool = False) -> bool:
@@ -121,14 +119,14 @@ class ConductorInstaller:
         core_path = self.base_path / "conductor-core"
 
         if not core_path.exists():
-            self.log("⚠️  conductor-core not found, skipping", Colors.YELLOW)
+            self.log("[WARN]  conductor-core not found, skipping", Colors.YELLOW)
             self.skipped.append("core")
             return True
 
         # Check if already installed
         result = self.run_command([sys.executable, "-c", "import conductor_core"], check=False)
         if result[0] == 0 and not force:
-            self.log("ℹ️  conductor-core already installed (use --force to reinstall)", Colors.YELLOW)
+            self.log("[INFO]  conductor-core already installed (use --force to reinstall)", Colors.YELLOW)
             return True
 
         # Install with uv if available, otherwise pip
@@ -150,7 +148,7 @@ class ConductorInstaller:
         gemini_path = self.base_path / "conductor-gemini"
 
         if not gemini_path.exists():
-            self.log("⚠️  conductor-gemini not found, skipping", Colors.YELLOW)
+            self.log("[WARN]  conductor-gemini not found, skipping", Colors.YELLOW)
             self.skipped.append("gemini")
             return True
 
@@ -173,7 +171,7 @@ class ConductorInstaller:
 
         # Check if VS Code is installed
         if not self.check_command("code"):
-            self.log("⚠️  VS Code not found, skipping extension install", Colors.YELLOW)
+            self.log("[WARN]  VS Code not found, skipping extension install", Colors.YELLOW)
             self.skipped.append("vscode")
             return True
 
@@ -186,12 +184,12 @@ class ConductorInstaller:
                 # Build extension
                 code, stdout, stderr = self.run_command(["npm", "run", "package"], cwd=vscode_path, check=False)
                 if code != 0:
-                    self.log(f"⚠️  Failed to build extension: {stderr}", Colors.YELLOW)
+                    self.log(f"[WARN]  Failed to build extension: {stderr}", Colors.YELLOW)
                     self.skipped.append("vscode")
                     return True
 
         if not vsix_path.exists():
-            self.log("⚠️  conductor.vsix not found, skipping", Colors.YELLOW)
+            self.log("[WARN]  conductor.vsix not found, skipping", Colors.YELLOW)
             self.skipped.append("vscode")
             return True
 
@@ -219,13 +217,13 @@ class ConductorInstaller:
         claude_dest = Path.home() / ".claude"
 
         if not claude_source.exists():
-            self.log("⚠️  .claude directory not found, skipping", Colors.YELLOW)
+            self.log("[WARN]  .claude directory not found, skipping", Colors.YELLOW)
             self.skipped.append("claude")
             return True
 
         # Check if already installed
         if claude_dest.exists() and not force:
-            self.log("ℹ️  Claude Code commands already installed (use --force to reinstall)", Colors.YELLOW)
+            self.log("[INFO]  Claude Code commands already installed (use --force to reinstall)", Colors.YELLOW)
             return True
 
         # Remove existing if force
@@ -237,13 +235,13 @@ class ConductorInstaller:
             shutil.rmtree(claude_dest)
 
         shutil.copytree(claude_source, claude_dest)
-        self.log(f"✅ Copied Claude commands to {claude_dest}", Colors.GREEN)
+        self.log(f"[PASS] Copied Claude commands to {claude_dest}", Colors.GREEN)
 
         return True
 
     def verify_installation(self) -> bool:
         """Verify all installed components"""
-        self.log("\n🔍 Verifying installation...", Colors.BLUE)
+        self.log("\n[SCAN] Verifying installation...", Colors.BLUE)
 
         all_good = True
 
@@ -253,9 +251,9 @@ class ConductorInstaller:
             check=False,
         )
         if result[0] == 0:
-            self.log(f"✅ conductor-core: {result[1].strip()}", Colors.GREEN)
+            self.log(f"[PASS] conductor-core: {result[1].strip()}", Colors.GREEN)
         else:
-            self.log("❌ conductor-core: Not installed or import error", Colors.RED)
+            self.log("[FAIL] conductor-core: Not installed or import error", Colors.RED)
             all_good = False
 
         # Check conductor-gemini
@@ -264,9 +262,9 @@ class ConductorInstaller:
             check=False,
         )
         if result[0] == 0:
-            self.log("✅ conductor-gemini: Installed", Colors.GREEN)
+            self.log("[PASS] conductor-gemini: Installed", Colors.GREEN)
         else:
-            self.log("❌ conductor-gemini: Not installed", Colors.RED)
+            self.log("[FAIL] conductor-gemini: Not installed", Colors.RED)
             all_good = False
 
         # Check VS Code extension
@@ -276,16 +274,16 @@ class ConductorInstaller:
                 check=False,
             )
             if "conductor" in result[1].lower():
-                self.log("✅ VS Code extension: Installed", Colors.GREEN)
+                self.log("[PASS] VS Code extension: Installed", Colors.GREEN)
             else:
-                self.log("⚠️  VS Code extension: Not found (may need manual install)", Colors.YELLOW)
+                self.log("[WARN]  VS Code extension: Not found (may need manual install)", Colors.YELLOW)
 
         # Check Claude
         claude_dest = Path.home() / ".claude"
         if claude_dest.exists():
-            self.log(f"✅ Claude Code commands: Installed at {claude_dest}", Colors.GREEN)
+            self.log(f"[PASS] Claude Code commands: Installed at {claude_dest}", Colors.GREEN)
         else:
-            self.log("⚠️  Claude Code commands: Not installed", Colors.YELLOW)
+            self.log("[WARN]  Claude Code commands: Not installed", Colors.YELLOW)
 
         return all_good
 
@@ -296,7 +294,7 @@ class ConductorInstaller:
         self.log("=" * 60, Colors.BLUE)
 
         if self.installed:
-            self.log(f"\n✅ Successfully installed ({len(self.installed)}):", Colors.GREEN)
+            self.log(f"\n[PASS] Successfully installed ({len(self.installed)}):", Colors.GREEN)
             for comp in self.installed:
                 self.log(f"   • {comp}", Colors.GREEN)
 
@@ -306,15 +304,15 @@ class ConductorInstaller:
                 self.log(f"   • {comp}", Colors.YELLOW)
 
         if self.errors:
-            self.log(f"\n❌ Errors ({len(self.errors)}):", Colors.RED)
+            self.log(f"\n[FAIL] Errors ({len(self.errors)}):", Colors.RED)
             for error in self.errors:
                 self.log(f"   • {error}", Colors.RED)
 
         self.log("\n" + "=" * 60, Colors.BLUE)
 
-    def install_all(self, components: Optional[List[str]] = None, force: bool = False) -> bool:
+    def install_all(self, components: Optional[list[str]] = None, force: bool = False) -> bool:
         """Install all or specified components"""
-        self.log("\n🚀 Conductor Universal Installer", Colors.BLUE)
+        self.log("\n[START] Conductor Universal Installer", Colors.BLUE)
         self.log("=" * 60, Colors.BLUE)
         self.log(f"OS: {self.detect_os()} ({self.detect_arch()})")
         self.log(f"Base path: {self.base_path}")
@@ -334,7 +332,7 @@ class ConductorInstaller:
         return success and len(self.errors) == 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Install conductor components",
         formatter_class=argparse.RawDescriptionHelpFormatter,

@@ -11,16 +11,15 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 
 class DocumentationValidator:
     """Validates documentation files against style guides."""
 
-    def __init__(self, base_path: Path = Path(".")):
+    def __init__(self, base_path: Path = Path()) -> None:
         self.base_path = base_path
-        self.errors: List[Tuple[Path, str]] = []
-        self.warnings: List[Tuple[Path, str]] = []
+        self.errors: list[tuple[Path, str]] = []
+        self.warnings: list[tuple[Path, str]] = []
 
     def validate_all(self) -> bool:
         """Run all validation checks.
@@ -28,7 +27,7 @@ class DocumentationValidator:
         Returns:
             True if all checks pass, False otherwise.
         """
-        print("🔍 Running documentation validation...\n")
+        print("[SCAN] Running documentation validation...\n")
 
         # Validate Markdown files
         self._validate_markdown_files()
@@ -159,7 +158,7 @@ class DocumentationValidator:
     def _check_csl_json_file(self, file_path: Path) -> None:
         """Check a single CSL-JSON file."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             # Check structure
@@ -204,29 +203,29 @@ class DocumentationValidator:
         print("=" * 60)
 
         if not self.errors and not self.warnings:
-            print("\n✅ All documentation checks passed!")
+            print("\n[PASS] All documentation checks passed!")
             return
 
         if self.errors:
-            print(f"\n❌ ERRORS ({len(self.errors)}):")
+            print(f"\n[FAIL] ERRORS ({len(self.errors)}):")
             for file_path, message in self.errors:
                 print(f"   {file_path}: {message}")
 
         if self.warnings:
-            print(f"\n⚠️  WARNINGS ({len(self.warnings)}):")
+            print(f"\n[WARN]  WARNINGS ({len(self.warnings)}):")
             for file_path, message in self.warnings:
                 print(f"   {file_path}: {message}")
 
         print("\n" + "=" * 60)
 
         if self.errors:
-            print(f"\n❌ Validation FAILED: {len(self.errors)} error(s)")
+            print(f"\n[FAIL] Validation FAILED: {len(self.errors)} error(s)")
             sys.exit(1)
         else:
-            print(f"\n✅ Validation PASSED with {len(self.warnings)} warning(s)")
+            print(f"\n[PASS] Validation PASSED with {len(self.warnings)} warning(s)")
 
 
-def main():
+def main() -> int:
     """Main entry point."""
     validator = DocumentationValidator()
     success = validator.validate_all()

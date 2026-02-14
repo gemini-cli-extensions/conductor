@@ -3,8 +3,8 @@ id: status
 name: conductor-status
 description: Display project progress overview.
 triggers: ["$conductor-status", "/conductor-status", "/conductor:status", "@conductor /status"]
-version: "0.1.0"
-engine_compatibility: ">=0.2.0"
+version: 0.1.0
+engine_compatibility: >=0.2.0
 ---
 
 # conductor-status
@@ -108,4 +108,3 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **Phases (total):** The total number of major phases.
     -   **Tasks (total):** The total number of tasks.
     -   **Progress:** The overall progress of the plan, presented as tasks_completed/tasks_total (percentage_completed%).
-

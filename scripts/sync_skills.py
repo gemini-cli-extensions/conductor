@@ -27,7 +27,10 @@ ANTIGRAVITY_SKILLS_GLOBAL_DIR = Path.home() / ".gemini" / "antigravity" / "skill
 ANTIGRAVITY_SKILLS_WORKSPACE_DIR = ROOT / ".agent" / "skills"
 CODEX_DIR = Path.home() / ".codex" / "skills"
 CLAUDE_DIR = Path.home() / ".claude" / "skills"
-OPENCODE_DIR = Path.home() / ".opencode" / "skill"
+CLINE_DIR = Path.home() / ".cline" / "skills"
+KILO_DIR = Path.home() / ".kilo" / "skills"
+AMP_DIR = Path.home() / ".amp" / "skills"
+OPENCODE_DIR = Path.home() / ".opencode" / "skills"
 COPILOT_DIR = Path.home() / ".config" / "github-copilot"
 AIX_DIR = Path.home() / ".config" / "aix"
 SKILLSHARE_DIR = Path.home() / ".config" / "skillshare" / "skills"
@@ -189,6 +192,15 @@ def sync_skills() -> None:
 
         # Sync to Claude
         _perform_sync(CLAUDE_DIR, skills)
+
+        # Sync to Cline
+        _perform_sync(CLINE_DIR, skills)
+
+        # Sync to Kilo
+        _perform_sync(KILO_DIR, skills)
+
+        # Sync to Amp
+        _perform_sync(AMP_DIR, skills)
 
         # Sync to OpenCode
         _perform_sync(OPENCODE_DIR, skills)

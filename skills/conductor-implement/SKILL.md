@@ -3,8 +3,8 @@ id: implement
 name: conductor-implement
 description: Execute tasks from a track's plan following the TDD workflow.
 triggers: ["$conductor-implement", "/conductor-implement", "/conductor:implement", "@conductor /implement"]
-version: "0.1.0"
-engine_compatibility: ">=0.2.0"
+version: 0.1.0
+engine_compatibility: >=0.2.0
 ---
 
 # conductor-implement
@@ -230,4 +230,3 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 a. **Announce Cancellation:** Announce: "Deletion cancelled. The track has not been changed."
     *   **If user chooses "C" (Skip) or provides any other input:**
         *   Announce: "Okay, the completed track will remain in your tracks file for now."
-

@@ -123,7 +123,7 @@ with open('$file') as f:
       - name: Check for documentation style guide compliance
         run: |
           echo "Checking documentation style guide compliance..."
-          
+
           # Check for proper heading hierarchy
           find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
             # Check that files don't start with h2 or lower
@@ -132,7 +132,7 @@ with open('$file') as f:
               echo "⚠️  $file starts with H2 instead of H1"
             fi
           done
-          
+
           echo "✓ Documentation standards check complete"
 
   generate-report:
@@ -150,17 +150,17 @@ with open('$file') as f:
           echo "" >> docs-report.md
           echo "Generated: $(date)" >> docs-report.md
           echo "" >> docs-report.md
-          
+
           echo "## Markdown Files" >> docs-report.md
           echo "" >> docs-report.md
           find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l | xargs echo "- Total files:" >> docs-report.md
           echo "" >> docs-report.md
-          
+
           echo "## Mermaid Diagrams" >> docs-report.md
           echo "" >> docs-report.md
           find . -name "*.mmd" -o -name "*.mermaid" | wc -l | xargs echo "- Total files:" >> docs-report.md
           echo "" >> docs-report.md
-          
+
           echo "## Status" >> docs-report.md
           echo "" >> docs-report.md
           echo "- Markdown Lint: ${{ needs.markdown-lint.result }}" >> docs-report.md
@@ -168,14 +168,14 @@ with open('$file') as f:
           echo "- CSL Validation: ${{ needs.csl-validate.result }}" >> docs-report.md
           echo "- Documentation Standards: ${{ needs.docs-standards.result }}" >> docs-report.md
           echo "" >> docs-report.md
-          
+
           echo "## Style Guides" >> docs-report.md
           echo "" >> docs-report.md
           echo "Documentation follows these style guides:" >> docs-report.md
           echo "- [Markdown](templates/code_styleguides/markdown.md)" >> docs-report.md
           echo "- [Mermaid](templates/code_styleguides/mermaid.md)" >> docs-report.md
           echo "- [CSL-JSON](templates/code_styleguides/csl-json.md)" >> docs-report.md
-          
+
           cat docs-report.md
 
       - name: Upload report

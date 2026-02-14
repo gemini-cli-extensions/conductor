@@ -38,38 +38,38 @@ function barChart() {
     let margin = { top: 20, right: 30, bottom: 40, left: 50 };
     let xAccessor = d => d.x;
     let yAccessor = d => d.y;
-    
+
     // Main function
     function chart(selection) {
         selection.each(function(data) {
             const svg = d3.select(this)
                 .attr('width', width)
                 .attr('height', height);
-            
+
             // Implementation here
             update(data);
         });
     }
-    
+
     // Getter/setter methods
     chart.width = function(value) {
         if (!arguments.length) return width;
         width = value;
         return chart;
     };
-    
+
     chart.height = function(value) {
         if (!arguments.length) return height;
         height = value;
         return chart;
     };
-    
+
     chart.margin = function(value) {
         if (!arguments.length) return margin;
         margin = value;
         return chart;
     };
-    
+
     return chart;
 }
 
@@ -93,7 +93,7 @@ function update(data) {
     // Select and bind data
     const bars = svg.selectAll('.bar')
         .data(data, d => d.id); // Use key function for object constancy
-    
+
     // Exit: Remove old elements
     bars.exit()
         .transition()
@@ -101,7 +101,7 @@ function update(data) {
         .attr('y', height)
         .attr('height', 0)
         .remove();
-    
+
     // Enter: Create new elements
     const barsEnter = bars.enter()
         .append('rect')
@@ -111,7 +111,7 @@ function update(data) {
         .attr('width', xScale.bandwidth())
         .attr('height', 0)
         .attr('fill', d => colorScale(d.category));
-    
+
     // Update: Merge and update all elements
     barsEnter.merge(bars)
         .transition()
@@ -127,6 +127,7 @@ function update(data) {
 ## Scales
 
 ### Linear Scales
+
 ```javascript
 const xScale = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.value)])
@@ -139,6 +140,7 @@ const yScale = d3.scaleLinear()
 ```
 
 ### Ordinal/Band Scales
+
 ```javascript
 const xScale = d3.scaleBand()
     .domain(data.map(d => d.category))
@@ -151,6 +153,7 @@ const colorScale = d3.scaleOrdinal()
 ```
 
 ### Time Scales
+
 ```javascript
 const xScale = d3.scaleTime()
     .domain(d3.extent(data, d => d.date))
@@ -158,11 +161,12 @@ const xScale = d3.scaleTime()
 ```
 
 ### Scale Utilities
+
 ```javascript
 // Create scale from data
 function createScale(data, accessor, range, scaleType = 'linear') {
     const scale = d3[`scale${scaleType.charAt(0).toUpperCase() + scaleType.slice(1)}`]();
-    
+
     if (scaleType === 'band') {
         scale.domain(data.map(accessor))
             .range(range)
@@ -172,7 +176,7 @@ function createScale(data, accessor, range, scaleType = 'linear') {
             .range(range)
             .nice();
     }
-    
+
     return scale;
 }
 ```
@@ -184,22 +188,22 @@ function createAxes(svg, xScale, yScale, width, height, margin) {
     const xAxis = d3.axisBottom(xScale)
         .tickSizeOuter(0)
         .tickPadding(10);
-    
+
     const yAxis = d3.axisLeft(yScale)
         .ticks(5)
         .tickFormat(d => `$${d3.format('.2s')(d)}`) // Format as currency
         .tickSizeOuter(0);
-    
+
     // X Axis
     const xAxisGroup = svg.append('g')
         .attr('class', 'axis axis-x')
         .attr('transform', `translate(0, ${height})`)
         .call(xAxis);
-    
+
     xAxisGroup.selectAll('text')
         .attr('transform', 'rotate(-45)')
         .style('text-anchor', 'end');
-    
+
     // X Axis Label
     xAxisGroup.append('text')
         .attr('class', 'axis-label')
@@ -208,12 +212,12 @@ function createAxes(svg, xScale, yScale, width, height, margin) {
         .attr('fill', 'currentColor')
         .style('text-anchor', 'middle')
         .text('Category');
-    
+
     // Y Axis
     const yAxisGroup = svg.append('g')
         .attr('class', 'axis axis-y')
         .call(yAxis);
-    
+
     // Y Axis Label
     yAxisGroup.append('text')
         .attr('class', 'axis-label')
@@ -223,7 +227,7 @@ function createAxes(svg, xScale, yScale, width, height, margin) {
         .attr('fill', 'currentColor')
         .style('text-anchor', 'middle')
         .text('Value');
-    
+
     return { xAxisGroup, yAxisGroup };
 }
 ```
@@ -270,7 +274,7 @@ function setupInteractions(selection) {
                 .transition()
                 .duration(200)
                 .attr('opacity', 0.8);
-            
+
             showTooltip(event, d);
         })
         .on('mousemove', function(event, d) {
@@ -281,7 +285,7 @@ function setupInteractions(selection) {
                 .transition()
                 .duration(200)
                 .attr('opacity', 1);
-            
+
             hideTooltip();
         })
         .on('click', function(event, d) {
@@ -298,12 +302,12 @@ function makeResponsive(svg) {
     const container = svg.node().parentNode;
     const width = container.clientWidth;
     const height = container.clientHeight || width * 0.6;
-    
+
     svg.attr('width', width)
         .attr('height', height)
         .attr('viewBox', `0 0 ${width} ${height}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
-    
+
     return { width, height };
 }
 
@@ -315,9 +319,9 @@ function observeResize(svg, renderCallback) {
             renderCallback(width, height);
         }
     });
-    
+
     resizeObserver.observe(svg.node().parentNode);
-    
+
     return () => resizeObserver.disconnect();
 }
 ```
@@ -376,7 +380,7 @@ function createTooltip() {
 
 function showTooltip(event, d, content) {
     const tooltip = d3.select('.tooltip');
-    
+
     tooltip
         .style('visibility', 'visible')
         .html(content(d))
@@ -397,15 +401,15 @@ function addAccessibilityFeatures(svg, data, config) {
     // Title
     svg.append('title')
         .text(config.title || 'Data Visualization');
-    
+
     // Description
     svg.append('desc')
         .text(config.description || 'Chart showing data trends');
-    
+
     // ARIA labels
     svg.attr('role', 'img')
         .attr('aria-label', config.ariaLabel || 'Data visualization');
-    
+
     // Keyboard navigation
     svg.selectAll('.interactive')
         .attr('tabindex', 0)
@@ -416,7 +420,7 @@ function addAccessibilityFeatures(svg, data, config) {
                 handleInteraction(d);
             }
         });
-    
+
     // Screen reader text
     data.forEach((d, i) => {
         svg.append('text')
@@ -442,27 +446,27 @@ function createTestContainer() {
 describe('BarChart', () => {
     let container;
     let chart;
-    
+
     beforeEach(() => {
         container = createTestContainer();
         chart = barChart().width(500).height(300);
     });
-    
+
     afterEach(() => {
         container.remove();
     });
-    
+
     test('renders correct number of bars', () => {
         const data = [{ category: 'A', value: 10 }, { category: 'B', value: 20 }];
-        
+
         d3.select(container)
             .datum(data)
             .call(chart);
-        
+
         const bars = container.querySelectorAll('.bar');
         expect(bars.length).toBe(2);
     });
-    
+
     test('applies correct dimensions', () => {
         const svg = container.querySelector('svg');
         expect(svg.getAttribute('width')).toBe('500');
@@ -480,9 +484,9 @@ function createCanvasChart(data) {
         .attr('width', width)
         .attr('height', height)
         .node();
-    
+
     const ctx = canvas.getContext('2d');
-    
+
     data.forEach(d => {
         ctx.beginPath();
         ctx.arc(xScale(d.x), yScale(d.y), 2, 0, 2 * Math.PI);
@@ -533,6 +537,7 @@ function animate() {
 **BE CONSISTENT.** When creating visualizations, follow established patterns in the project.
 
 *References:*
+
 - [D3.js Documentation](https://d3js.org/)
 - [D3.js Gallery](https://observablehq.com/@d3/gallery)
 - [D3.js API Reference](https://github.com/d3/d3/blob/main/API.md)

@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for suggesting a new feature!
-        
+
   - type: textarea
     id: description
     attributes:
@@ -16,7 +16,7 @@ body:
       placeholder: I would like to be able to...
     validations:
       required: true
-      
+
   - type: textarea
     id: problem
     attributes:
@@ -24,7 +24,7 @@ body:
       description: What problem does this feature solve?
     validations:
       required: true
-      
+
   - type: textarea
     id: solution
     attributes:
@@ -32,7 +32,7 @@ body:
       description: Describe the solution you'd like
     validations:
       required: true
-      
+
   - type: textarea
     id: alternatives
     attributes:
@@ -40,7 +40,7 @@ body:
       description: Describe any alternative solutions you've considered
     validations:
       required: false
-      
+
   - type: textarea
     id: additional
     attributes:

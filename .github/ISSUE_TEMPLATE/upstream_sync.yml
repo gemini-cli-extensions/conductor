@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Request a sync from upstream repositories.
-        
+
   - type: dropdown
     id: source
     attributes:
@@ -19,7 +19,7 @@ body:
         - Both
     validations:
       required: true
-      
+
   - type: textarea
     id: changes
     attributes:
@@ -31,7 +31,7 @@ body:
         - New feature X
     validations:
       required: true
-      
+
   - type: textarea
     id: rationale
     attributes:
@@ -39,7 +39,7 @@ body:
       description: Why do these changes need to be synced?
     validations:
       required: true
-      
+
   - type: checkboxes
     id: checklist
     attributes:

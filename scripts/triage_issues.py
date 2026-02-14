@@ -10,12 +10,11 @@ Usage:
 
 import argparse
 import json
-import re
 import sys
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 
 class Colors:
@@ -45,11 +44,11 @@ class IssueTriager:
 
     UPSTREAM_REPO = "gemini-cli-extensions/conductor"
 
-    def __init__(self, base_path: Path = Path("."), dry_run: bool = False):
+    def __init__(self, base_path: Path = Path(), dry_run: bool = False) -> None:
         self.base_path = base_path.resolve()
         self.dry_run = dry_run
-        self.issues_analyzed: List[Dict] = []
-        self.tracks_created: List[str] = []
+        self.issues_analyzed: list[dict] = []
+        self.tracks_created: list[str] = []
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -58,9 +57,9 @@ class IssueTriager:
         else:
             print(message)
 
-    def fetch_issues(self, state: str = "open") -> List[Dict]:
+    def fetch_issues(self, state: str = "open") -> list[dict]:
         """Fetch issues from GitHub API"""
-        self.log(f"\n📡 Fetching {state} issues from {self.UPSTREAM_REPO}...", Colors.BLUE)
+        self.log(f"\n[FETCH] Fetching {state} issues from {self.UPSTREAM_REPO}...", Colors.BLUE)
 
         try:
             url = f"https://api.github.com/repos/{self.UPSTREAM_REPO}/issues?state={state}&per_page=100"
@@ -72,13 +71,13 @@ class IssueTriager:
                 issues = json.loads(response.read().decode())
                 # Filter out PRs (they are also returned as issues)
                 issues = [i for i in issues if "pull_request" not in i]
-                self.log(f"✅ Fetched {len(issues)} issues", Colors.GREEN)
+                self.log(f"[PASS] Fetched {len(issues)} issues", Colors.GREEN)
                 return issues
         except Exception as e:
-            self.log(f"❌ Failed to fetch issues: {e}", Colors.RED)
+            self.log(f"[FAIL] Failed to fetch issues: {e}", Colors.RED)
             return []
 
-    def classify_issue(self, issue: Dict) -> Dict:
+    def classify_issue(self, issue: dict) -> dict:
         """Classify an issue by type and priority"""
         title = issue.get("title", "").lower()
         body = issue.get("body", "").lower()
@@ -117,9 +116,9 @@ class IssueTriager:
             "state": issue.get("state", ""),
         }
 
-    def analyze_issues(self, issues: List[Dict]) -> List[Dict]:
+    def analyze_issues(self, issues: list[dict]) -> list[dict]:
         """Analyze all issues"""
-        self.log("\n🔍 Analyzing issues...", Colors.BLUE)
+        self.log("\n[SCAN] Analyzing issues...", Colors.BLUE)
 
         analyzed = []
         for issue in issues:
@@ -128,7 +127,7 @@ class IssueTriager:
 
         return analyzed
 
-    def should_create_track(self, issue: Dict) -> bool:
+    def should_create_track(self, issue: dict) -> bool:
         """Determine if we should create a track for this issue"""
         # Only create tracks for trackable issues
         if not issue["is_trackable"]:
@@ -145,12 +144,12 @@ class IssueTriager:
 
         return True
 
-    def create_track(self, issue: Dict) -> Optional[str]:
+    def create_track(self, issue: dict) -> Optional[str]:
         """Create a conductor track for an issue"""
         issue_num = issue["number"]
         track_id = f"issue_{issue_num}_{datetime.now().strftime('%Y%m%d')}"
 
-        self.log(f"\n📝 Creating track for Issue #{issue_num}...", Colors.BLUE)
+        self.log(f"\n[WRITE] Creating track for Issue #{issue_num}...", Colors.BLUE)
 
         if self.dry_run:
             self.log(f"[DRY-RUN] Would create track: {track_id}", Colors.YELLOW)
@@ -243,10 +242,10 @@ This track addresses Issue #{issue_num} from upstream repository.
         # Update tracks.md
         self._add_track_to_registry(track_id, issue)
 
-        self.log(f"✅ Created track: {track_id}", Colors.GREEN)
+        self.log(f"[PASS] Created track: {track_id}", Colors.GREEN)
         return track_id
 
-    def _add_track_to_registry(self, track_id: str, issue: Dict) -> None:
+    def _add_track_to_registry(self, track_id: str, issue: dict) -> None:
         """Add track to tracks.md registry"""
         tracks_md = self.base_path / "conductor" / "tracks.md"
 
@@ -272,13 +271,13 @@ This track addresses Issue #{issue_num} from upstream repository.
 
     def run_triage(self, create_tracks: bool = False) -> bool:
         """Run full triage process"""
-        self.log("\n🚀 Conductor Issue Triage Bot", Colors.BLUE)
+        self.log("\n[START] Conductor Issue Triage Bot", Colors.BLUE)
         self.log("=" * 60, Colors.BLUE)
 
         # Fetch issues
         issues = self.fetch_issues()
         if not issues:
-            self.log("❌ No issues to triage", Colors.RED)
+            self.log("[FAIL] No issues to triage", Colors.RED)
             return False
 
         # Analyze issues
@@ -290,14 +289,14 @@ This track addresses Issue #{issue_num} from upstream repository.
         # Create tracks for trackable issues
         if create_tracks:
             trackable = [i for i in self.issues_analyzed if self.should_create_track(i)]
-            self.log(f"\n📝 Creating tracks for {len(trackable)} trackable issues...", Colors.BLUE)
+            self.log(f"\n[WRITE] Creating tracks for {len(trackable)} trackable issues...", Colors.BLUE)
 
             for issue in trackable:
                 track_id = self.create_track(issue)
                 if track_id:
                     self.tracks_created.append(track_id)
 
-            self.log(f"\n✅ Created {len(self.tracks_created)} track(s)", Colors.GREEN)
+            self.log(f"\n[PASS] Created {len(self.tracks_created)} track(s)", Colors.GREEN)
 
         return True
 
@@ -322,7 +321,7 @@ This track addresses Issue #{issue_num} from upstream repository.
             if issue["is_trackable"]:
                 trackable_count += 1
 
-        self.log(f"\n📊 Total issues analyzed: {len(self.issues_analyzed)}", Colors.BLUE)
+        self.log(f"\n[STATS] Total issues analyzed: {len(self.issues_analyzed)}", Colors.BLUE)
 
         self.log("\nBy Type:", Colors.BLUE)
         for issue_type, count in sorted(by_type.items()):
@@ -334,7 +333,7 @@ This track addresses Issue #{issue_num} from upstream repository.
                 color = Colors.RED if priority == "high" else Colors.YELLOW if priority == "medium" else Colors.GREEN
                 self.log(f"  {priority}: {by_priority[priority]}", color)
 
-        self.log(f"\n🎯 Trackable issues: {trackable_count}", Colors.YELLOW)
+        self.log(f"\n[TARGET] Trackable issues: {trackable_count}", Colors.YELLOW)
 
         # List trackable issues
         if trackable_count > 0:
@@ -347,7 +346,7 @@ This track addresses Issue #{issue_num} from upstream repository.
         self.log("\n" + "=" * 60, Colors.BLUE)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Triage GitHub issues from upstream",
         formatter_class=argparse.RawDescriptionHelpFormatter,

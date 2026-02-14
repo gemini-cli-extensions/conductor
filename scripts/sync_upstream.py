@@ -11,12 +11,11 @@ Usage:
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 
 class Colors:
@@ -45,11 +44,11 @@ class UpstreamSync:
         },
     }
 
-    def __init__(self, base_path: Path = Path("."), dry_run: bool = False):
+    def __init__(self, base_path: Path = Path(), dry_run: bool = False) -> None:
         self.base_path = base_path.resolve()
         self.dry_run = dry_run
-        self.sync_results: Dict[str, Dict] = {}
-        self.errors: List[str] = []
+        self.sync_results: dict[str, dict] = {}
+        self.errors: list[str] = []
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -58,7 +57,7 @@ class UpstreamSync:
         else:
             print(message)
 
-    def run_command(self, cmd: List[str], cwd: Optional[Path] = None, check: bool = False) -> Tuple[int, str, str]:
+    def run_command(self, cmd: list[str], cwd: Optional[Path] = None, check: bool = False) -> tuple[int, str, str]:
         """Run a git command"""
         if self.dry_run:
             self.log(f"[DRY-RUN] Would run: {' '.join(cmd)}", Colors.YELLOW)
@@ -82,7 +81,7 @@ class UpstreamSync:
         """Add upstream remote if not exists"""
         upstream = self.UPSTREAMS.get(source)
         if not upstream:
-            self.log(f"❌ Unknown upstream source: {source}", Colors.RED)
+            self.log(f"[FAIL] Unknown upstream source: {source}", Colors.RED)
             return False
 
         remote_name = f"upstream-{source}"
@@ -90,18 +89,18 @@ class UpstreamSync:
         # Check if remote already exists
         code, stdout, stderr = self.run_command(["git", "remote", "-v"])
         if remote_name in stdout:
-            self.log(f"✅ Remote {remote_name} already exists", Colors.GREEN)
+            self.log(f"[PASS] Remote {remote_name} already exists", Colors.GREEN)
             return True
 
         # Add remote
-        self.log(f"📡 Adding remote {remote_name}...", Colors.BLUE)
+        self.log(f"[FETCH] Adding remote {remote_name}...", Colors.BLUE)
         code, stdout, stderr = self.run_command(["git", "remote", "add", remote_name, upstream["url"]])
 
         if code == 0:
-            self.log(f"✅ Added remote {remote_name}", Colors.GREEN)
+            self.log(f"[PASS] Added remote {remote_name}", Colors.GREEN)
             return True
         else:
-            self.log(f"❌ Failed to add remote: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Failed to add remote: {stderr}", Colors.RED)
             return False
 
     def fetch_upstream(self, source: str) -> bool:
@@ -109,18 +108,18 @@ class UpstreamSync:
         remote_name = f"upstream-{source}"
         upstream = self.UPSTREAMS.get(source)
 
-        self.log(f"\n🔄 Fetching from {upstream['name']}...", Colors.BLUE)
+        self.log(f"\n[SYNC] Fetching from {upstream['name']}...", Colors.BLUE)
 
         code, stdout, stderr = self.run_command(["git", "fetch", remote_name, "--tags"])
 
         if code == 0:
-            self.log(f"✅ Fetched successfully", Colors.GREEN)
+            self.log("[PASS] Fetched successfully", Colors.GREEN)
             return True
         else:
-            self.log(f"❌ Fetch failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Fetch failed: {stderr}", Colors.RED)
             return False
 
-    def compare_branches(self, source: str) -> Dict:
+    def compare_branches(self, source: str) -> dict:
         """Compare local and upstream branches"""
         remote_name = f"upstream-{source}"
 
@@ -129,7 +128,7 @@ class UpstreamSync:
         current_branch = stdout.strip() if code == 0 else "main"
 
         # Compare commits
-        local_ref = f"HEAD"
+        local_ref = "HEAD"
         remote_ref = f"{remote_name}/{current_branch}"
 
         # Check if remote branch exists
@@ -174,15 +173,15 @@ class UpstreamSync:
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         branch_name = f"sync-{source}-{timestamp}"
 
-        self.log(f"🌿 Creating branch: {branch_name}", Colors.BLUE)
+        self.log(f"[BRANCH] Creating branch: {branch_name}", Colors.BLUE)
 
         code, stdout, stderr = self.run_command(["git", "checkout", "-b", branch_name])
 
         if code == 0:
-            self.log(f"✅ Created branch {branch_name}", Colors.GREEN)
+            self.log(f"[PASS] Created branch {branch_name}", Colors.GREEN)
             return branch_name
         else:
-            self.log(f"❌ Failed to create branch: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Failed to create branch: {stderr}", Colors.RED)
             return None
 
     def merge_upstream(self, source: str, branch: str) -> bool:
@@ -190,7 +189,7 @@ class UpstreamSync:
         remote_name = f"upstream-{source}"
         upstream = self.UPSTREAMS.get(source)
 
-        self.log(f"🔀 Merging {upstream['name']}...", Colors.BLUE)
+        self.log(f"[MERGE] Merging {upstream['name']}...", Colors.BLUE)
 
         # Get current branch
         code, stdout, stderr = self.run_command(["git", "branch", "--show-current"])
@@ -201,16 +200,16 @@ class UpstreamSync:
         code, stdout, stderr = self.run_command(["git", "merge", remote_ref, "--no-edit"])
 
         if code == 0:
-            self.log(f"✅ Merged successfully", Colors.GREEN)
+            self.log("[PASS] Merged successfully", Colors.GREEN)
             return True
         else:
             # Check if it's a conflict
             if "CONFLICT" in stderr or "conflict" in stderr.lower():
-                self.log(f"⚠️  Merge conflict detected!", Colors.YELLOW)
-                self.log(f"   Manual resolution required", Colors.YELLOW)
+                self.log("[WARN]  Merge conflict detected!", Colors.YELLOW)
+                self.log("   Manual resolution required", Colors.YELLOW)
                 return False
             else:
-                self.log(f"❌ Merge failed: {stderr}", Colors.RED)
+                self.log(f"[FAIL] Merge failed: {stderr}", Colors.RED)
                 return False
 
     def generate_diff_summary(self, source: str) -> str:
@@ -225,7 +224,7 @@ class UpstreamSync:
             return f"Changed files: {len(files)}"
         return "Could not generate summary"
 
-    def sync_source(self, source: str) -> Dict:
+    def sync_source(self, source: str) -> dict:
         """Sync from a specific upstream source"""
         self.log(f"\n{'=' * 60}", Colors.BLUE)
         self.log(f"Syncing from: {self.UPSTREAMS[source]['name']}", Colors.BLUE)
@@ -251,7 +250,7 @@ class UpstreamSync:
 
         # Compare branches
         comparison = self.compare_branches(source)
-        self.log(f"\n📊 Comparison:", Colors.BLUE)
+        self.log("\n[STATS] Comparison:", Colors.BLUE)
         self.log(
             f"   Behind: {comparison['behind']} commits", Colors.YELLOW if comparison["behind"] > 0 else Colors.GREEN
         )
@@ -262,7 +261,7 @@ class UpstreamSync:
         )
 
         if comparison["behind"] == 0:
-            self.log(f"\n✅ Already up to date!", Colors.GREEN)
+            self.log("\n[PASS] Already up to date!", Colors.GREEN)
             result["success"] = True
             result["changes"] = 0
             return result
@@ -277,26 +276,26 @@ class UpstreamSync:
 
         # Merge
         if comparison["diverged"]:
-            self.log(f"\n⚠️  Branches have diverged!", Colors.YELLOW)
-            self.log(f"   Creating PR for manual review", Colors.YELLOW)
+            self.log("\n[WARN]  Branches have diverged!", Colors.YELLOW)
+            self.log("   Creating PR for manual review", Colors.YELLOW)
             result["conflicts"] = True
         else:
             if self.merge_upstream(source, branch if not self.dry_run else ""):
                 result["success"] = True
                 result["changes"] = comparison["behind"]
-                self.log(f"\n✅ Synced {comparison['behind']} commit(s)", Colors.GREEN)
+                self.log(f"\n[PASS] Synced {comparison['behind']} commit(s)", Colors.GREEN)
             else:
                 result["error"] = "Merge failed"
                 result["conflicts"] = True
 
         return result
 
-    def sync_all(self, sources: Optional[List[str]] = None) -> bool:
+    def sync_all(self, sources: Optional[list[str]] = None) -> bool:
         """Sync from all or specified upstream sources"""
         if sources is None:
             sources = list(self.UPSTREAMS.keys())
 
-        self.log("\n🚀 Conductor Upstream Sync Bot", Colors.BLUE)
+        self.log("\n[START] Conductor Upstream Sync Bot", Colors.BLUE)
         self.log(f"{'=' * 60}", Colors.BLUE)
         self.log(f"Base path: {self.base_path}")
         self.log(f"Sources: {', '.join(sources)}")
@@ -308,7 +307,7 @@ class UpstreamSync:
 
         for source in sources:
             if source not in self.UPSTREAMS:
-                self.log(f"❌ Unknown source: {source}", Colors.RED)
+                self.log(f"[FAIL] Unknown source: {source}", Colors.RED)
                 all_success = False
                 continue
 
@@ -335,18 +334,18 @@ class UpstreamSync:
 
             if result["success"]:
                 if result["changes"] > 0:
-                    self.log(f"\n✅ {upstream_name}: Synced {result['changes']} commit(s)", Colors.GREEN)
+                    self.log(f"\n[PASS] {upstream_name}: Synced {result['changes']} commit(s)", Colors.GREEN)
                     if result.get("branch"):
                         self.log(f"   Branch: {result['branch']}", Colors.BLUE)
                 else:
-                    self.log(f"\n✅ {upstream_name}: Already up to date", Colors.GREEN)
+                    self.log(f"\n[PASS] {upstream_name}: Already up to date", Colors.GREEN)
             elif result.get("conflicts"):
-                self.log(f"\n⚠️  {upstream_name}: Conflicts detected", Colors.YELLOW)
+                self.log(f"\n[WARN]  {upstream_name}: Conflicts detected", Colors.YELLOW)
                 if result.get("branch"):
                     self.log(f"   Branch: {result['branch']} (needs manual merge)", Colors.YELLOW)
                 total_conflicts += 1
             else:
-                self.log(f"\n❌ {upstream_name}: Failed - {result.get('error', 'Unknown error')}", Colors.RED)
+                self.log(f"\n[FAIL] {upstream_name}: Failed - {result.get('error', 'Unknown error')}", Colors.RED)
 
             total_changes += result.get("changes", 0)
 
@@ -356,7 +355,7 @@ class UpstreamSync:
         self.log("=" * 60 + "\n", Colors.BLUE)
 
         if total_conflicts > 0:
-            self.log("⚠️  Some syncs have conflicts and need manual resolution.", Colors.YELLOW)
+            self.log("[WARN]  Some syncs have conflicts and need manual resolution.", Colors.YELLOW)
             self.log("   Please review the branches and create PRs for manual merge.\n", Colors.YELLOW)
 
     def save_state(self) -> None:
@@ -371,7 +370,7 @@ class UpstreamSync:
             json.dump(state, f, indent=2)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Sync from upstream repositories",
         formatter_class=argparse.RawDescriptionHelpFormatter,

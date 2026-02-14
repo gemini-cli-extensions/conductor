@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Conductor Universal Installer for Unix/macOS
 # One-liner install: curl -fsSL install.cat/edithatogo/conductor-next | sh
@@ -59,7 +59,7 @@ install_mise() {
     fi
 
     log_info "Installing mise..."
-    
+
     if command_exists curl; then
         curl https://mise.run | sh
     elif command_exists wget; then
@@ -71,19 +71,19 @@ install_mise() {
 
     # Add mise to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
-    
+
     if ! command_exists mise; then
         log_error "mise installation failed"
         exit 1
     fi
-    
+
     log_success "mise installed successfully"
 }
 
 # Clone or update repository
 clone_repository() {
     log_info "Setting up conductor-next repository..."
-    
+
     if [ -d "$INSTALL_DIR" ]; then
         log_info "Repository already exists at $INSTALL_DIR, updating..."
         cd "$INSTALL_DIR"
@@ -94,24 +94,24 @@ clone_repository() {
         git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
         cd "$INSTALL_DIR"
     fi
-    
+
     log_success "Repository ready at $INSTALL_DIR"
 }
 
 # Setup mise environment
 setup_mise() {
     log_info "Setting up mise environment..."
-    
+
     # Install tools defined in mise.toml
     mise install
-    
+
     log_success "mise environment ready"
 }
 
 # Install all components
 install_components() {
     log_info "Installing conductor components..."
-    
+
     # Run the Python installer
     if [ -f "scripts/conductor_install.py" ]; then
         python3 scripts/conductor_install.py --all
@@ -119,16 +119,16 @@ install_components() {
         log_warning "conductor_install.py not found, using mise tasks..."
         mise run install-all
     fi
-    
+
     log_success "Components installed"
 }
 
 # Setup shell integration
 setup_shell() {
     log_info "Setting up shell integration..."
-    
+
     local shell_rc=""
-    
+
     if [ -n "$ZSH_VERSION" ]; then
         shell_rc="$HOME/.zshrc"
     elif [ -n "$BASH_VERSION" ]; then
@@ -137,7 +137,7 @@ setup_shell() {
         log_warning "Unknown shell, skipping shell integration"
         return 0
     fi
-    
+
     # Add mise activation if not already present
     if ! grep -q "mise activate" "$shell_rc" 2>/dev/null; then
         echo "" >> "$shell_rc"
@@ -145,7 +145,7 @@ setup_shell() {
         echo 'eval "$("$HOME/.local/bin/mise" activate)' >> "$shell_rc"
         log_success "Added mise activation to $shell_rc"
     fi
-    
+
     # Add conductor to PATH if not already present
     if ! grep -q "$INSTALL_DIR" "$shell_rc" 2>/dev/null; then
         echo "export PATH=\"$INSTALL_DIR/scripts:\$PATH\"" >> "$shell_rc"
@@ -186,23 +186,23 @@ main() {
     echo "🚀 Conductor Universal Installer"
     echo "========================================"
     echo ""
-    
+
     local os=$(detect_os)
     log_info "Detected OS: $os"
-    
+
     # Check prerequisites
     if ! command_exists git; then
         log_error "git is required but not installed"
         exit 1
     fi
-    
+
     # Run installation steps
     install_mise
     clone_repository
     setup_mise
     install_components
     setup_shell
-    
+
     # Print summary
     print_summary
 }

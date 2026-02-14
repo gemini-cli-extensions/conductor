@@ -11,11 +11,9 @@ NOTE: The actual repository rename must be done manually via GitHub UI.
 """
 
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class Colors:
@@ -34,10 +32,10 @@ class RepoRenameCoordinator:
     OLD_NAME = "edithatogo/conductor"
     NEW_NAME = "edithatogo/conductor-next"
 
-    def __init__(self, base_path: Path = Path(".")):
+    def __init__(self, base_path: Path = Path()) -> None:
         self.base_path = base_path.resolve()
-        self.files_to_update: List[Tuple[Path, int]] = []
-        self.changes_made: List[str] = []
+        self.files_to_update: list[tuple[Path, int]] = []
+        self.changes_made: list[str] = []
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -46,9 +44,9 @@ class RepoRenameCoordinator:
         else:
             print(message)
 
-    def scan_for_references(self) -> List[Tuple[Path, List[int]]]:
+    def scan_for_references(self) -> list[tuple[Path, list[int]]]:
         """Scan codebase for old repository references"""
-        self.log("\n🔍 Scanning for old repository references...", Colors.BLUE)
+        self.log("\n[SCAN] Scanning for old repository references...", Colors.BLUE)
 
         findings = []
         patterns = [
@@ -83,9 +81,9 @@ class RepoRenameCoordinator:
 
         return findings
 
-    def generate_update_list(self, findings: List[Tuple[Path, List[int]]]) -> None:
+    def generate_update_list(self, findings: list[tuple[Path, list[int]]]) -> None:
         """Generate list of files that need updating"""
-        self.log("\n📋 Files requiring updates:", Colors.YELLOW)
+        self.log("\n[LIST] Files requiring updates:", Colors.YELLOW)
 
         for file_path, lines in findings:
             self.log(f"  {file_path} (lines: {', '.join(map(str, lines))})")
@@ -132,18 +130,18 @@ class RepoRenameCoordinator:
             return False
 
         except Exception as e:
-            self.log(f"❌ Error updating {file_path}: {e}", Colors.RED)
+            self.log(f"[FAIL] Error updating {file_path}: {e}", Colors.RED)
             return False
 
     def apply_updates(self) -> int:
         """Apply all necessary updates"""
-        self.log("\n📝 Applying updates...", Colors.BLUE)
+        self.log("\n[WRITE] Applying updates...", Colors.BLUE)
 
         updated = 0
         for file_path, _ in self.files_to_update:
             if self.update_file(file_path):
                 updated += 1
-                self.log(f"  ✅ Updated: {file_path}", Colors.GREEN)
+                self.log(f"  [PASS] Updated: {file_path}", Colors.GREEN)
 
         return updated
 
@@ -240,7 +238,7 @@ If you encounter any issues:
         self.log(f"New name: {self.NEW_NAME}", Colors.GREEN)
 
         if self.changes_made:
-            self.log(f"\n✅ Updated {len(self.changes_made)} files:", Colors.GREEN)
+            self.log(f"\n[PASS] Updated {len(self.changes_made)} files:", Colors.GREEN)
             for file in self.changes_made:
                 self.log(f"  • {file}")
 
@@ -262,7 +260,7 @@ If you encounter any issues:
         self.log("\n" + "=" * 60 + "\n", Colors.BLUE)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Coordinate repository rename",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -296,7 +294,7 @@ Examples:
     findings = coordinator.scan_for_references()
 
     if not findings:
-        coordinator.log("\n✅ No references to old repository name found!", Colors.GREEN)
+        coordinator.log("\n[PASS] No references to old repository name found!", Colors.GREEN)
         return 0
 
     # Generate update list
@@ -304,15 +302,15 @@ Examples:
 
     if args.apply:
         updated = coordinator.apply_updates()
-        coordinator.log(f"\n✅ Updated {updated} files", Colors.GREEN)
+        coordinator.log(f"\n[PASS] Updated {updated} files", Colors.GREEN)
 
         # Create migration guide
         guide_path = coordinator.create_migration_guide()
-        coordinator.log(f"✅ Created migration guide: {guide_path}", Colors.GREEN)
+        coordinator.log(f"[PASS] Created migration guide: {guide_path}", Colors.GREEN)
 
         coordinator.print_summary()
     else:
-        coordinator.log("\n⚠️  This was a dry-run. Use --apply to make changes.", Colors.YELLOW)
+        coordinator.log("\n[WARN]  This was a dry-run. Use --apply to make changes.", Colors.YELLOW)
 
     return 0
 

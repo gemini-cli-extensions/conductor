@@ -1,7 +1,7 @@
 # Specification: Documentation Standards & Style Guides
 
-**Track ID:** `documentation_standards_20260214`  
-**Status:** In Progress  
+**Track ID:** `documentation_standards_20260214`
+**Status:** In Progress
 **Created:** 2026-02-14
 
 ---
@@ -14,19 +14,19 @@ Define and enforce consistent documentation standards across all conductor proje
 
 ## Goals
 
-1. **Establish consistent documentation formatting standards**  
+1. **Establish consistent documentation formatting standards**
    Ensure all documentation follows uniform style guidelines regardless of format or author.
 
-2. **Provide templates and examples for all documentation types**  
+2. **Provide templates and examples for all documentation types**
    Enable contributors to quickly create compliant documentation with copy-paste templates.
 
-3. **Integrate documentation validation into CI/CD workflow**  
+3. **Integrate documentation validation into CI/CD workflow**
    Automatically check documentation quality on every pull request and push.
 
-4. **Enable pre-commit hooks for automated checking**  
+4. **Enable pre-commit hooks for automated checking**
    Catch documentation issues before they enter the repository.
 
-5. **Ensure accessibility compliance**  
+5. **Ensure accessibility compliance**
    All documentation must meet WCAG 2.1 AA standards for accessibility.
 
 ---

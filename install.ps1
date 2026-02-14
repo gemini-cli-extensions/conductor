@@ -2,15 +2,15 @@
 <#
 .SYNOPSIS
     Conductor Universal Installer for Windows
-    
+
 .DESCRIPTION
     Installs conductor-next on Windows systems using PowerShell.
     Supports both native PowerShell and WSL.
-    
+
 .EXAMPLE
     # One-liner install:
     irm install.cat/edithatogo/conductor-next | iex
-    
+
     # Or download and run:
     .\install.ps1
 #>
@@ -83,22 +83,22 @@ function Test-Command($Command) {
 # Install mise using PowerShell
 function Install-Mise {
     Write-Info "Checking for mise..."
-    
+
     if (Test-Command "mise") {
         Write-Success "mise is already installed"
         return $true
     }
-    
+
     Write-Info "Installing mise..."
-    
+
     try {
         # Download and install mise
         $installScript = Invoke-RestMethod -Uri "https://mise.run"
         Invoke-Expression $installScript
-        
+
         # Add to PATH for current session
         $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
-        
+
         if (Test-Command "mise") {
             Write-Success "mise installed successfully"
             return $true
@@ -117,7 +117,7 @@ function Install-Mise {
 # Clone or update repository
 function Install-Repository {
     Write-Info "Setting up conductor-next repository..."
-    
+
     if (Test-Path $InstallDir) {
         Write-Info "Repository already exists at $InstallDir, updating..."
         Push-Location $InstallDir
@@ -135,10 +135,10 @@ function Install-Repository {
         if (!(Test-Path $parentDir)) {
             New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
         }
-        
+
         git clone --depth 1 $script:RepoUrl $InstallDir
     }
-    
+
     Write-Success "Repository ready at $InstallDir"
     return $true
 }
@@ -146,7 +146,7 @@ function Install-Repository {
 # Setup mise environment
 function Setup-MiseEnvironment {
     Write-Info "Setting up mise environment..."
-    
+
     Push-Location $InstallDir
     try {
         # Install tools
@@ -159,14 +159,14 @@ function Setup-MiseEnvironment {
         return $false
     }
     Pop-Location
-    
+
     return $true
 }
 
 # Install components using Python installer
 function Install-Components {
     Write-Info "Installing conductor components..."
-    
+
     Push-Location $InstallDir
     try {
         if (Test-Path "scripts\conductor_install.py") {
@@ -176,7 +176,7 @@ function Install-Components {
             Write-Warning "conductor_install.py not found, using mise tasks..."
             mise run install-all
         }
-        
+
         Write-Success "Components installed"
     }
     catch {
@@ -185,58 +185,58 @@ function Install-Components {
         return $false
     }
     Pop-Location
-    
+
     return $true
 }
 
 # Setup PowerShell profile
 function Setup-PowerShellProfile {
     Write-Info "Setting up PowerShell profile..."
-    
+
     $profileDir = Split-Path -Parent $PROFILE
     if (!(Test-Path $profileDir)) {
         New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
     }
-    
+
     if (!(Test-Path $PROFILE)) {
         New-Item -ItemType File -Path $PROFILE -Force | Out-Null
     }
-    
+
     # Add mise activation if not present
     $miseLine = 'if (Get-Command mise -ErrorAction SilentlyContinue) { mise activate pwsh | Out-String | Invoke-Expression }'
     $profileContent = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
-    
+
     if ($profileContent -notmatch "mise activate") {
         Add-Content -Path $PROFILE -Value "`n# Conductor-next (mise)`n$miseLine"
         Write-Success "Added mise activation to PowerShell profile"
     }
-    
+
     # Add conductor to PATH
     $pathLine = "`$env:PATH = `'$InstallDir\scripts;`' + `$env:PATH"
     if ($profileContent -notmatch [regex]::Escape($InstallDir)) {
         Add-Content -Path $PROFILE -Value "`n# Conductor-next`n$pathLine"
         Write-Success "Added conductor scripts to PATH"
     }
-    
+
     return $true
 }
 
 # Install using WSL as fallback
 function Install-UsingWSL {
     Write-Info "Attempting installation via WSL..."
-    
+
     if (!(Test-WSL)) {
         Write-Error "WSL is not available. Please install WSL or use manual installation."
         return $false
     }
-    
+
     Write-Info "WSL detected, running Linux installer..."
-    
+
     # Download and run the shell script in WSL
     $wslCommand = @"
 curl -fsSL install.cat/edithatogo/conductor-next | bash
 "@
-    
+
     try {
         wsl bash -c $wslCommand
         Write-Success "Installation via WSL completed"
@@ -282,16 +282,16 @@ function Main {
     Write-Host "🚀 Conductor Universal Installer for Windows" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
-    
+
     $windowsVersion = Get-WindowsVersion
     Write-Info "Detected Windows: $($windowsVersion.Name) ($($windowsVersion.Build))"
-    
+
     # Check prerequisites
     if (!(Test-Command "git")) {
         Write-Error "git is required but not installed. Please install Git for Windows."
         exit 1
     }
-    
+
     # Check if we should use WSL
     if ((Test-WSL) -and !$SkipWSLCheck) {
         $useWSL = Read-Host "WSL is available. Install via WSL for better compatibility? (Y/n)"
@@ -305,37 +305,37 @@ function Main {
             }
         }
     }
-    
+
     # Run native PowerShell installation
     Write-Info "Installing via PowerShell..."
-    
+
     # Install mise
     if (!(Install-Mise)) {
         Write-Error "Failed to install mise"
         exit 1
     }
-    
+
     # Clone repository
     if (!(Install-Repository)) {
         Write-Error "Failed to setup repository"
         exit 1
     }
-    
+
     # Setup mise environment
     if (!(Setup-MiseEnvironment)) {
         Write-Error "Failed to setup mise environment"
         exit 1
     }
-    
+
     # Install components
     if (!(Install-Components)) {
         Write-Error "Failed to install components"
         exit 1
     }
-    
+
     # Setup PowerShell profile
     Setup-PowerShellProfile
-    
+
     # Show summary
     Show-Summary
 }

@@ -5,6 +5,7 @@ This document outlines standards for creating diagrams using Mermaid syntax in d
 ## When to Use Mermaid
 
 Use Mermaid diagrams for:
+
 - **Architecture diagrams**: System components and their relationships
 - **Flowcharts**: Process flows, decision trees, workflows
 - **Sequence diagrams**: Interactions between components over time
@@ -14,6 +15,7 @@ Use Mermaid diagrams for:
 - **State diagrams**: State machines and transitions
 
 Use dedicated tools for:
+
 - Complex visual designs requiring pixel-perfect control
 - Diagrams needing custom icons or branding
 - Presentations requiring specific styling
@@ -34,6 +36,7 @@ flowchart TD
 ```
 
 **Syntax:**
+
 - Direction: `TB` (top-bottom), `LR` (left-right), `BT`, `RL`
 - Node shapes: `[]` rectangle, `{}` diamond, `()` circle, `[[]]` stadium
 - Arrows: `-->` solid, `-.->` dashed, `==>` thick
@@ -47,7 +50,7 @@ sequenceDiagram
     participant Client
     participant API
     participant Database
-    
+
     Client->>API: Request data
     API->>Database: Query
     Database-->>API: Return results
@@ -55,6 +58,7 @@ sequenceDiagram
 ```
 
 **Syntax:**
+
 - Participants: `participant Name`
 - Messages: `->>` solid, `-->>` dashed/open
 - Activations: `activate`/`deactivate`
@@ -71,20 +75,21 @@ classDiagram
         +int age
         +makeSound()
     }
-    
+
     class Dog {
         +fetch()
     }
-    
+
     class Cat {
         +climb()
     }
-    
+
     Animal <|-- Dog
     Animal <|-- Cat
 ```
 
 **Syntax:**
+
 - Visibility: `+` public, `-` private, `#` protected
 - Relationships: `<|--` inheritance, `*--` composition, `o--` aggregation
 - Methods: `methodName()` with types
@@ -109,6 +114,7 @@ erDiagram
 ```
 
 **Syntax:**
+
 - Relationships: `||--o{` (one-to-many), `||--||` (one-to-one)
 - Keys: `PK` primary key, `FK` foreign key
 - Types: string, int, date, etc.
@@ -130,6 +136,7 @@ gantt
 ```
 
 **Syntax:**
+
 - Status: `:done`, `:active`, `:crit` (critical)
 - Dependencies: `after task_name`
 - Sections: `section Name`
@@ -137,6 +144,7 @@ gantt
 ## Syntax Standards
 
 ### Indentation
+
 - Use 4 spaces for nesting
 - Align related elements
 - Group related nodes
@@ -151,12 +159,14 @@ flowchart TD
 ```
 
 ### Node Naming
+
 - Use descriptive names: `authService` not `A1`
 - CamelCase for multi-word: `userDatabase`
 - Add labels for clarity: `authService[Authentication Service]`
 - Avoid spaces in IDs: use hyphens or camelCase
 
 ### Comments
+
 Use `%%` for single-line comments:
 
 ```mermaid
@@ -168,6 +178,7 @@ flowchart TD
 ## Styling Guidelines
 
 ### Subgraphs
+
 Group related elements using subgraphs:
 
 ```mermaid
@@ -176,17 +187,18 @@ flowchart TB
         A[React App]
         B[Redux Store]
     end
-    
+
     subgraph Backend
         C[API Gateway]
         D[Microservices]
     end
-    
+
     A --> C
     B --> D
 ```
 
 ### Styling Nodes
+
 Use classes for consistent styling:
 
 ```mermaid
@@ -194,12 +206,13 @@ flowchart TD
     A[Start]:::start
     B[Process]
     C[End]:::end
-    
+
     classDef start fill:#90EE90,stroke:#333
     classDef end fill:#FFB6C1,stroke:#333
 ```
 
 ### Colors
+
 - Use semantic colors: green (start/success), red (error), yellow (warning)
 - Ensure contrast ratios meet WCAG 2.1 standards
 - Avoid color as the only means of conveying information
@@ -219,6 +232,7 @@ flowchart TB
     API --> Service1
     API --> Service2
 ```
+
 ```
 
 ### Using Diagram References
@@ -232,6 +246,7 @@ flowchart LR
     A[Load Balancer] --> B[Server 1]
     A --> C[Server 2]
 ```
+
 ```
 
 ## Accessibility
@@ -244,6 +259,7 @@ Always provide descriptive alt text:
 ```
 
 ### Color Independence
+
 - Use patterns or labels in addition to colors
 - Provide text descriptions for complex diagrams
 - Test with grayscale filters
@@ -253,7 +269,7 @@ flowchart TD
     A[Start] --> B{Decision?}
     B -->|Yes| C[Success]
     B -->|No| D[Failure]
-    
+
     style C fill:#90EE90
     style D fill:#FFB6C1
 ```
@@ -272,14 +288,14 @@ flowchart TD
 flowchart TD
     %% Start node
     Start([User Login])
-    
+
     %% Decision point
     Start --> Check{Valid?}
-    
+
     %% Outcomes
     Check -->|Yes| Success[Dashboard]
     Check -->|No| Error[Show Error]
-    
+
     %% End
     Error --> Start
 ```
@@ -287,6 +303,7 @@ flowchart TD
 ## Common Patterns
 
 ### Decision Tree
+
 ```mermaid
 flowchart TD
     Start --> A{Condition A}
@@ -299,13 +316,14 @@ flowchart TD
 ```
 
 ### Request Flow
+
 ```mermaid
 sequenceDiagram
     participant C as Client
     participant A as API Gateway
     participant S as Service
     participant D as Database
-    
+
     C->>A: HTTP Request
     A->>A: Validate Token
     A->>S: Forward Request
@@ -316,19 +334,20 @@ sequenceDiagram
 ```
 
 ### Module Dependencies
+
 ```mermaid
 flowchart LR
     subgraph Core
         Config
         Utils
     end
-    
+
     subgraph Features
         Auth --> Core
         Dashboard --> Core
         Profile --> Core
     end
-    
+
     subgraph UI
         Components --> Features
     end
@@ -350,6 +369,7 @@ flowchart LR
 **BE CONSISTENT.** When creating diagrams, follow established patterns in the project.
 
 *References:*
+
 - [Mermaid Documentation](https://mermaid.js.org/)
 - [Mermaid Live Editor](https://mermaid.live/)
 - [GitHub Mermaid Support](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/)

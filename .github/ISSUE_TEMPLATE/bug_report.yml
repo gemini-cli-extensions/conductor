@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to report a bug!
-        
+
   - type: textarea
     id: description
     attributes:
@@ -16,7 +16,7 @@ body:
       placeholder: When I try to...
     validations:
       required: true
-      
+
   - type: textarea
     id: reproduce
     attributes:
@@ -27,7 +27,7 @@ body:
         2. See error
     validations:
       required: true
-      
+
   - type: textarea
     id: expected
     attributes:
@@ -35,7 +35,7 @@ body:
       description: What you expected to happen
     validations:
       required: true
-      
+
   - type: textarea
     id: actual
     attributes:
@@ -43,7 +43,7 @@ body:
       description: What actually happened
     validations:
       required: true
-      
+
   - type: input
     id: version
     attributes:
@@ -52,7 +52,7 @@ body:
       placeholder: e.g., 0.2.0
     validations:
       required: true
-      
+
   - type: dropdown
     id: os
     attributes:
@@ -64,7 +64,7 @@ body:
         - Other
     validations:
       required: true
-      
+
   - type: textarea
     id: additional
     attributes:

@@ -11,7 +11,6 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 
 class Colors:
@@ -27,12 +26,12 @@ class Colors:
 class InstallationVerifier:
     """Verifies conductor installation"""
 
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
         self.checks_passed = 0
         self.checks_failed = 0
         self.checks_warned = 0
-        self.warnings: List[str] = []
+        self.warnings: list[str] = []
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -41,7 +40,7 @@ class InstallationVerifier:
         else:
             print(message)
 
-    def run_command(self, cmd: List[str], check: bool = True) -> Tuple[int, str, str]:
+    def run_command(self, cmd: list[str], check: bool = True) -> tuple[int, str, str]:
         """Run a shell command"""
         try:
             result = subprocess.run(
@@ -57,22 +56,22 @@ class InstallationVerifier:
     def check_pass(self, message: str) -> None:
         """Log a passed check"""
         self.checks_passed += 1
-        self.log(f"  ✅ {message}", Colors.GREEN)
+        self.log(f"  [PASS] {message}", Colors.GREEN)
 
     def check_fail(self, message: str) -> None:
         """Log a failed check"""
         self.checks_failed += 1
-        self.log(f"  ❌ {message}", Colors.RED)
+        self.log(f"  [FAIL] {message}", Colors.RED)
 
     def check_warn(self, message: str) -> None:
         """Log a warning"""
         self.checks_warned += 1
         self.warnings.append(message)
-        self.log(f"  ⚠️  {message}", Colors.YELLOW)
+        self.log(f"  [WARN]  {message}", Colors.YELLOW)
 
     def verify_system_requirements(self) -> None:
         """Verify system meets requirements"""
-        self.log("\n🔍 System Requirements", Colors.BLUE)
+        self.log("\n[SCAN] System Requirements", Colors.BLUE)
 
         # Check Python version
         code, stdout, stderr = self.run_command([sys.executable, "--version"])
@@ -98,7 +97,7 @@ class InstallationVerifier:
 
     def verify_conductor_core(self) -> None:
         """Verify conductor-core installation"""
-        self.log("\n🔍 Conductor Core", Colors.BLUE)
+        self.log("\n[SCAN] Conductor Core", Colors.BLUE)
 
         # Check if module can be imported
         code, stdout, stderr = self.run_command(
@@ -114,7 +113,7 @@ class InstallationVerifier:
 
     def verify_conductor_gemini(self) -> None:
         """Verify conductor-gemini installation"""
-        self.log("\n🔍 Conductor Gemini", Colors.BLUE)
+        self.log("\n[SCAN] Conductor Gemini", Colors.BLUE)
 
         # Check if module can be imported
         code, stdout, stderr = self.run_command([sys.executable, "-c", "import conductor_gemini; print('OK')"])
@@ -134,7 +133,7 @@ class InstallationVerifier:
 
     def verify_vscode_extension(self) -> None:
         """Verify VS Code extension installation"""
-        self.log("\n🔍 VS Code Extension", Colors.BLUE)
+        self.log("\n[SCAN] VS Code Extension", Colors.BLUE)
 
         # Check if VS Code is installed
         code, stdout, stderr = self.run_command(["code", "--version"], check=False)
@@ -157,7 +156,7 @@ class InstallationVerifier:
 
     def verify_claude_commands(self) -> None:
         """Verify Claude Code commands installation"""
-        self.log("\n🔍 Claude Code Commands", Colors.BLUE)
+        self.log("\n[SCAN] Claude Code Commands", Colors.BLUE)
 
         claude_dir = Path.home() / ".claude"
         if claude_dir.exists():
@@ -183,7 +182,7 @@ class InstallationVerifier:
 
     def verify_mise_configuration(self) -> None:
         """Verify mise configuration"""
-        self.log("\n🔍 Mise Configuration", Colors.BLUE)
+        self.log("\n[SCAN] Mise Configuration", Colors.BLUE)
 
         # Check if mise is installed
         code, stdout, stderr = self.run_command(["mise", "--version"], check=False)
@@ -213,7 +212,7 @@ class InstallationVerifier:
 
     def verify_documentation(self) -> None:
         """Verify documentation is accessible"""
-        self.log("\n🔍 Documentation", Colors.BLUE)
+        self.log("\n[SCAN] Documentation", Colors.BLUE)
 
         readme = Path("README.md")
         if readme.exists():
@@ -236,7 +235,7 @@ class InstallationVerifier:
 
     def verify_scripts(self) -> None:
         """Verify installation scripts are present"""
-        self.log("\n🔍 Installation Scripts", Colors.BLUE)
+        self.log("\n[SCAN] Installation Scripts", Colors.BLUE)
 
         scripts = [
             "scripts/conductor_install.py",
@@ -278,9 +277,9 @@ class InstallationVerifier:
         self.log("=" * 60, Colors.BLUE)
 
         self.log(f"\n  Total checks: {total}")
-        self.log(f"  ✅ Passed: {self.checks_passed}", Colors.GREEN)
-        self.log(f"  ⚠️  Warnings: {self.checks_warned}", Colors.YELLOW)
-        self.log(f"  ❌ Failed: {self.checks_failed}", Colors.RED)
+        self.log(f"  [PASS] Passed: {self.checks_passed}", Colors.GREEN)
+        self.log(f"  [WARN]  Warnings: {self.checks_warned}", Colors.YELLOW)
+        self.log(f"  [FAIL] Failed: {self.checks_failed}", Colors.RED)
 
         if self.warnings:
             self.log("\n  Warnings:", Colors.YELLOW)
@@ -290,20 +289,20 @@ class InstallationVerifier:
         self.log("\n" + "=" * 60, Colors.BLUE)
 
         if self.checks_failed == 0:
-            self.log("\n  ✅ All critical checks passed!", Colors.GREEN)
+            self.log("\n  [PASS] All critical checks passed!", Colors.GREEN)
             if self.checks_warned > 0:
-                self.log("  ⚠️  Some optional components are missing", Colors.YELLOW)
+                self.log("  [WARN]  Some optional components are missing", Colors.YELLOW)
                 self.log("     Run with --verbose for details\n")
             else:
-                self.log("  🎉 Installation is complete and healthy!\n", Colors.GREEN)
+                self.log("  [DONE] Installation is complete and healthy!\n", Colors.GREEN)
             return True
         else:
-            self.log(f"\n  ❌ {self.checks_failed} critical check(s) failed", Colors.RED)
+            self.log(f"\n  [FAIL] {self.checks_failed} critical check(s) failed", Colors.RED)
             self.log("  Please review the errors above and reinstall if necessary\n")
             return False
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Verify conductor installation",
     )

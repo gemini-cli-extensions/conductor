@@ -5,6 +5,7 @@ This document outlines standards for working with CSL-JSON (Citation Style Langu
 ## Overview of CSL-JSON Format
 
 CSL-JSON is a standardized JSON format for bibliographic metadata used by:
+
 - Citation processors (pandoc-citeproc, citeproc-js)
 - Reference managers (Zotero, Mendeley)
 - Academic publishing tools
@@ -15,6 +16,7 @@ It provides a unified format that can be formatted into any citation style (APA,
 ## File Structure and Naming
 
 ### File Naming
+
 ```
 references.json          # Default name for single file
 bibliography.json        # Alternative name
@@ -23,6 +25,7 @@ project-references.json  # Project-specific
 ```
 
 ### File Structure
+
 ```json
 {
   "references": [
@@ -52,6 +55,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Common Document Types
+
 - `article-journal` - Journal articles
 - `book` - Books
 - `chapter` - Book chapters
@@ -66,6 +70,7 @@ Every CSL-JSON entry must have:
 ## Author Format
 
 ### Individual Authors
+
 ```json
 {
   "author": [
@@ -83,6 +88,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Corporate Authors
+
 ```json
 {
   "author": [
@@ -94,6 +100,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Multiple Authors
+
 ```json
 {
   "author": [
@@ -105,6 +112,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Editors
+
 ```json
 {
   "editor": [
@@ -116,6 +124,7 @@ Every CSL-JSON entry must have:
 ## Date Fields
 
 ### Issued Date (Publication Date)
+
 ```json
 {
   "issued": {
@@ -143,6 +152,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Accessed Date
+
 ```json
 {
   "accessed": {
@@ -154,6 +164,7 @@ Every CSL-JSON entry must have:
 ## Complete Examples
 
 ### Journal Article
+
 ```json
 {
   "id": "smith2024neural",
@@ -177,6 +188,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Book
+
 ```json
 {
   "id": "jones2023python",
@@ -199,6 +211,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Book Chapter
+
 ```json
 {
   "id": "brown2024chapter",
@@ -223,6 +236,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Conference Paper
+
 ```json
 {
   "id": "lee2024conference",
@@ -246,6 +260,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Technical Report
+
 ```json
 {
   "id": "nasa2024report",
@@ -266,6 +281,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Web Page
+
 ```json
 {
   "id": "mdn2024web",
@@ -286,6 +302,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Software
+
 ```json
 {
   "id": "python2024",
@@ -304,6 +321,7 @@ Every CSL-JSON entry must have:
 ```
 
 ### Thesis
+
 ```json
 {
   "id": "garcia2024thesis",
@@ -351,12 +369,13 @@ Every CSL-JSON entry must have:
 ## BibLaTeX Conversion
 
 ### Python Conversion
+
 ```python
 import json
 
 def biblatex_to_csl(biblatex_entry):
     """Convert BibLaTeX entry to CSL-JSON."""
-    
+
     type_mapping = {
         'article': 'article-journal',
         'book': 'book',
@@ -371,12 +390,12 @@ def biblatex_to_csl(biblatex_entry):
         'online': 'webpage',
         'software': 'software'
     }
-    
+
     csl = {
         'id': biblatex_entry.get('key', ''),
         'type': type_mapping.get(biblatex_entry.get('type'), 'document')
     }
-    
+
     # Map fields
     field_mapping = {
         'title': 'title',
@@ -395,7 +414,7 @@ def biblatex_to_csl(biblatex_entry):
         'year': 'issued',
         'abstract': 'abstract'
     }
-    
+
     for bib_field, csl_field in field_mapping.items():
         if bib_field in biblatex_entry:
             value = biblatex_entry[bib_field]
@@ -403,11 +422,12 @@ def biblatex_to_csl(biblatex_entry):
                 csl[csl_field] = {'date-parts': [[int(value)]]}
             else:
                 csl[csl_field] = value
-    
+
     return csl
 ```
 
 ### Using pandoc
+
 ```bash
 # Convert BibLaTeX to CSL-JSON
 pandoc references.bib -f biblatex -t csljson -o references.json
@@ -419,12 +439,14 @@ pandoc references.json -f csljson -t biblatex -o references.bib
 ## EndNote Conversion
 
 ### Export from EndNote
+
 1. Select references in EndNote
 2. File → Export
 3. Choose "XML" format
 4. Save as `.xml` file
 
 ### Convert to CSL-JSON
+
 ```python
 import xml.etree.ElementTree as ET
 import json
@@ -433,22 +455,22 @@ def endnote_to_csl(xml_file):
     """Convert EndNote XML to CSL-JSON."""
     tree = ET.parse(xml_file)
     root = tree.getroot()
-    
+
     references = []
-    
+
     for record in root.findall('.//record'):
         ref = {
             'id': record.find('rec-number').text if record.find('rec-number') is not None else '',
             'type': 'article-journal'  # Default, map based on reference type
         }
-        
+
         # Extract title
         titles = record.find('titles')
         if titles is not None:
             title = titles.find('title')
             if title is not None:
                 ref['title'] = title.text
-        
+
         # Extract authors
         authors_elem = record.find('authors')
         if authors_elem is not None:
@@ -462,15 +484,16 @@ def endnote_to_csl(xml_file):
                     })
             if authors:
                 ref['author'] = authors
-        
+
         references.append(ref)
-    
+
     return {'references': references}
 ```
 
 ## Validation
 
 ### Schema Validation
+
 ```python
 import json
 import jsonschema
@@ -504,6 +527,7 @@ def validate_csl_json(data):
 ```
 
 ### Required Fields Check
+
 ```python
 def check_required_fields(csl_entry):
     """Check if entry has all required fields based on type."""
@@ -517,12 +541,12 @@ def check_required_fields(csl_entry):
         'software': ['id', 'type', 'title', 'author', 'issued'],
         'thesis': ['id', 'type', 'title', 'author', 'publisher', 'genre', 'issued']
     }
-    
+
     doc_type = csl_entry.get('type', 'document')
     required = required_by_type.get(doc_type, ['id', 'type'])
-    
+
     missing = [field for field in required if field not in csl_entry]
-    
+
     if missing:
         return False, f"Missing required fields: {', '.join(missing)}"
     return True, "All required fields present"
@@ -531,6 +555,7 @@ def check_required_fields(csl_entry):
 ## Usage with Pandoc
 
 ### Basic Usage
+
 ```bash
 # Generate bibliography from CSL-JSON
 pandoc document.md --citeproc --bibliography=references.json -o output.pdf
@@ -541,6 +566,7 @@ pandoc document.md --citeproc --bibliography=references.json \
 ```
 
 ### In Markdown
+
 ```markdown
 ---
 bibliography: references.json
@@ -553,6 +579,7 @@ Smith claims that climate change is accelerating [@smith2024neural].
 ```
 
 ### YAML Metadata
+
 ```yaml
 ---
 bibliography: references.json
@@ -566,6 +593,7 @@ suppress-bibliography: false
 ## Style Files
 
 ### Common CSL Styles
+
 | Style | File | Use Case |
 |-------|------|----------|
 | APA 7th | `apa.csl` | Social sciences |
@@ -576,6 +604,7 @@ suppress-bibliography: false
 | Vancouver | `vancouver.csl` | Medicine, science |
 
 ### Download CSL Styles
+
 ```bash
 # From official repository
 git clone https://github.com/citation-style-language/styles.git
@@ -585,6 +614,7 @@ curl -O https://raw.githubusercontent.com/citation-style-language/styles/master/
 ```
 
 ### Custom CSL Style
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0" default-locale="en-US">
@@ -610,19 +640,23 @@ curl -O https://raw.githubusercontent.com/citation-style-language/styles/master/
 ## Tools
 
 ### Zotero
+
 - Export: File → Export Library → CSL JSON
 - Import: File → Import
 - Better BibTeX plugin for citation keys
 
 ### Mendeley
+
 - Export: File → Export → CSL JSON
 - Import: File → Import
 
 ### JabRef
+
 - Export: File → Export → CSL JSON
 - Import: File → Import into new library
 
 ### Python Libraries
+
 ```python
 # citeproc-py
 from citeproc import CitationStylesStyle, CitationStylesBibliography
@@ -637,8 +671,8 @@ bib_style = CitationStylesStyle('apa', validate=False)
 
 # Create bibliography
 bibliography = CitationStylesBibliography(
-    bib_style, 
-    bib_source, 
+    bib_style,
+    bib_source,
     formatter.html
 )
 
@@ -666,6 +700,7 @@ print(bibliography.cite(citation))
 **BE CONSISTENT.** When creating citations, follow established patterns in the project.
 
 *References:*
+
 - [CSL Specification](https://docs.citationstyles.org/en/stable/specification.html)
 - [CSL-JSON Schema](https://github.com/citation-style-language/schema)
 - [Zotero CSL-JSON Documentation](https://www.zotero.org/support/dev/citation_styles/csl-json)

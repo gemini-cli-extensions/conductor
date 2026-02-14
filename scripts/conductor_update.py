@@ -12,9 +12,9 @@ import json
 import re
 import subprocess
 import sys
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 import urllib.request
+from pathlib import Path
+from typing import Optional
 
 
 class Colors:
@@ -30,10 +30,10 @@ class Colors:
 class UpdateChecker:
     """Checks and applies updates to conductor components"""
 
-    def __init__(self, base_path: Path = Path(".")):
+    def __init__(self, base_path: Path = Path()) -> None:
         self.base_path = base_path.resolve()
-        self.updates_available: Dict[str, Dict] = {}
-        self.current_versions: Dict[str, str] = {}
+        self.updates_available: dict[str, dict] = {}
+        self.current_versions: dict[str, str] = {}
 
     def log(self, message: str, color: str = "") -> None:
         """Print colored message"""
@@ -42,7 +42,7 @@ class UpdateChecker:
         else:
             print(message)
 
-    def run_command(self, cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, str]:
+    def run_command(self, cmd: list[str], cwd: Optional[Path] = None) -> tuple[int, str, str]:
         """Run a shell command"""
         try:
             result = subprocess.run(
@@ -98,7 +98,7 @@ class UpdateChecker:
                 tag = data.get("tag_name", "")
                 # Remove 'v' prefix if present
                 return tag.lstrip("v")
-        except Exception as e:
+        except Exception:
             return None
 
     def get_latest_git_tag(self, component: str) -> Optional[str]:
@@ -115,7 +115,7 @@ class UpdateChecker:
             return stdout.strip().lstrip("v")
         return None
 
-    def check_updates(self, component: str) -> Optional[Dict]:
+    def check_updates(self, component: str) -> Optional[dict]:
         """Check for updates for a specific component"""
         current = self.get_current_version(component)
         latest = self.get_latest_git_tag(component)
@@ -138,9 +138,9 @@ class UpdateChecker:
 
         return None
 
-    def check_all_updates(self) -> Dict[str, Dict]:
+    def check_all_updates(self) -> dict[str, dict]:
         """Check for updates for all components"""
-        self.log("\n🔍 Checking for updates...", Colors.BLUE)
+        self.log("\n[SCAN] Checking for updates...", Colors.BLUE)
 
         components = ["core", "gemini", "vscode", "claude"]
 
@@ -160,26 +160,26 @@ class UpdateChecker:
         self.log("=" * 60, Colors.BLUE)
 
         if self.updates_available:
-            self.log(f"\n📦 Updates available ({len(self.updates_available)}):", Colors.YELLOW)
+            self.log(f"\n[PKG] Updates available ({len(self.updates_available)}):", Colors.YELLOW)
             for component, info in self.updates_available.items():
                 self.log(
                     f"   • {component}: {info['current']} → {info['latest']}",
                     Colors.YELLOW,
                 )
         else:
-            self.log("\n✅ All components are up to date!", Colors.GREEN)
+            self.log("\n[PASS] All components are up to date!", Colors.GREEN)
 
         # Show all versions
-        self.log("\n📋 Installed versions:", Colors.BLUE)
+        self.log("\n[LIST] Installed versions:", Colors.BLUE)
         for component, version in self.current_versions.items():
-            status = "✅" if component not in self.updates_available else "⬆️"
+            status = "[PASS]" if component not in self.updates_available else "[UP]"
             self.log(f"   {status} {component}: {version}")
 
         self.log("\n" + "=" * 60, Colors.BLUE)
 
     def update_component(self, component: str) -> bool:
         """Update a specific component"""
-        self.log(f"\n⬆️  Updating {component}...", Colors.BLUE)
+        self.log(f"\n[UP]  Updating {component}...", Colors.BLUE)
 
         if component == "core":
             return self._update_core()
@@ -196,19 +196,19 @@ class UpdateChecker:
         """Update conductor-core"""
         core_path = self.base_path / "conductor-core"
         if not core_path.exists():
-            self.log("⚠️  conductor-core not found", Colors.YELLOW)
+            self.log("[WARN]  conductor-core not found", Colors.YELLOW)
             return True
 
         # Pull latest changes
         code, stdout, stderr = self.run_command(["git", "pull"], cwd=core_path)
         if code != 0:
-            self.log(f"❌ Git pull failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Git pull failed: {stderr}", Colors.RED)
             return False
 
         # Reinstall
         code, stdout, stderr = self.run_command([sys.executable, "-m", "pip", "install", "--upgrade", str(core_path)])
         if code != 0:
-            self.log(f"❌ Reinstall failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Reinstall failed: {stderr}", Colors.RED)
             return False
 
         return True
@@ -217,17 +217,17 @@ class UpdateChecker:
         """Update conductor-gemini"""
         gemini_path = self.base_path / "conductor-gemini"
         if not gemini_path.exists():
-            self.log("⚠️  conductor-gemini not found", Colors.YELLOW)
+            self.log("[WARN]  conductor-gemini not found", Colors.YELLOW)
             return True
 
         code, stdout, stderr = self.run_command(["git", "pull"], cwd=gemini_path)
         if code != 0:
-            self.log(f"❌ Git pull failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Git pull failed: {stderr}", Colors.RED)
             return False
 
         code, stdout, stderr = self.run_command([sys.executable, "-m", "pip", "install", "--upgrade", str(gemini_path)])
         if code != 0:
-            self.log(f"❌ Reinstall failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Reinstall failed: {stderr}", Colors.RED)
             return False
 
         return True
@@ -236,19 +236,19 @@ class UpdateChecker:
         """Update VS Code extension"""
         vscode_path = self.base_path / "conductor-vscode"
         if not vscode_path.exists():
-            self.log("⚠️  conductor-vscode not found", Colors.YELLOW)
+            self.log("[WARN]  conductor-vscode not found", Colors.YELLOW)
             return True
 
         # Pull changes
         code, stdout, stderr = self.run_command(["git", "pull"], cwd=vscode_path)
         if code != 0:
-            self.log(f"❌ Git pull failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Git pull failed: {stderr}", Colors.RED)
             return False
 
         # Rebuild
         code, stdout, stderr = self.run_command(["npm", "run", "package"], cwd=vscode_path)
         if code != 0:
-            self.log(f"❌ Build failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Build failed: {stderr}", Colors.RED)
             return False
 
         # Reinstall extension
@@ -256,7 +256,7 @@ class UpdateChecker:
         if vsix_path.exists():
             code, stdout, stderr = self.run_command(["code", "--install-extension", str(vsix_path), "--force"])
             if code != 0:
-                self.log(f"❌ Extension install failed: {stderr}", Colors.RED)
+                self.log(f"[FAIL] Extension install failed: {stderr}", Colors.RED)
                 return False
 
         return True
@@ -269,13 +269,13 @@ class UpdateChecker:
         claude_dest = Path.home() / ".claude"
 
         if not claude_source.exists():
-            self.log("⚠️  .claude not found", Colors.YELLOW)
+            self.log("[WARN]  .claude not found", Colors.YELLOW)
             return True
 
         # Pull changes
         code, stdout, stderr = self.run_command(["git", "pull"])
         if code != 0:
-            self.log(f"❌ Git pull failed: {stderr}", Colors.RED)
+            self.log(f"[FAIL] Git pull failed: {stderr}", Colors.RED)
             return False
 
         # Update .claude directory
@@ -285,10 +285,10 @@ class UpdateChecker:
 
         return True
 
-    def update_all(self, components: Optional[List[str]] = None) -> bool:
+    def update_all(self, components: Optional[list[str]] = None) -> bool:
         """Update all or specified components"""
         if not self.updates_available:
-            self.log("\n✅ No updates available", Colors.GREEN)
+            self.log("\n[PASS] No updates available", Colors.GREEN)
             return True
 
         if components is None:
@@ -298,10 +298,10 @@ class UpdateChecker:
             components = [c for c in components if c in self.updates_available]
 
         if not components:
-            self.log("\n✅ No updates available for specified components", Colors.GREEN)
+            self.log("\n[PASS] No updates available for specified components", Colors.GREEN)
             return True
 
-        self.log(f"\n⬆️  Updating {len(components)} component(s)...", Colors.BLUE)
+        self.log(f"\n[UP]  Updating {len(components)} component(s)...", Colors.BLUE)
 
         success = True
         for component in components:
@@ -309,14 +309,14 @@ class UpdateChecker:
                 success = False
 
         if success:
-            self.log("\n✅ All updates applied successfully!", Colors.GREEN)
+            self.log("\n[PASS] All updates applied successfully!", Colors.GREEN)
         else:
-            self.log("\n⚠️  Some updates failed", Colors.YELLOW)
+            self.log("\n[WARN]  Some updates failed", Colors.YELLOW)
 
         return success
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Check for and apply conductor updates",
         formatter_class=argparse.RawDescriptionHelpFormatter,
