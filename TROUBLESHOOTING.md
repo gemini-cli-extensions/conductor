@@ -9,6 +9,7 @@ Common issues and solutions for conductor-next installation and usage.
 **Cause**: mise is not installed or not in PATH
 
 **Solution**:
+
 ```bash
 # Install mise
 curl https://mise.run | sh
@@ -24,6 +25,7 @@ export PATH="$HOME/.local/bin:$PATH"
 **Cause**: Script doesn't have execute permissions
 
 **Solution**:
+
 ```bash
 # Make it executable
 chmod +x install.sh
@@ -37,6 +39,7 @@ bash install.sh
 **Cause**: Git not installed or network issues
 
 **Solution**:
+
 ```bash
 # Check git is installed
 git --version
@@ -52,6 +55,7 @@ git --version
 **Cause**: Python not installed or not in PATH
 
 **Solution**:
+
 ```bash
 # Install Python 3.9+
 # macOS: brew install python
@@ -71,6 +75,7 @@ python --version
 **Cause**: VS Code CLI not in PATH
 
 **Solution**:
+
 ```bash
 # Check code command
 code --version
@@ -85,6 +90,7 @@ code --version
 **Cause**: Python package not installed correctly
 
 **Solution**:
+
 ```bash
 # Reinstall core component
 pip install ./conductor-core --force-reinstall
@@ -98,6 +104,7 @@ python -c "import conductor_core; print(conductor_core.__version__)"
 **Cause**: Claude Code not installed or .claude directory not set up
 
 **Solution**:
+
 ```bash
 # Check if Claude Code is installed
 which claude
@@ -114,6 +121,7 @@ cp -r .claude ~/.claude
 ### Issue: "mise: command not found"
 
 **Solution**:
+
 ```bash
 # Source mise activation
 eval "$(mise activate)"
@@ -128,6 +136,7 @@ echo 'eval "$(mise activate zsh)"' >> ~/.zshrc    # For zsh
 **Cause**: Tools not installed
 
 **Solution**:
+
 ```bash
 # Install all tools
 mise install
@@ -141,6 +150,7 @@ mise list
 **Cause**: mise.toml not found or invalid
 
 **Solution**:
+
 ```bash
 # Check you're in the right directory
 ls mise.toml
@@ -157,18 +167,21 @@ cd conductor-next
 **Common Causes & Solutions**:
 
 1. **Component not installed**
+
    ```bash
    # Install missing components
    python scripts/conductor_install.py --all
    ```
 
 2. **PATH not updated**
+
    ```bash
    # Restart terminal or source profile
    source ~/.bashrc  # or ~/.zshrc
    ```
 
 3. **Mise not activated**
+
    ```bash
    eval "$(mise activate)"
    ```
@@ -180,6 +193,7 @@ cd conductor-next
 **Cause**: Local changes conflict with upstream
 
 **Solution**:
+
 ```bash
 # Stash local changes
 git stash
@@ -196,6 +210,7 @@ git stash pop
 **Cause**: Git remote not configured correctly
 
 **Solution**:
+
 ```bash
 # Check remotes
 git remote -v
@@ -214,6 +229,7 @@ git fetch upstream
 **Error**: "cannot be loaded because running scripts is disabled"
 
 **Solution**:
+
 ```powershell
 # Run as Administrator
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -227,6 +243,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 **Cause**: WSL not installed or not in PATH
 
 **Solution**:
+
 ```powershell
 # Install WSL
 wsl --install
@@ -240,6 +257,7 @@ wsl --install
 **Cause**: Shell profile not reloaded
 
 **Solution**:
+
 ```bash
 # Add to PATH manually
 export PATH="$HOME/.local/bin:$PATH"
@@ -254,6 +272,7 @@ source ~/.zshrc  # or ~/.bashrc
 **Cause**: User doesn't have write permissions
 
 **Solution**:
+
 ```bash
 # Install to user directory instead of system
 python scripts/conductor_install.py --all --user
@@ -269,6 +288,7 @@ pip install --user ./conductor-core
 **Cause**: Network connectivity or rate limiting
 
 **Solution**:
+
 ```bash
 # Check connectivity
 ping github.com
@@ -285,11 +305,13 @@ export GITHUB_TOKEN=your_token_here
 ### Issue: Installation is very slow
 
 **Possible Causes**:
+
 - Slow internet connection
 - Large repository clone
 - Many dependencies to install
 
 **Solutions**:
+
 ```bash
 # Use shallow clone
 git clone --depth 1 https://github.com/edithatogo/conductor-next.git
@@ -322,12 +344,13 @@ mise run verify --verbose
 If none of these solutions work:
 
 1. **Run diagnostics**:
+
    ```bash
    python scripts/verify_installation.py > diagnostic.log 2>&1
    ```
 
 2. **Check GitHub Issues**:
-   - Visit: https://github.com/edithatogo/conductor-next/issues
+   - Visit: <https://github.com/edithatogo/conductor-next/issues>
    - Search for similar problems
 
 3. **Create a new issue** with:

@@ -14,7 +14,7 @@ def run_command(cmd: list[str], cwd: Path | None = None) -> tuple[int, str, str]
     try:
         result = subprocess.run(
             cmd,
-            cwd=cwd or Path("."),
+            cwd=cwd or Path(),
             capture_output=True,
             text=True,
             check=False,
@@ -64,7 +64,7 @@ def test_conductor_install_help() -> bool:
         print("PASS conductor_install.py --help works")
         return True
     else:
-        print(f"FAIL conductor_install.py --help failed")
+        print("FAIL conductor_install.py --help failed")
         return False
 
 
@@ -78,7 +78,7 @@ def test_conductor_update_help() -> bool:
         print("PASS conductor_update.py --help works")
         return True
     else:
-        print(f"FAIL conductor_update.py --help failed")
+        print("FAIL conductor_update.py --help failed")
         return False
 
 
@@ -92,7 +92,7 @@ def test_sync_upstream_help() -> bool:
         print("PASS sync_upstream.py --help works")
         return True
     else:
-        print(f"FAIL sync_upstream.py --help failed")
+        print("FAIL sync_upstream.py --help failed")
         return False
 
 
@@ -106,7 +106,7 @@ def test_triage_issues_help() -> bool:
         print("PASS triage_issues.py --help works")
         return True
     else:
-        print(f"FAIL triage_issues.py --help failed")
+        print("FAIL triage_issues.py --help failed")
         return False
 
 

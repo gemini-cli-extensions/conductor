@@ -36,11 +36,13 @@ cd conductor-next
 Conductor uses [mise](https://mise.jdx.dev/) for tool management.
 
 **macOS/Linux:**
+
 ```bash
 curl https://mise.run | sh
 ```
 
 **Windows:**
+
 ```powershell
 # Via winget
 winget install jdx.mise
@@ -52,11 +54,13 @@ scoop install mise
 ### Step 3: Install Components
 
 Using the installer script:
+
 ```bash
 python scripts/conductor_install.py --all
 ```
 
 Or using mise tasks:
+
 ```bash
 mise install
 mise run install-all
@@ -100,16 +104,19 @@ python scripts/conductor_install.py --claude
 ### Shell Integration
 
 **Bash:**
+
 ```bash
 echo 'eval "$(mise activate bash)"' >> ~/.bashrc
 ```
 
 **Zsh:**
+
 ```bash
 echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
 ```
 
 **PowerShell:**
+
 ```powershell
 Add-Content $PROFILE 'if (Get-Command mise -ErrorAction SilentlyContinue) { mise activate pwsh | Out-String | Invoke-Expression }'
 ```
