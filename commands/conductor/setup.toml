@@ -172,7 +172,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Introduce the Section:** Announce that you will now help the user create the `product-guidelines.md`.
 2.  **Determine Mode:** Use the `ask_user` tool to let the user choose their preferred workflow.
     - **questions:**
-        - **header:** "Prod Guidelines"
+        - **header:** "Product"
         - **question:** "How would you like to define the product guidelines? You can hand-pick the style or let me generate a standard set."
         - **type:** "choice"
         - **multiSelect:** false
@@ -238,7 +238,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 - **header:** "Tech Stack"
                 - **question:** "Is the inferred tech stack (listed above) correct?"
                 - **type:** "yesno"
-        -   **Handle Disagreement:** If the user disputes the suggestion, acknowledge their input and allow them to provide the correct technology stack manually using `ask_user` tool with `type: "text"`.
+        -   **Handle Disagreement:** If the user answers 'no' (disputes the suggestion), you MUST immediately call the `ask_user` tool with `type: "text"` to allow the user to provide the correct technology stack manually. Once provided, proceed to draft the document using the user's input.
 
 3.  **Gather Information (Greenfield Interactive Only):**
     -   **If user chose "Interactive":** Use a single `ask_user` tool call to gather detailed preferences.
@@ -334,9 +334,9 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - Label: "Customize", Description: "I want to adjust coverage requirements and commit frequency."
 
 3.  **Gather Information (Conditional):**
-    -   **If user chose "Default":** Skip this step and proceed directly to **Step 4 (Action)**.
-    -   **If user chose "Customize":** Use a single `ask_user` tool call to gather all customizations.
-        -   **CRITICAL:** Batch the following 3 questions into this single tool call (using the `questions` array):
+    -   **If user chose "Default":** Skip this step and proceed directly to **Step 5 (Action)**.
+    -   **If user chose "Customize":**
+        a. **Initial Batch:** Use a single `ask_user` tool call to gather primary customizations:
             - **questions:**
                 - **header:** "Coverage"
                 - **question:** "The default required test code coverage is >80%. What is your preferred percentage?" (type: "text", placeholder: "e.g., 90")
@@ -352,9 +352,19 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 - **options:**
                     - Label: "Git Notes", Description: "Store summaries in Git notes metadata"
                     - Label: "Commit Messages", Description: "Include summaries in the commit message body"
-        -   **Interaction Flow:** Wait for the user's response, then proceed to the next step.
+        b. **Final Tweak (Second Batch):** Once the first batch is answered, immediately use a second `ask_user` tool call to show the result and allow for any additional tweaks:
+            - **questions:**
+                - **header:** "Workflow"
+                - **type:** "text"
+                - **question:**
+                    Based on your answers, I will configure the workflow with:
+                    - Test Coverage: <User Answer 1>%
+                    - Commit Frequency: <User Answer 2>
+                    - Summary Storage: <User Answer 3>
 
-4.  **Action:** Update `conductor/workflow.md` based on the user's specific answers.
+                    Is there anything else you'd like to change or add to the workflow? (Leave blank to finish or type your additional requirements).
+
+4.  **Action:** Update `conductor/workflow.md` based on all user answers from both steps.
 5.  **Commit State:** After the `workflow.md` file is successfully written or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
     `{"last_successful_step": "2.5_workflow"}`
 
@@ -419,25 +429,13 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 2.  **Generate Track Title:** Analyze the project context (`product.md`, `tech-stack.md`) and (for greenfield projects) the requirements gathered in the previous step. Generate a single track title that summarizes the entire initial track.
     - **Greenfield:** Focus on the MVP core (e.g., "Build core tip calculator functionality").
     - **Brownfield:** Focus on maintenance or targeted enhancements (e.g., "Implement user authentication flow").
-3.  **Confirm Proposal:** Use the `ask_user` tool to validate the proposal.
+3.  **Confirm Proposal:** Use the `ask_user` tool to validate and/or refine the proposal in a single step:
     - **questions:**
         - **header:** "Confirm Track"
-        - **question:** "To get the project started, I suggest the following track: <Track Title>. Do you approve?"
-        - **type:** "choice"
-        - **multiSelect:** false
-        - **options:**
-            - Label: "Approve", Description: "Proceed with this track."
-            - Label: "Revise", Description: "I want to specify a different track."
-
-4.  **Handle Revision (Conditional):**
-    -   **If user chose "Approve":** Proceed to **Section 3.3** using the proposed title.
-    -   **If user chose "Revise":** Use a single `ask_user` tool call to get the user's preferred track title.
-        - **questions:**
-            - **header:** "New Track"
-            - **type:** "text"
-            - **question:** "Please describe the track you would like to start with."
-            - **placeholder:** "e.g., Setup CI/CD pipeline"
-    -   **Action:** Use the user's provided description as the track title for the next step.
+        - **type:** "text"
+        - **question:** "To get the project started, I suggest the following track: '<Track Title>'. If you approve, please type 'ok' (or leave blank). Otherwise, type your preferred track description."
+        - **placeholder:** "e.g., Setup CI/CD pipeline"
+4.  **Action:** Use the user's response as the source of truth. If the user types 'ok' or leaves it blank, use the suggested '<Track Title>'. If they provide a new description, use that instead. Proceed to **Section 3.3**.
 
 ### 3.3 Convert the Initial Track into Artifacts (Automated)
 1.  **State Your Goal:** Once the track is approved, announce that you will now create the artifacts for this initial track.

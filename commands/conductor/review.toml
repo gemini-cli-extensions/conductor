@@ -74,7 +74,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             -   Run `git diff <revision_range>` to get the full context in one go.
             -   Proceed to "Analyze and Verify".
         -   **Large Changes (> 300 lines):**
-            -   **Confirm:** Immediately call the `ask_user` tool to confirm before proceeding with a large review (do not repeat in chat):
+            -   **Confirm:** Immediately call the `ask_user` tool to confirm before proceeding with a large review (do not repeat the question in the chat):
                 - **questions:**
                     - **header:** "Large Review"
                     - **question:** "This review involves >300 lines of changes. I will use 'Iterative Review Mode' which may take longer. Proceed?"
@@ -99,13 +99,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 4.  **Testing:**
     -   Are there new tests?
     -   Do the changes look like they are covered by existing tests?
-    -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`).
-        -   If the test command is ambiguous or cannot be inferred, immediately call the `ask_user` tool to ask for it (do not repeat the question in the chat):
-            - **questions:**
-                - **header:** "Test Command"
-                - **question:** "I couldn't infer the test command. Please provide the command to run tests."
-                - **type:** "text"
-    -   Run it. Analyze the output for failures.
+    -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`). Run it. Analyze the output for failures.
 
 ### 2.4 Output Findings
 **Format your output strictly as follows:**
@@ -147,7 +141,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   If no issues found:
         - Announce: "Everything looks great! I don't see any issues."
 2.  **Action:**
-    -   **If issues found:** Immediately call the `ask_user` tool (do not repeat in chat):
+    -   **If issues found:** Immediately call the `ask_user` tool (do not repeat the question in the chat):
         - **questions:**
             - **header:** "Decision"
             - **question:** "How would you like to proceed with the findings?"
@@ -170,7 +164,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   If NO changes are detected, proceed to '3.3 Track Cleanup'.
     -   If changes are detected:
         a. **Check for Track Context:**
-            - If you are NOT reviewing a specific track (i.e., you don't have a `plan.md` in context), immediately call the `ask_user` tool (do not repeat in chat):
+            - If you are NOT reviewing a specific track (i.e., you don't have a `plan.md` in context), immediately call the `ask_user` tool (do not repeat the question in the chat):
                 - **questions:**
                     - **header:** "Commit Changes"
                     - **question:** "I've detected uncommitted changes. Should I commit them?"
@@ -178,7 +172,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 - If 'yes', stage all changes and commit with `fix(conductor): Apply review suggestions <brief description of changes>`.
                 - Proceed to '3.3 Track Cleanup'.
         b. **Handle Track-Specific Changes:**
-            i.   **Confirm with User:** Immediately call the `ask_user` tool (do not repeat in chat):
+            i.   **Confirm with User:** Immediately call the `ask_user` tool (do not repeat the question in the chat):
                 - **questions:**
                     - **header:** "Commit & Track"
                     - **question:** "I've detected uncommitted changes from the review process. Should I commit these and update the track's plan?"

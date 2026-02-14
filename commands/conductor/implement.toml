@@ -118,9 +118,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         i. **Condition for Update:** Based on your analysis, you MUST determine if the completed feature or bug fix significantly impacts the description of the product itself.
         ii. **Propose and Confirm Changes:** If an update is needed:
             -   **Announce:** Briefly state that updates are proposed. Do NOT repeat the request to review in the chat.
-            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed updates (ideally in a diff format) directly into the `question` field so the user can review them in context.
+            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed updates (in a diff format) directly into the `question` field so the user can review them in context.
                 - **questions:**
-                    - **header:** "Prod Definition"
+                    - **header:** "Product"
                     - **question:**
                         Please review the proposed updates to the Product Definition below. Do you approve?
 
@@ -133,7 +133,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         i. **Condition for Update:** Similarly, you MUST determine if significant changes in the technology stack are detected as a result of the completed track.
         ii. **Propose and Confirm Changes:** If an update is needed:
             -   **Announce:** Briefly state that updates are proposed. Do NOT repeat the request to review in the chat.
-            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed updates (ideally in a diff format) directly into the `question` field so the user can review them in context.
+            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed updates (in a diff format) directly into the `question` field so the user can review them in context.
                 - **questions:**
                     - **header:** "Tech Stack"
                     - **question:**
@@ -149,11 +149,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         ii. **Condition for Update:** You may ONLY propose an update to this file if the track's **Specification** explicitly describes a change that directly impacts branding, voice, tone, or other core product guidelines.
         iii. **Propose and Confirm Changes:** If the conditions are met:
             -   **Announce:** Briefly state that updates are proposed. Do NOT repeat the request to review in the chat.
-            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed changes (ideally in a diff format) directly into the `question` field, including a clear warning.
+            -   **Ask for Approval:** Use the `ask_user` tool to request confirmation. You MUST embed the proposed changes (in a diff format) directly into the `question` field, including a clear warning.
                 - **questions:**
-                    - **header:** "Prod Guidelines"
+                    - **header:** "Product"
                     - **question:**
-                        WARNING: This is an unusual step as it impacts core product guidelines. Please review the proposed changes below. Do you approve these critical changes?
+                        WARNING: This is a sensitive action as it impacts core product guidelines. Please review the proposed changes below. Do you approve these critical changes?
 
                         ---
 
