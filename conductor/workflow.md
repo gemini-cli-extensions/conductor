@@ -89,7 +89,12 @@ All tasks follow a strict lifecycle:
     - Execute the announced command.
     - If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
 
-4. **Automated Verification (Preferred):**
+4. **Phase Review (Optional but Recommended):**
+    - Execute `/conductor:review` to verify the completed phase against guidelines and original plan.
+    - This step ensures quality control before moving to the next phase.
+    - If the review identifies issues, address them before proceeding to the next phase.
+
+5. **Automated Verification (Preferred):**
     - **CRITICAL:** When possible, perform verification automatically rather than requesting manual user steps.
     - Execute relevant CLI or scripted checks (smoke tests, validation scripts, or CLI commands) that confirm the phase outcomes.
     - If no automated path exists, create a minimal automated verification step or a script to validate the behavior.
@@ -119,12 +124,13 @@ All tasks follow a strict lifecycle:
 
 1. **Verify Track Completion:** Ensure all phases and tasks are checked off `[x]` and each task has a corresponding commit SHA recorded in `plan.md`.
 2. **Final Test Run:** Execute the full project test suite one last time to ensure no regressions.
-3. **Archive Track Automatically:**
+3. **Automatic Review:** Execute `/conductor:review` to verify the completed track against guidelines and original plan.
+4. **Archive Track Automatically:**
     - Move the track folder to `conductor/tracks/archive/<track_id>/`.
     - Update `conductor/tracks.md` to mark the track complete with `[x]` and keep the link updated to the archive location.
-4. **Proceed to Next Sequential Track:**
+5. **Proceed to Next Sequential Track:**
     - Identify the next `[ ]` track in `conductor/tracks.md` and begin Phase 1.
-5. **Announce Success:** Inform the user that the track is complete and the next track has started.
+6. **Announce Success:** Inform the user that the track is complete and the next track has started.
 
 ### Quality Gates
 

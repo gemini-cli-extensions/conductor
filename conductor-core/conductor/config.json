@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "project_name": "",
+  "description": "",
+  "default_track_template": "default",
+  "enable_git_integration": true,
+  "enable_locking": true,
+  "default_workflow": "standard",
+  "extensions": {},
+  "templates_path": "./templates",
+  "tracks_path": "./tracks",
+  "archive_path": "./archive"
+}

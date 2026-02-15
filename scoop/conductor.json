@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0",
+    "description": "Context-Driven Development tool for AI-assisted workflows",
+    "homepage": "https://github.com/edithatogo/conductor-next",
+    "license": "MIT",
+    "depends": [
+        "git",
+        "python",
+        "nodejs"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/edithatogo/conductor-next/archive/v0.2.0.zip",
+            "hash": "TODO_REPLACE_WITH_ACTUAL_HASH"
+        }
+    },
+    "extract_dir": "conductor-next-0.2.0",
+    "installer": {
+        "script": [
+            "# Install mise if not present",
+            "if (!(Get-Command mise -ErrorAction SilentlyContinue)) {",
+            "    Write-Host \"Installing mise...\"",
+            "    Invoke-Expression (Invoke-RestMethod https://mise.run)",
+            "}",
+            "# Run mise install to set up the environment",
+            "Push-Location \"$dir\"",
+            "try {",
+            "    mise install",
+            "    Write-Host \"Running conductor setup...\"",
+            "    python scripts/conductor_install.py --all",
+            "} finally {",
+            "    Pop-Location",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "scripts/conductor_install.py",
+            "conductor"
+        ]
+    ],
+    "env_add_path": [
+        "scripts"
+    ],
+    "checkver": {
+        "github": "https://github.com/edithatogo/conductor-next"
+    },
+    "autoupdate": {
+        "url": "https://github.com/edithatogo/conductor-next/archive/v$version.zip"
+    }
+}

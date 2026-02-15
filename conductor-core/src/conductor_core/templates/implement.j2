@@ -141,19 +141,24 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ---
 
-## 5.0 TRACK CLEANUP
-**PROTOCOL: Offer to archive or delete the completed track.**
+## 5.0 TRACK REVIEW AND CLEANUP
+**PROTOCOL: Automatically review the completed track and offer to archive or delete it.**
 
 1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
 
-2.  **Ask for User Choice:** You MUST prompt the user with the available options for the completed track.
-    > "Track '<track_description>' is now complete. What would you like to do?
+2.  **Automatic Review Trigger:**
+    - **Announce:** Inform the user that an automatic review will now be conducted for the completed track.
+    - **Action:** Automatically trigger the `/conductor:review` command to review the completed track work against guidelines and the original plan.
+    - **Wait:** Allow the review process to complete before proceeding.
+
+3.  **Post-Review Options:** After the review is complete, present the user with options for the completed track.
+    > "Track '<track_description>' has been completed and reviewed. What would you like to do?
     > A.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
     > B.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
     > C.  **Skip:** Do nothing and leave it in the tracks file.
     > Please enter the letter of your choice (A, B, or C)."
 
-3.  **Handle User Response:**
+4.  **Handle User Response:**
     *   **If user chooses "A" (Archive):**
         i.   **Create Archive Directory:** Check for the existence of `conductor/archive/`. If it does not exist, create it.
         ii.  **Archive Track Folder:** Move the track's folder from its current location (resolved via the **Tracks Directory**) to `conductor/archive/<track_id>`.

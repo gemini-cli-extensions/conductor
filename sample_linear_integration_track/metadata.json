@@ -1,0 +1,8 @@
+{
+  "track_id": "linear_integration_20260215",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-15T10:30:00Z",
+  "updated_at": "2026-02-15T10:30:00Z",
+  "description": "Create an integration between Conductor and Linear (project management tool) using the Model Context Protocol (MCP)"
+}

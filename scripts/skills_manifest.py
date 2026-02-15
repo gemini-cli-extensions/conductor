@@ -64,12 +64,11 @@ def render_skill_content(skill: dict, templates_dir: Path) -> str:
 
     summary = template.render(skill=skill_data)
 
-    # Append the actual instruction template content
-    template_file = templates_dir / f"{skill['template']}.j2"
-    if template_file.exists():
-        instructions = template_file.read_text(encoding="utf-8")
-        return f"{summary}\n\n## Instructions\n\n{instructions}"
-
+    # Note: Do NOT append raw instruction template content.
+    # The SKILL.md.j2 template is designed as a standalone skill definition
+    # for Amp and other platforms. Raw template content includes its own
+    # frontmatter which would corrupt the output. For consolidated formats
+    # (Antigravity workflows, Copilot), use render_antigravity_workflow_content.
     return summary
 
 

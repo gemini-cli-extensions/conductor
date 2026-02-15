@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import FileSystemLoader, Template
+from jinja2.sandbox import SandboxedEnvironment
 
 
 class PromptProvider:
     def __init__(self, template_dir: str | Path) -> None:
         self.template_dir = Path(template_dir)
-        self.env = Environment(
+        self.env = SandboxedEnvironment(
             loader=FileSystemLoader(str(self.template_dir)), autoescape=True, trim_blocks=True, lstrip_blocks=True
         )
 

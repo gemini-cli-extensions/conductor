@@ -71,12 +71,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Repository Excellence & Pipeline Hardening**
+- [x] **Track: Repository Excellence & Pipeline Hardening**
 *Link: [./tracks/repository_excellence_20260210/](./tracks/repository_excellence_20260210/)*
 
 ---
 
-- [ ] **Track: Universal Installer via Mise**
+- [x] **Track: Universal Installer via Mise**
 *Link: [./tracks/universal_installer_20260214/](./tracks/universal_installer_20260214/)*
 - **Purpose:** One-click installer for all conductor components using mise
 - **Deliverables:** mise.toml, install.sh, install.ps1, conductor_install.py

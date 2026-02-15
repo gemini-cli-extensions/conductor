@@ -1,0 +1,78 @@
+# Smithery Manifest for Conductor
+
+# Basic package information
+id = "conductor"
+name = "Conductor"
+version = "0.2.0"
+description = "Context-Driven Development tool for AI-assisted workflows"
+homepage = "https://github.com/edithatogo/conductor-next"
+repository = "https://github.com/edithatogo/conductor-next"
+license = "MIT"
+
+# Installation methods
+[installation]
+# Primary method: via mise (already supported)
+primary = "mise"
+
+# Alternative methods
+methods = [
+    "pip",
+    "npm",
+    "cargo",
+    "go"
+]
+
+# Mise integration
+[installation.mise]
+enabled = true
+config_file = "mise.toml"
+
+# Pip installation
+[installation.pip]
+enabled = true
+packages = [
+    "conductor-core",
+    "conductor-gemini",
+    "conductor-claude"
+]
+
+# NPM installation
+[installation.npm]
+enabled = true
+packages = [
+    "conductor-vscode"
+]
+
+# Installation scripts
+[installation.scripts]
+install = "./install.sh"
+post_install = "mise install && mise run install-all"
+uninstall = "scripts/uninstall.sh"
+
+# Platform support
+[platforms]
+linux = true
+macos = true
+windows = true
+
+# Dependencies
+[dependencies]
+python = ">=3.9"
+node = ">=18"
+git = ">=2.0"
+
+# Tags for discoverability
+tags = [
+    "ai",
+    "development-tool",
+    "cli",
+    "automation",
+    "context-driven",
+    "project-management",
+    "workflow"
+]
+
+# Maintainers
+[maintainers]
+primary = "Edith Atogo"
+contact = "edithatogo@conductor-project.org"

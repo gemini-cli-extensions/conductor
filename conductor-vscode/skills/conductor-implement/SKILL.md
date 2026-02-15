@@ -12,6 +12,7 @@ engine_compatibility: >=0.2.0
 Execute tasks from a track's plan following the TDD workflow.
 
 ## Triggers
+
 This skill is activated by the following phrases:
 
 - "$conductor-implement"
@@ -22,8 +23,8 @@ This skill is activated by the following phrases:
 
 - "@conductor /implement"
 
-
 ## Usage
+
 To use this skill, simply type one of the triggers or ask the agent to "implement".
 
 ## Platform-Specific Commands
@@ -48,14 +49,12 @@ To use this skill, simply type one of the triggers or ask the agent to "implemen
 
 - **Skillshare:** `/conductor-implement`
 
-
 ## Capabilities Required
-
-
 
 ## Instructions
 
 ## 1.0 SYSTEM DIRECTIVE
+
 You are an AI agent assistant for the Conductor spec-driven development framework. Your current task is to implement a track. You MUST follow this protocol precisely.
 
 CRITICAL: You must validate the success of every tool call. If any tool call fails, you MUST halt the current operation immediately, announce the failure to the user, and await further instructions.
@@ -63,96 +62,100 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ---
 
 ## 1.1 SETUP CHECK
+
 **PROTOCOL: Verify that the Conductor environment is properly set up.**
 
-1.  **Verify Core Context:** Using the **Universal File Resolution Protocol**, resolve and verify the existence of:
-    -   **Product Definition**
-    -   **Tech Stack**
-    -   **Workflow**
+1. **Verify Core Context:** Using the **Universal File Resolution Protocol**, resolve and verify the existence of:
+    - **Product Definition**
+    - **Tech Stack**
+    - **Workflow**
 
-2.  **Handle Failure:**
-    -   IF ANY of these files are missing (or their resolved paths do not exist), you MUST halt the operation immediately.
-    -   Announce: "Conductor is not set up. Please run `/conductor:setup` to set up the environment."
-    -   Do NOT proceed to Track Selection.
+2. **Handle Failure:**
+    - IF ANY of these files are missing (or their resolved paths do not exist), you MUST halt the operation immediately.
+    - Announce: "Conductor is not set up. Please run `/conductor:setup` to set up the environment."
+    - Do NOT proceed to Track Selection.
 
 ---
 
 ## 2.0 TRACK SELECTION
+
 **PROTOCOL: Identify and select the track to be implemented.**
 
-1.  **Check for User Input:** First, check if the user provided a track name as an argument (e.g., `/conductor:implement <track_description>`).
+1. **Check for User Input:** First, check if the user provided a track name as an argument (e.g., `/conductor:implement <track_description>`).
 
-2.  **Locate and Parse Tracks Registry:**
-    -   Resolve the **Tracks Registry**.
-    -   Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section. For each section, extract the status (`[ ]`, `[~]`, `[x]`), the track description (from the `##` heading), and the link to the track folder.
-    -   **CRITICAL:** If no track sections are found after parsing, announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
+2. **Locate and Parse Tracks Registry:**
+    - Resolve the **Tracks Registry**.
+    - Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section. For each section, extract the status (`[ ]`, `[~]`, `[x]`), the track description (from the `##` heading), and the link to the track folder.
+    - **CRITICAL:** If no track sections are found after parsing, announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
 
-3.  **Continue:** Immediately proceed to the next step to select a track.
+3. **Continue:** Immediately proceed to the next step to select a track.
 
-4.  **Select Track:**
-    -   **If a track name was provided:**
-        1.  Perform an exact, case-insensitive match for the provided name against the track descriptions you parsed.
-        2.  If a unique match is found, confirm the selection with the user: "I found track '<track_description>'. Is this correct?"
-        3.  If no match is found, or if the match is ambiguous, inform the user and ask for clarification. Suggest the next available track as below.
-    -   **If no track name was provided (or if the previous step failed):**
-        1.  **Identify Next Track:** Find the first track in the parsed tracks file that is NOT marked as `[x] Completed`.
-        2.  **If a next track is found:**
-            -   Announce: "No track name provided. Automatically selecting the next incomplete track: '<track_description>'."
-            -   Proceed with this track.
-        3.  **If no incomplete tracks are found:**
-            -   Announce: "No incomplete tracks found in the tracks file. All tasks are completed!"
-            -   Halt the process and await further user instructions.
+4. **Select Track:**
+    - **If a track name was provided:**
+        1. Perform an exact, case-insensitive match for the provided name against the track descriptions you parsed.
+        2. If a unique match is found, confirm the selection with the user: "I found track '<track_description>'. Is this correct?"
+        3. If no match is found, or if the match is ambiguous, inform the user and ask for clarification. Suggest the next available track as below.
+    - **If no track name was provided (or if the previous step failed):**
+        1. **Identify Next Track:** Find the first track in the parsed tracks file that is NOT marked as `[x] Completed`.
+        2. **If a next track is found:**
+            - Announce: "No track name provided. Automatically selecting the next incomplete track: '<track_description>'."
+            - Proceed with this track.
+        3. **If no incomplete tracks are found:**
+            - Announce: "No incomplete tracks found in the tracks file. All tasks are completed!"
+            - Halt the process and await further user instructions.
 
-5.  **Handle No Selection:** If no track is selected, inform the user and await further instructions.
+5. **Handle No Selection:** If no track is selected, inform the user and await further instructions.
 
 ---
 
 ## 3.0 TRACK IMPLEMENTATION
+
 **PROTOCOL: Execute the selected track.**
 
-1.  **Announce Action:** Announce which track you are beginning to implement.
+1. **Announce Action:** Announce which track you are beginning to implement.
 
-2.  **Update Status to 'In Progress':**
-    -   Before beginning any work, you MUST update the status of the selected track in the **Tracks Registry** file.
-    -   This requires finding the specific heading for the track (e.g., `## [ ] Track: <Description>`) and replacing it with the updated status (e.g., `## [~] Track: <Description>`) in the **Tracks Registry** file you identified earlier.
+2. **Update Status to 'In Progress':**
+    - Before beginning any work, you MUST update the status of the selected track in the **Tracks Registry** file.
+    - This requires finding the specific heading for the track (e.g., `## [ ] Track: <Description>`) and replacing it with the updated status (e.g., `## [~] Track: <Description>`) in the **Tracks Registry** file you identified earlier.
 
-3.  **Load Track Context:**
+3. **Load Track Context:**
     a. **Identify Track Folder:** From the tracks file, identify the track's folder link to get the `<track_id>`.
     b. **Read Files:**
         -   **Track Context:** Using the **Universal File Resolution Protocol**, resolve and read the **Specification** and **Implementation Plan** for the selected track.
         -   **Workflow:** Resolve **Workflow** (via the **Universal File Resolution Protocol** using the project's index file).
     c. **Error Handling:** If you fail to read any of these files, you MUST stop and inform the user of the error.
 
-4.  **Execute Tasks and Update Track Plan:**
+4. **Execute Tasks and Update Track Plan:**
     a. **Announce:** State that you will now execute the tasks from the track's **Implementation Plan** by following the procedures in the **Workflow**.
     b. **Iterate Through Tasks:** You MUST now loop through each task in the track's **Implementation Plan one by one.
     c. **For Each Task, You MUST:**
         i. **Defer to Workflow:** The **Workflow** file is the **single source of truth** for the entire task lifecycle. You MUST now read and execute the procedures defined in the "Task Workflow" section of the **Workflow** file you have in your context. Follow its steps for implementation, testing, and committing precisely.
 
-5.  **Finalize Track:**
-    -   After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status in the **Tracks Registry**.
-    -   This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
-    -   **Commit Changes:** Stage the **Tracks Registry** file and commit with the message `chore(conductor): Mark track '<track_description>' as complete`.
-    -   Announce that the track is fully complete and the tracks file has been updated.
+5. **Finalize Track:**
+    - After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status in the **Tracks Registry**.
+    - This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
+    - **Commit Changes:** Stage the **Tracks Registry** file and commit with the message `chore(conductor): Mark track '<track_description>' as complete`.
+    - Announce that the track is fully complete and the tracks file has been updated.
 
 ---
 
 ## 4.0 SYNCHRONIZE PROJECT DOCUMENTATION
+
 **PROTOCOL: Update project-level documentation based on the completed track.**
 
-1.  **Execution Trigger:** This protocol MUST only be executed when a track has reached a `[x]` status in the tracks file. DO NOT execute this protocol for any other track status changes.
+1. **Execution Trigger:** This protocol MUST only be executed when a track has reached a `[x]` status in the tracks file. DO NOT execute this protocol for any other track status changes.
 
-2.  **Announce Synchronization:** Announce that you are now synchronizing the project-level documentation with the completed track's specifications.
+2. **Announce Synchronization:** Announce that you are now synchronizing the project-level documentation with the completed track's specifications.
 
-3.  **Load Track Specification:** Read the track's **Specification**.
+3. **Load Track Specification:** Read the track's **Specification**.
 
-4.  **Load Project Documents:**
-    -   Resolve and read:
-        -   **Product Definition**
-        -   **Tech Stack**
-        -   **Product Guidelines**
+4. **Load Project Documents:**
+    - Resolve and read:
+        - **Product Definition**
+        - **Tech Stack**
+        - **Product Guidelines**
 
-5.  **Analyze and Update:**
+5. **Analyze and Update:**
     a.  **Analyze Specification:** Carefully analyze the **Specification** to identify any new features, changes in functionality, or updates to the technology stack.
     b.  **Update Product Definition:**
         i. **Condition for Update:** Based on your analysis, you MUST determine if the completed feature or bug fix significantly impacts the description of the product itself.
@@ -160,7 +163,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             > "Based on the completed track, I propose the following updates to the **Product Definition**:"
             > ```diff
             > [Proposed changes here, ideally in a diff format]
-            > ```
+            >```
             > "Do you approve these changes? (yes/no)"
         iii. **Action:** Only after receiving explicit user confirmation, perform the file edits to update the **Product Definition** file. Keep a record of whether this file was changed.
     c.  **Update Tech Stack:**
@@ -169,7 +172,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             > "Based on the completed track, I propose the following updates to the **Tech Stack**:"
             > ```diff
             > [Proposed changes here, ideally in a diff format]
-            > ```
+            >```
             > "Do you approve these changes? (yes/no)"
         iii. **Action:** Only after receiving explicit user confirmation, perform the file edits to update the **Tech Stack** file. Keep a record of whether this file was changed.
     d. **Update Product Guidelines (Strictly Controlled):**
@@ -179,11 +182,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             > "WARNING: The completed track suggests a change to the core **Product Guidelines**. This is an unusual step. Please review carefully:"
             > ```diff
             > [Proposed changes here, ideally in a diff format]
-            > ```
+            >```
             > "Do you approve these critical changes to the **Product Guidelines**? (yes/no)"
         iv. **Action:** Only after receiving explicit user confirmation, perform the file edits. Keep a record of whether this file was changed.
 
-6.  **Final Report:** Announce the completion of the synchronization process and provide a summary of the actions taken.
+6. **Final Report:** Announce the completion of the synchronization process and provide a summary of the actions taken.
     - **Construct the Message:** Based on the records of which files were changed, construct a summary message.
     - **Commit Changes:**
         - If any files were changed (**Product Definition**, **Tech Stack**, or **Product Guidelines**), you MUST stage them and commit them.
@@ -198,26 +201,32 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 ---
 
-## 5.0 TRACK CLEANUP
-**PROTOCOL: Offer to archive or delete the completed track.**
+## 5.0 TRACK REVIEW AND CLEANUP
 
-1.  **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
+**PROTOCOL: Automatically review the completed track and offer to archive or delete it.**
 
-2.  **Ask for User Choice:** You MUST prompt the user with the available options for the completed track.
-    > "Track '<track_description>' is now complete. What would you like to do?
+1. **Execution Trigger:** This protocol MUST only be executed after the current track has been successfully implemented and the `SYNCHRONIZE PROJECT DOCUMENTATION` step is complete.
+
+2. **Automatic Review Trigger:**
+    - **Announce:** Inform the user that an automatic review will now be conducted for the completed track.
+    - **Action:** Automatically trigger the `/conductor:review` command to review the completed track work against guidelines and the original plan.
+    - **Wait:** Allow the review process to complete before proceeding.
+
+3. **Post-Review Options:** After the review is complete, present the user with options for the completed track.
+    > "Track '<track_description>' has been completed and reviewed. What would you like to do?
     > A.  **Archive:** Move the track's folder to `conductor/archive/` and remove it from the tracks file.
     > B.  **Delete:** Permanently delete the track's folder and remove it from the tracks file.
     > C.  **Skip:** Do nothing and leave it in the tracks file.
     > Please enter the letter of your choice (A, B, or C)."
 
-3.  **Handle User Response:**
-    *   **If user chooses "A" (Archive):**
+4. **Handle User Response:**
+    - **If user chooses "A" (Archive):**
         i.   **Create Archive Directory:** Check for the existence of `conductor/archive/`. If it does not exist, create it.
         ii.  **Archive Track Folder:** Move the track's folder from its current location (resolved via the **Tracks Directory**) to `conductor/archive/<track_id>`.
         iii. **Remove from Tracks File:** Read the content of the **Tracks Registry** file, remove the entire section for the completed track (the part that starts with `---` and contains the track description), and write the modified content back to the file.
         iv.  **Commit Changes:** Stage the **Tracks Registry** file and `conductor/archive/`. Commit with the message `chore(conductor): Archive track '<track_description>'`.
         v.   **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
-    *   **If user chooses "B" (Delete):**
+    - **If user chooses "B" (Delete):**
         i. **CRITICAL WARNING:** Before proceeding, you MUST ask for a final confirmation due to the irreversible nature of the action.
             > "WARNING: This will permanently delete the track folder and all its contents. This action cannot be undone. Are you sure you want to proceed? (yes/no)"
         ii. **Handle Confirmation:**
@@ -228,5 +237,5 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 d. **Announce Success:** Announce: "Track '<track_description>' has been permanently deleted."
             - **If 'no' (or anything else)**:
                 a. **Announce Cancellation:** Announce: "Deletion cancelled. The track has not been changed."
-    *   **If user chooses "C" (Skip) or provides any other input:**
-        *   Announce: "Okay, the completed track will remain in your tracks file for now."
+    - **If user chooses "C" (Skip) or provides any other input:**
+        - Announce: "Okay, the completed track will remain in your tracks file for now."

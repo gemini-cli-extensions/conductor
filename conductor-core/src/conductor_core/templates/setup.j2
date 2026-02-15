@@ -302,6 +302,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
          - 80% code test coverage
          - Commit changes after every task
          - Use Git Notes for task summaries
+         - Automated review at the end of each track
         -   A) Default
         -   B) Customize
     -   If the user chooses to **customize** (Option B):
@@ -314,6 +315,9 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Question 3:** "Do you want to use git notes or the commit message to record the task summary?"
             -   A) Git Notes (Recommended)
             -   B) Commit Message
+        -   **Question 4:** "Do you want to enable automated review at the end of each track? This will automatically trigger `/conductor:review` after each track completion."
+            -   A) Yes (Enable automated review - Recommended)
+            -   B) No (Disable automated review)
         -   **Action:** Update `conductor/workflow.md` based on the user's responses.
     -   **Commit State:** After the `workflow.md` file is successfully copied or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
         `{"last_successful_step": "2.5_workflow"}`

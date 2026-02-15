@@ -217,3 +217,16 @@ tmp/
 out/
 dist/
 node_modules/
+
+# Tool-specific directories (should not be in remote repo)
+/.claude/
+/.gemini/
+/.claude-plugin/
+/.antigravity/
+/.agent/
+/.qwen/
+/.copilot/
+/.github-copilot/
+/.vscode/settings.json
+/.idea/
+/.editor/

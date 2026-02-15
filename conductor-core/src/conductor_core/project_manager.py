@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -73,6 +75,50 @@ class ProjectManager:
             f.write(f"\n---\n\n- [ ] **Track: {description}**\n")
             f.write(f"*Link: [./conductor/tracks/{track_id}/](./conductor/tracks/{track_id}/)*\n")
         return track_id
+
+    def acquire_lock(self, timeout: int = 30) -> bool:
+        """Acquire a file-based lock to prevent concurrent access."""
+        lock_file = self.conductor_path / ".lock"
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            try:
+                # Try to create the lock file exclusively
+                fd = os.open(lock_file, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                try:
+                    # Write PID and timestamp to the lock file
+                    os.write(fd, f"{os.getpid()}\n{time.time()}".encode())
+                    os.close(fd)
+                    return True
+                except Exception:
+                    os.close(fd)
+                    # Clean up the file if write failed
+                    try:
+                        os.unlink(lock_file)
+                    except OSError:
+                        pass
+                    return False
+            except OSError:
+                # Lock file already exists, wait and retry
+                time.sleep(0.1)
+
+        # Timeout reached
+        return False
+
+    def release_lock(self) -> bool:
+        """Release the file-based lock."""
+        lock_file = self.conductor_path / ".lock"
+        try:
+            lock_file.unlink()
+            return True
+        except OSError:
+            # Lock file doesn't exist or can't be removed
+            return False
+
+    def is_locked(self) -> bool:
+        """Check if the project is currently locked."""
+        lock_file = self.conductor_path / ".lock"
+        return lock_file.exists()
 
     def get_status_report(self) -> str:
         """Generates a detailed status report of all tracks."""

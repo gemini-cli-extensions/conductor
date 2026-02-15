@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import re
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .git_service import GitService
-from .models import CapabilityContext, PlatformCapability
+from .models import CapabilityContext, PlatformCapability, TaskStatus
+from .parser import MarkdownParser
+from .vcs_adapters import JujutsuService
 
 if TYPE_CHECKING:
     from .project_manager import ProjectManager
@@ -20,13 +23,42 @@ class TaskRunner:
     ) -> None:
         self.pm = project_manager
         self.capabilities = capability_context or CapabilityContext()
-        self.git: GitService | None
+        self.vcs: GitService | JujutsuService | None
+
         if git_service is not None:
-            self.git = git_service
+            self.vcs = git_service
         elif capability_context is not None and not self.capabilities.has_capability(PlatformCapability.VCS):
-            self.git = None
+            self.vcs = None
         else:
-            self.git = GitService(str(self.pm.base_path))
+            # Discover which VCS system is in use and select appropriate adapter
+            self.vcs = self._discover_and_select_vcs_adapter(str(self.pm.base_path))
+
+    @property
+    def git(self):
+        """Backward compatibility property for git attribute."""
+        return self.vcs
+
+    @git.setter
+    def git(self, value):
+        """Backward compatibility setter for git attribute."""
+        self.vcs = value
+
+    def _discover_and_select_vcs_adapter(self, repo_path: str):
+        """Discover the VCS system in use and return the appropriate adapter."""
+        repo_path_obj = Path(repo_path)
+
+        # Check for Jujutsu first (JJ repo)
+        jj_config = repo_path_obj / ".jj"
+        if jj_config.exists():
+            return JujutsuService(repo_path)
+
+        # Check for Git (standard .git directory or file)
+        git_indicator = repo_path_obj / ".git"
+        if git_indicator.exists():
+            return GitService(repo_path)
+
+        # If no VCS detected, try to initialize Git as default
+        return GitService(repo_path)
 
     def get_track_to_implement(self, description: str | None = None) -> tuple[str, str, str]:
         """Selects a track to implement, either by description or the next pending one."""
@@ -75,20 +107,34 @@ class TaskRunner:
 
         content = plan_file.read_text()
 
-        # Escape description for regex
-        escaped_desc = re.escape(task_description)
-        # Match - [ ] Task description ...
-        pattern = rf"(^\s*-\s*\[)[ xX~]?(\]\s*(?:Task:\s*)?{escaped_desc}.*?)(?:\s*\[[0-9a-f]{{7,}}\])?$"
+        # Parse the plan using structured parsing
+        plan = MarkdownParser.parse_plan(content)
 
-        replacement = rf"\1{status}\2"
-        if commit_sha:
-            short_sha = commit_sha[:7]
-            replacement += f" [{short_sha}]"
+        # Find and update the task
+        task_updated = False
+        for phase in plan.phases:
+            for task in phase.tasks:
+                if task_description.lower() in task.description.lower():
+                    # Map status string to TaskStatus enum
+                    if status == "x":
+                        task.status = TaskStatus.COMPLETED
+                    elif status == "~":
+                        task.status = TaskStatus.IN_PROGRESS
+                    elif status == " ":
+                        task.status = TaskStatus.PENDING
 
-        new_content, count = re.subn(pattern, replacement, content, flags=re.MULTILINE)
-        if count == 0:
+                    if commit_sha:
+                        task.commit_sha = commit_sha
+                    task_updated = True
+                    break
+            if task_updated:
+                break
+
+        if not task_updated:
             raise ValueError(f"Could not find task '{task_description}' in plan.md")
 
+        # Serialize back to markdown
+        new_content = MarkdownParser.serialize_plan(plan)
         plan_file.write_text(new_content)
 
     def checkpoint_phase(self, track_id: str, phase_name: str, commit_sha: str) -> None:
@@ -99,15 +145,22 @@ class TaskRunner:
 
         content = plan_file.read_text()
 
-        escaped_phase = re.escape(phase_name)
-        short_sha = commit_sha[:7]
-        pattern = rf"(##\s*(?:Phase\s*\d+:\s*)?{escaped_phase})(?:\s*\[checkpoint:\s*[0-9a-f]+\])?"
-        replacement = rf"\1 [checkpoint: {short_sha}]"
+        # Parse the plan using structured parsing
+        plan = MarkdownParser.parse_plan(content)
 
-        new_content, count = re.subn(pattern, replacement, content, flags=re.IGNORECASE | re.MULTILINE)
-        if count == 0:
+        # Find and update the phase
+        phase_updated = False
+        for phase in plan.phases:
+            if phase_name.lower() in phase.name.lower():
+                phase.checkpoint_sha = commit_sha
+                phase_updated = True
+                break
+
+        if not phase_updated:
             raise ValueError(f"Could not find phase '{phase_name}' in plan.md")
 
+        # Serialize back to markdown
+        new_content = MarkdownParser.serialize_plan(plan)
         plan_file.write_text(new_content)
 
     def revert_task(self, track_id: str, task_description: str) -> None:
