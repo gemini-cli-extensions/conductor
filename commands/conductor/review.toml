@@ -41,9 +41,22 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 2.  **Auto-Detect Scope:**
     -   If no input, read the **Tracks Registry**.
     -   Look for a track marked as `[~] In Progress`.
-    -   If one exists, ask the user: "Do you want to review the in-progress track '<track_name>'? (yes/no)"
-    -   If no track is in progress, or user says "no", ask: "What would you like to review? (Enter a track name, or typing 'current' for uncommitted changes)"
-3.  **Confirm Scope:** Ensure you and the user agree on what is being reviewed.
+    -   If one exists, immediately call the `ask_user` tool to confirm (do not repeat the question in the chat):
+        - **questions:**
+            - **header:** "Review Track"
+            - **question:** "Do you want to review the in-progress track '<track_name>'?"
+            - **type:** "yesno"
+    -   If no track is in progress, or user says "no", immediately call the `ask_user` tool to ask for the scope (do not repeat the question in the chat):
+        - **questions:**
+            - **header:** "Select Scope"
+            - **question:** "What would you like to review?"
+            - **type:** "text"
+            - **placeholder:** "Enter track name, or 'current' for uncommitted changes"
+3.  **Confirm Scope:** Ensure you and the user agree on what is being reviewed by immediately calling the `ask_user` tool (do not repeat the question in the chat):
+    - **questions:**
+        - **header:** "Confirm Scope"
+        - **question:** "I will review: '<identified_scope>'. Is this correct?"
+        - **type:** "yesno"
 
 ### 2.2 Retrieve Context
 1.  **Load Project Context:**
@@ -61,7 +74,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
             -   Run `git diff <revision_range>` to get the full context in one go.
             -   Proceed to "Analyze and Verify".
         -   **Large Changes (> 300 lines):**
-            -   **Announce:** "Use 'Iterative Review Mode' due to change size."
+            -   **Confirm:** Immediately call the `ask_user` tool to confirm before proceeding with a large review (do not repeat the question in the chat):
+                - **questions:**
+                    - **header:** "Large Review"
+                    - **question:** "This review involves >300 lines of changes. I will use 'Iterative Review Mode' which may take longer. Proceed?"
+                    - **type:** "yesno"
             -   **List Files:** Run `git diff --name-only <revision_range>`.
             -   **Iterate:** For each source file (ignore locks/assets):
                 1.  Run `git diff <revision_range> -- <file_path>`.
@@ -114,45 +131,103 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ---
 
 ## 3.0 COMPLETION PHASE
-1.  **Review Decision:**
-    -   **Determine Recommendation:**
-        -   If **Critical** or **High** issues found: "Recommend **CHANGES REQUESTED**."
-        -   If only **Medium/Low** issues found: "Recommend **APPROVE WITH COMMENTS**."
-        -   If no issues found: "Recommend **APPROVE**."
-    -   **Action:**
-        -   **If issues found:** Ask:
-            > "Do you want me to apply the suggested fixes, fix them manually yourself, or proceed to complete the track?
-            > A. **Apply Fixes:** Automatically apply the suggested code changes.
-            > B. **Manual Fix:** Stop so you can fix issues yourself.
-            > C. **Complete Track:** Ignore warnings and proceed to cleanup.
-            > Please enter your choice (A, B, or C)."
-            -   **If "A" (Apply Fixes):** Apply the code modifications suggested in the findings using file editing tools. Then Proceed to next step.
-            -   **If "B" (Manual Fix):** Terminate operation to allow user to edit code.
-            -   **If "C" (Complete Track):** Proceed to the next step.
-        -   **If no issues found:** Proceed to the next step.
 
-2.  **Track Cleanup:**
-    **PROTOCOL: Offer to archive or delete the reviewed track.**
+### 3.1 Review Decision
+1.  **Determine Recommendation and announce it to the user:**
+    -   If **Critical** or **High** issues found:
+        - Announce: "I recommend we fix the important issues I found before moving forward."
+    -   If only **Medium/Low** issues found:
+        - Announce: "The changes look good overall, but I have a few suggestions to improve them."
+    -   If no issues found:
+        - Announce: "Everything looks great! I don't see any issues."
+2.  **Action:**
+    -   **If issues found:** Immediately call the `ask_user` tool (do not repeat the question in the chat):
+        - **questions:**
+            - **header:** "Decision"
+            - **question:** "How would you like to proceed with the findings?"
+            - **type:** "choice"
+            - **multiSelect:** false
+            - **options:**
+                - Label: "Apply Fixes", Description: "Automatically apply the suggested code changes."
+                - Label: "Manual Fix", Description: "Stop so you can fix issues yourself."
+                - Label: "Complete Track", Description: "Ignore warnings and proceed to cleanup."
+        -   **If "Apply Fixes":** Apply the code modifications suggested in the findings using file editing tools. Then Proceed to next step.
+        -   **If "Manual Fix":** Terminate operation to allow user to edit code.
+        -   **If "Complete Track":** Proceed to the next step.
+    -   **If no issues found:** Proceed to the next step.
 
-    a.  **Context Check:** If you are NOT reviewing a specific track (e.g., just reviewing current changes without a track context), SKIP this entire section.
+### 3.2 Commit Review Changes
+**PROTOCOL: Ensure all review-related changes are committed and tracked in the plan.**
 
-    b.  **Ask for User Choice:**
-        > "Review complete. What would you like to do with track '<track_name>'?
-        > A.  **Archive:** Move to `conductor/archive/` and update registry.
-        > B.  **Delete:** Permanently remove from system.
-        > C.  **Skip:** Leave as is.
-        > Please enter your choice (A, B, or C)."
+1.  **Check for Changes:** Use `git status --porcelain` to check for any uncommitted changes (staged or unstaged) in the repository.
+2.  **Condition for Action:**
+    -   If NO changes are detected, proceed to '3.3 Track Cleanup'.
+    -   If changes are detected:
+        a. **Check for Track Context:**
+            - If you are NOT reviewing a specific track (i.e., you don't have a `plan.md` in context), immediately call the `ask_user` tool (do not repeat the question in the chat):
+                - **questions:**
+                    - **header:** "Commit Changes"
+                    - **question:** "I've detected uncommitted changes. Should I commit them?"
+                    - **type:** "yesno"
+                - If 'yes', stage all changes and commit with `fix(conductor): Apply review suggestions <brief description of changes>`.
+                - Proceed to '3.3 Track Cleanup'.
+        b. **Handle Track-Specific Changes:**
+            i.   **Confirm with User:** Immediately call the `ask_user` tool (do not repeat the question in the chat):
+                - **questions:**
+                    - **header:** "Commit & Track"
+                    - **question:** "I've detected uncommitted changes from the review process. Should I commit these and update the track's plan?"
+                    - **type:** "yesno"
+            ii.  **If Yes:**
+                 - **Update Plan (Add Review Task):**
+                   - Read the track's `plan.md`.
+                   - Append a new phase (if it doesn't exist) and task to the end of the file.
+                   - **Format:**
+                     ```markdown
+                     ## Phase: Review Fixes
+                     - [~] Task: Apply review suggestions
+                     ```
+                 - **Commit Code:**
+                   - Stage all code changes related to the track (excluding `plan.md`).
+                   - Commit with message: `fix(conductor): Apply review suggestions for track '<track_name>'`.
+                 - **Record SHA:**
+                   - Get the short SHA (first 7 characters) of the commit.
+                   - Update the task in `plan.md` to: `- [x] Task: Apply review suggestions <sha>`.
+                 - **Commit Plan Update:**
+                   - Stage `plan.md`.
+                   - Commit with message: `conductor(plan): Mark task 'Apply review suggestions' as complete`.
+                 - **Announce Success:** "Review changes committed and tracked in the plan."
+            iii. **If No:** Skip the commit and plan update. Proceed to '3.3 Track Cleanup'.
 
-    c.  **Handle User Response:**
-        *   **If "A" (Archive):**
-            i.   **Setup:** Ensure `conductor/archive/` exists.
-            ii.  **Move:** Move track folder to `conductor/archive/<track_id>`.
-            iii. **Update Registry:** Remove track section from **Tracks Registry**.
-            iv.  **Commit:** Stage registry and archive. Commit: `chore(conductor): Archive track '<track_name>'`.
-            v.   **Announce:** "Track '<track_name>' archived."
-        *   **If "B" (Delete):**
-            i.   **Confirm:** "WARNING: Irreversible deletion. Proceed? (yes/no)"
-            ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
-            iii. **If no:** Cancel.
-        *   **If "C" (Skip):** Leave track as is.
+### 3.3 Track Cleanup
+**PROTOCOL: Offer to archive or delete the reviewed track.**
+
+1.  **Context Check:** If you are NOT reviewing a specific track (e.g., just reviewing current changes without a track context), SKIP this entire section.
+
+2.  **Ask for User Choice:** Immediately call the `ask_user` tool to prompt the user (do not repeat the question in the chat):
+    - **questions:**
+        - **header:** "Track Cleanup"
+        - **question:** "Review complete. What would you like to do with track '<track_name>'?"
+        - **type:** "choice"
+        - **multiSelect:** false
+        - **options:**
+            - Label: "Archive", Description: "Move the track's folder to `conductor/archive/` and remove it from the tracks file."
+            - Label: "Delete", Description: "Permanently delete the track's folder and remove it from the tracks file."
+            - Label: "Skip", Description: "Do nothing and leave it in the tracks file."
+
+3.  **Handle User Response:**
+    *   **If "Archive":**
+        i.   **Setup:** Ensure `conductor/archive/` exists.
+        ii.  **Move:** Move track folder to `conductor/archive/<track_id>`.
+        iii. **Update Registry:** Remove track section from **Tracks Registry**.
+        iv.  **Commit:** Stage registry and archive. Commit: `chore(conductor): Archive track '<track_name>'`.
+        v.   **Announce:** "Track '<track_name>' archived."
+    *   **If "Delete":**
+        i.   **Confirm:** Immediately call the `ask_user` tool to ask for final confirmation (do not repeat the warning in the chat):
+            - **questions:**
+                - **header:** "Confirm"
+                - **question:** "WARNING: This is an irreversible deletion. Do you want to proceed?"
+                - **type:** "yesno"
+        ii.  **If yes:** Delete track folder, remove from **Tracks Registry**, commit (`chore(conductor): Delete track '<track_name>'`), announce success.
+        iii. **If no:** Cancel.
+    *   **If "Skip":** Leave track as is.
 """
