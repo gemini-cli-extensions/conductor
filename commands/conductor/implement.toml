@@ -64,6 +64,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     b. **Read Files:**
         -   **Track Context:** Using the **Universal File Resolution Protocol**, resolve and read the **Specification** and **Implementation Plan** for the selected track.
         -   **Workflow:** Resolve **Workflow** (via the **Universal File Resolution Protocol** using the project's index file).
+        -   **Skills:** Check if `conductor/skills.md` exists. If so, read it and any referenced `SKILL.md` files to understand available capabilities.
     c. **Error Handling:** If you fail to read any of these files, you MUST stop and inform the user of the error.
 
 4.  **Execute Tasks and Update Track Plan:**

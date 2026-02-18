@@ -272,6 +272,38 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     `{"last_successful_step": "2.3_tech_stack"}`
 8.  **Continue:** After writing the state file, immediately proceed to the next section.
 
+### 2.3.1 Select Skills (Interactive)
+1.  **Introduce the Section:** Announce that you will now help the user select useful Skills for the project. Explain that Skills are specialized toolsets or instructions (e.g., for GCP, AWS, or specific frameworks) that the agent can use.
+2.  **Read Registry:** Read the content of `~/.gemini/extensions/conductor/templates/skills_registry.md`.
+3.  **Analyze and Recommend:**
+    -   Analyze the project's `tech-stack.md` and `product.md`.
+    -   Compare the project context with the list of skills in the registry. Parse each line in the format `- [Name](URL) - Description` to understand the skill's purpose.
+    -   **Recommendation:** Identify the skills that differ from the current stack but are highly relevant.
+4.  **Select Skills:**
+    -   List the available skills from the registry, highlighting the recommended ones.
+    -   Ask the user which skills they would like to add:
+        A) Add recommended skills (list them)
+        B) Select from full list
+        C) Skip (No skills)
+    -   **Action:**
+        -   If (A) or (B) is selected, proceed to install the skills.
+        -   If (C) is selected, proceed to the next section.
+5.  **Install Skills:**
+    -   **Create Directory:** Create `conductor/skills/` if it doesn't exist.
+    -   **Create Index:** Create/Update `conductor/skills.md` to list the selected skills.
+    -   **Fetch and Write:** For each selected skill:
+        -   Identify the `url` from the registry (parsed from `(URL)`).
+        -   Display the Name and Description to the user.
+        -   Create a directory `conductor/skills/<skill_id>/`. (Derive `<skill_id>` from the name, e.g. `Gemini API Dev` -> `gemini-api-dev`).
+        -   **Protocol for content retrieval:** The provided URL points to the Skill's definition. A Skill is a folder containing `SKILL.md` and potentially other files and directories. You must download the **entire contents** of the skill folder.
+            -   **Pre-requisite:** You MUST have access to the internet and a tool to fetch URL content (e.g., `read_url_content`).
+            -   **Action:** Use the tool to fetch `SKILL.md` and **recursively download any other files or subdirectories** associated with that skill into `conductor/skills/<skill_id>/`.
+            -   **Warning:** If you do not have the tool or internet access, you MUST warn the user: "I cannot install this skill because I cannot access the internet or lack the necessary tool. Please make sure I have internet access to fetch the skill content."
+            -   **Write:** Write all fetched content to `conductor/skills/<skill_id>/`.
+    -   **Commit State:** Upon successful installation, write to `conductor/setup_state.json`:
+        `{"last_successful_step": "2.3.1_select_skills"}`
+6.  **Continue:** Proceed to the next section.
+
 ### 2.4 Select Guides (Interactive)
 1.  **Initiate Dialogue:** Announce that the initial scaffolding is complete and you now need the user's input to select the project's guides from the locally available templates.
 2.  **Select Code Style Guides:**
