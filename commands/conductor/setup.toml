@@ -296,7 +296,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Display the Name and Description to the user.
         -   Create a directory `conductor/skills/<skill_id>/`. (Derive `<skill_id>` from the name, e.g. `Gemini API Dev` -> `gemini-api-dev`).
         -   **Protocol for content retrieval:** The provided URL points to the Skill's definition. A Skill is a folder containing `SKILL.md` and potentially other files and directories. You must download the **entire contents** of the skill folder.
-            -   **Pre-requisite:** You MUST have access to the internet and a tool to fetch URL content (e.g., `read_url_content`).
+            -   **Pre-requisite:** You MUST have access to the internet and a tool to fetch URL content (e.g., shell tool).
             -   **Action:** Use the tool to fetch `SKILL.md` and **recursively download any other files or subdirectories** associated with that skill into `conductor/skills/<skill_id>/`.
             -   **Warning:** If you do not have the tool or internet access, you MUST warn the user: "I cannot install this skill because I cannot access the internet or lack the necessary tool. Please make sure I have internet access to fetch the skill content."
             -   **Write:** Write all fetched content to `conductor/skills/<skill_id>/`.
