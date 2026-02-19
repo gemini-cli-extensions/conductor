@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "name": "plan_mode_warning",
+            "type": "command",
+            "command": "node ${extensionPath}/hooks/plan_mode_warning.js"
+          }
+        ]
+      }
+    ]
+  }
+}
