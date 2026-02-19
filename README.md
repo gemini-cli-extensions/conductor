@@ -33,6 +33,10 @@ Conductor is designed to manage the entire lifecycle of your development tasks.
 
 **Note on Token Consumption:** Conductor's context-driven approach involves reading and analyzing your project's context, specifications, and plans. This can lead to increased token consumption, especially in larger projects or during extensive planning and implementation phases. You can check the token consumption in the current session by running `/stats model`.
 
+> [!WARNING]
+> **Disable Gemini CLI's built-in Plan Mode for Conductor**
+> Conductor manages its own planning lifecycle. Gemini CLI's built-in Plan Mode will conflict with Conductor's state management. For the best Conductor experience, please disable Gemini CLI's built-in Plan Mode in your environment.
+
 ### 1. Set Up the Project (Run Once)
 
 When you run `/conductor:setup`, Conductor helps you define the core components of your project context. This context is then used for building new components or features by you or anyone on your team.
