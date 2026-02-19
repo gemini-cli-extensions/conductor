@@ -51,7 +51,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **CRITICAL:** Check for the existence of `conductor/code_styleguides/` directory.
         -   If it exists, list and read ALL `.md` files within it. These are the **Law**. Violations here are **High** severity.
     -   **Check for Installed Skills:**
-        -   Check for the existence of `.agents/commands/`.
+        -   Check for the existence of `.agents/skills/`.
         -   If it exists, list the subdirectories to identify installed skills.
         -   If relevant skills (e.g., `gcp-*`) are found, enable specialized feedback for those domains.
 2.  **Load Track Context (if reviewing a track):**
