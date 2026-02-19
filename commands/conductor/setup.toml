@@ -37,7 +37,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - If `STEP` is "2.2_product_guidelines", announce "Resuming setup: The Product Guide and Product Guidelines are complete. Next, we will define the Technology Stack." and proceed to **Section 2.3**.
     - If `STEP` is "2.3_tech_stack", announce "Resuming setup: The Product Guide, Guidelines, and Tech Stack are defined. Next, we will select Code Styleguides." and proceed to **Section 2.4**.
     - If `STEP` is "2.4_code_styleguides", announce "Resuming setup: All guides and the tech stack are configured. Next, we will define the project workflow." and proceed to **Section 2.5**.
-    - If `STEP` is "2.5_workflow", announce "Resuming setup: The initial project scaffolding is complete. Next, we will generate the first track." and proceed to **Phase 2 (3.0)**.
+    - If `STEP` is "2.5_workflow", announce "Resuming setup: The workflow is configured. Next, we will select Agent Skills." and proceed to **Section 2.6**.
+    - If `STEP` is "2.6_skills", announce "Resuming setup: Skills are installed. Next, we will finalize the setup." and proceed to **Section 2.7**.
     - If `STEP` is "3.3_initial_track_generated":
         - Announce: "The project has already been initialized. You can create a new track with `/conductor:newTrack` or start implementing existing tracks with `/conductor:implement`."
         - Halt the `setup` process.
@@ -319,7 +320,33 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   **Commit State:** After the `workflow.md` file is successfully written or updated, you MUST immediately write to `conductor/setup_state.json` with the exact content:
             `{"last_successful_step": "2.5_workflow"}`
 
-### 2.6 Finalization
+### 2.6 Select Skills (Interactive)
+1.  **Analyze and Recommend:**
+    -   Read `skills/catalog.md`.
+    -   Detect applicable skills based on `detectSignals` matched against project files and `conductor/tech-stack.md`.
+    -   Identify "Always Recommended" skills.
+2.  **Present Selection:**
+    -   Present the list of recommended skills to the user, grouped by category (e.g., "Always Recommended", "GCP", etc.).
+    -   Display the Skill Name and Description.
+3.  **Ask for Selection:**
+    -   Ask the user: "How would you like to proceed?"
+        A) Install all recommended skills
+        B) Select specific skills (enter numbers separated by commas)
+        C) Skip skills installation
+4.  **Process Selection:**
+    -   If (A): Install all recommended skills.
+    -   If (B): Parse input and install selected skills.
+    -   If (C): Proceed without installation.
+5.  **Installation Action:**
+    -   For each selected skill:
+        -   Create directory `.agents/commands/<skill-name>/`.
+        -   Download `SKILL.md` from the `url` specified in `catalog.md` to `.agents/commands/<skill-name>/SKILL.md`.
+        -   **CRITICAL:** Use `curl -fsSL <url> -o .agents/commands/<skill-name>/SKILL.md`.
+6.  **Commit State:** Upon successful completion, write to `conductor/setup_state.json`:
+    `{"last_successful_step": "2.6_skills"}`
+7.  **Continue:** Immediately proceed to the next section.
+
+### 2.7 Finalization
 1.  **Generate Index File:**
     -   Create `conductor/index.md` with the following content:
         ```markdown
