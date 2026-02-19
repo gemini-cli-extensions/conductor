@@ -340,8 +340,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 5.  **Installation Action:**
     -   For each selected skill:
         -   Create directory `.agents/skills/<skill-name>/`.
-        -   Download `SKILL.md` from the `url` specified in `catalog.md` to `.agents/skills/<skill-name>/SKILL.md`.
-        -   **CRITICAL:** Use `curl -fsSL <url> -o .agents/skills/<skill-name>/SKILL.md`.
+        -   Download the content of the skill folder from the `url` specified in `catalog.md` to `.agents/skills/<skill-name>/`.
+        -   **CRITICAL:** If the URL is a file path, find the parent folder. If it is a Git URL, use `git clone` or `sparse-checkout` to get the folder.
 6.  **Commit State:** Upon successful completion, write to `conductor/setup_state.json`:
     `{"last_successful_step": "2.6_skills"}`
 7.  **Continue:** Immediately proceed to the next section.
