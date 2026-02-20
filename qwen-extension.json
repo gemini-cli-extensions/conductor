@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.0.1",
+  "name": "conductor",
+  "version": "0.1.0",
+  "description": "Specify, plan, and implement software features",
+  "repository": "https://github.com/gemini-cli-extensions/conductor",
+  "license": "Apache-2.0",
+  "commands": [
+    {
+      "name": "conductor",
+      "description": "Specify, plan, and implement software features",
+      "handler": "./dist/commands/conductor.js"
+    }
+  ],
+  "dependencies": []
+}
