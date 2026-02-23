@@ -93,7 +93,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Documentation Standards & Style Guides**
+- [~] **Track: Documentation Standards & Style Guides**
 *Link: [./tracks/documentation_standards_20260214/](./tracks/documentation_standards_20260214/)*
 - **Purpose:** Define and enforce consistent documentation standards
 - **Style guides for:** Markdown, Mermaid, D3.js, DOCX, CSL-JSON

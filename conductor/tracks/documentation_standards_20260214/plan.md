@@ -28,7 +28,7 @@ All 5 style guides have been created and are available in `templates/code_styleg
 
 ### Tasks
 
-- [ ] **2.1** Create `.markdownlint.json` configuration file
+- [~] **2.1** Create `.markdownlint.json` configuration file
   - Configure rules matching style guide requirements
   - Set line length limits (80-100 chars)
   - Configure heading styles

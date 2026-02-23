@@ -45,7 +45,7 @@ class DocumentationValidator:
 
     def _validate_markdown_files(self) -> None:
         """Validate all Markdown files."""
-        print("📄 Validating Markdown files...")
+        print("[DOC] Validating Markdown files...")
 
         md_files = list(self.base_path.rglob("*.md"))
         md_files = [f for f in md_files if not any(x in str(f) for x in ["node_modules", ".git", "vendor"])]
@@ -112,7 +112,7 @@ class DocumentationValidator:
 
     def _validate_mermaid_files(self) -> None:
         """Validate all Mermaid diagram files."""
-        print("🧜 Validating Mermaid diagram files...")
+        print("[DIAGRAM] Validating Mermaid diagram files...")
 
         mmd_files = list(self.base_path.rglob("*.mmd"))
         mmd_files.extend(self.base_path.rglob("*.mermaid"))
@@ -145,7 +145,7 @@ class DocumentationValidator:
 
     def _validate_csl_json_files(self) -> None:
         """Validate all CSL-JSON files."""
-        print("📚 Validating CSL-JSON reference files...")
+        print("[CSL] Validating CSL-JSON reference files...")
 
         csl_files = list(self.base_path.rglob("references.json"))
         csl_files.extend(self.base_path.rglob("*.csl.json"))
