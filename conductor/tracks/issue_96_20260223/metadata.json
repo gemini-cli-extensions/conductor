@@ -1,0 +1,14 @@
+{
+  "track_id": "issue_96_20260223",
+  "type": "feature",
+  "status": "new",
+  "priority": "P2",
+  "depends_on": [],
+  "created_at": "2026-02-23T11:20:20.350936+00:00",
+  "description": "Add track completion checklist",
+  "upstream_issue": "https://github.com/gemini-cli-extensions/conductor/issues/96",
+  "labels": [
+    "enhancement",
+    "workflow"
+  ]
+}

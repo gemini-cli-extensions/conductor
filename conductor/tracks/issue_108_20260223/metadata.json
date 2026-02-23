@@ -1,0 +1,14 @@
+{
+  "track_id": "issue_108_20260223",
+  "type": "feature",
+  "status": "new",
+  "priority": "P2",
+  "depends_on": [],
+  "created_at": "2026-02-23T11:20:20.359171+00:00",
+  "description": "Improve error messages for track creation failures",
+  "upstream_issue": "https://github.com/gemini-cli-extensions/conductor/issues/108",
+  "labels": [
+    "enhancement",
+    "error-handling"
+  ]
+}

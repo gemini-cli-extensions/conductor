@@ -87,7 +87,9 @@
 
 ## Phase 5: Create Tracks for Key Issues
 
-- [ ] Task: Create track for Issue #113 (Auto-create .gitignore)
+**Status:** IN PROGRESS
+
+- [~] Task: Create track for Issue #113 (Auto-create .gitignore)
   - [ ] Subtask: Create track directory and files
   - [ ] Subtask: Write spec.md with acceptance criteria
   - [ ] Subtask: Write plan.md with implementation phases

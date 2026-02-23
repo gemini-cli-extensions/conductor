@@ -1,0 +1,14 @@
+{
+  "track_id": "issue_113_20260223",
+  "type": "feature",
+  "status": "new",
+  "priority": "P1",
+  "depends_on": [],
+  "created_at": "2026-02-23T11:20:20.364180+00:00",
+  "description": "Auto-create .gitignore for new tracks",
+  "upstream_issue": "https://github.com/gemini-cli-extensions/conductor/issues/113",
+  "labels": [
+    "enhancement",
+    "developer-experience"
+  ]
+}

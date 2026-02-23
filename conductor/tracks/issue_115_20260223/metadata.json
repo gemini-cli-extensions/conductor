@@ -1,0 +1,14 @@
+{
+  "track_id": "issue_115_20260223",
+  "type": "feature",
+  "status": "new",
+  "priority": "P1",
+  "depends_on": [],
+  "created_at": "2026-02-23T11:20:20.366286+00:00",
+  "description": "Multi-agent support for parallel track execution",
+  "upstream_issue": "https://github.com/gemini-cli-extensions/conductor/issues/115",
+  "labels": [
+    "enhancement",
+    "multi-agent"
+  ]
+}
