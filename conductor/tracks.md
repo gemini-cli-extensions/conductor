@@ -84,13 +84,48 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Upstream Sync Bot & Issue Triage**
-*Link: [./tracks/upstream_sync_bot_20260214/](./tracks/upstream_sync_bot_20260214/)*
+- [x] **Track: Upstream Sync Bot & Issue Triage** [d4ed2c5]
+*Link: [./tracks/archive/upstream_sync_bot_20260214/](./tracks/archive/upstream_sync_bot_20260214/)*
 - **Purpose:** Automated sync from upstream repos and GitHub issue triage
 - **Deliverables:** sync_upstream.py, triage_issues.py, GitHub Actions workflow
 - **Key Issues:** #113, #112, #105, #115, #108, #103, #97, #96
 - **Note:** Includes repository rename (conductor → conductor-next)
-- **Status:** IN PROGRESS - Starting Phase 1
+- **Status:** COMPLETE - All 6 phases done
+- **Archived:** 2026-02-23
+
+## Active Tracks (Created from Upstream Issues)
+
+- [ ] **Track: AskUser tool integration for interactive prompts** (./tracks/issue_105_20260223/)
+  - Priority: P0 (Critical)
+  - Source: gemini-cli-extensions/conductor#105
+
+- [ ] **Track: Auto-create .gitignore for new tracks** (./tracks/issue_113_20260223/)
+  - Priority: P1 (High)
+  - Source: gemini-cli-extensions/conductor#113
+
+- [ ] **Track: Add overwrite confirmation for file operations** (./tracks/issue_112_20260223/)
+  - Priority: P1 (High)
+  - Source: gemini-cli-extensions/conductor#112
+
+- [ ] **Track: Multi-agent support for parallel track execution** (./tracks/issue_115_20260223/)
+  - Priority: P1 (High)
+  - Source: gemini-cli-extensions/conductor#115
+
+- [ ] **Track: Improve error messages for track creation failures** (./tracks/issue_108_20260223/)
+  - Priority: P2 (Medium)
+  - Source: gemini-cli-extensions/conductor#108
+
+- [ ] **Track: Add track dependency visualization** (./tracks/issue_103_20260223/)
+  - Priority: P2 (Medium)
+  - Source: gemini-cli-extensions/conductor#103
+
+- [ ] **Track: Support for custom track templates** (./tracks/issue_97_20260223/)
+  - Priority: P2 (Medium)
+  - Source: gemini-cli-extensions/conductor#97
+
+- [ ] **Track: Add track completion checklist** (./tracks/issue_96_20260223/)
+  - Priority: P2 (Medium)
+  - Source: gemini-cli-extensions/conductor#96
 
 ---
 
