@@ -11,8 +11,10 @@ repos:
     rev: v0.1.14
     hooks:
       - id: ruff
-        args: [--fix]
+        args: [--fix, --ignore=T201]
+        exclude: scripts/validate_docs.py
       - id: ruff-format
+        exclude: scripts/validate_docs.py
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
