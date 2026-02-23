@@ -73,8 +73,8 @@ To submit to Homebrew:
 ```ruby
 class Conductor < Formula
   desc "Context-Driven Development tool for AI-assisted workflows"
-  homepage "https://github.com/edithatogo/conductor-next"
-  url "https://github.com/edithatogo/conductor-next/archive/v0.2.0.tar.gz"
+  homepage "https://github.com/edithatogo/conductor-next-next"
+  url "https://github.com/edithatogo/conductor-next-next/archive/v0.2.0.tar.gz"
   sha256 "REPLACE_WITH_ACTUAL_SHA256"
   license "MIT"
 

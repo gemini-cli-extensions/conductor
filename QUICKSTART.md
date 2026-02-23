@@ -41,7 +41,7 @@ If you prefer to install manually:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/edithatogo/conductor-next.git
+   git clone https://github.com/edithatogo/conductor-next-next.git
    cd conductor-next
    ```
 

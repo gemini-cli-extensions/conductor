@@ -3,17 +3,17 @@
   <metadata>
     <id>conductor</id>
     <version>0.2.0</version>
-    <packageSourceUrl>https://github.com/edithatogo/conductor-next</packageSourceUrl>
+    <packageSourceUrl>https://github.com/edithatogo/conductor-next-next</packageSourceUrl>
     <owners>Edith Atogo</owners>
     <title>Conductor</title>
     <authors>Edith Atogo</authors>
     <description>Context-Driven Development tool for AI-assisted workflows. Conductor enables Context-Driven Development for AI coding assistants. It turns your AI assistant into a proactive project manager that follows a protocol to specify, plan, and implement software features and bug fixes.</description>
     <summary>Context-Driven Development tool for AI-assisted workflows</summary>
     <language>en-US</language>
-    <projectUrl>https://github.com/edithatogo/conductor-next</projectUrl>
+    <projectUrl>https://github.com/edithatogo/conductor-next-next</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/edithatogo/conductor-next/main/assets/conductor-icon.png</iconUrl>
     <copyright>Copyright © 2026 Edith Atogo</copyright>
-    <licenseUrl>https://github.com/edithatogo/conductor-next/blob/main/LICENSE</licenseUrl>
+    <licenseUrl>https://github.com/edithatogo/conductor-next-next/blob/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>ai development cli automation context-driven project-management workflow</tags>
     <dependencies>

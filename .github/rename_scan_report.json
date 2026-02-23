@@ -1,0 +1,618 @@
+{
+  "CHANGELOG.md": [
+    [
+      5,
+      "## [0.2.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.1.1...conductor-v0.2.0) (2026-01-14)"
+    ]
+  ],
+  "GEMINI.md": [
+    [
+      3,
+      "If a user mentions a \"plan\" or asks about the plan, and they have used the conductor extension in the current session, they are likely referring to the `conductor/tracks.md` file or one of the track plans (`conductor/tracks/<track_id>/plan.md`)."
+    ]
+  ],
+  "HOMEBREW.md": [
+    [
+      20,
+      "  homepage \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      21,
+      "  url \"https://github.com/edithatogo/conductor-next/archive/v0.2.0.tar.gz\""
+    ]
+  ],
+  "IMPLEMENTATION_SUMMARY.md": [
+    [
+      249,
+      "git remote set-url origin https://github.com/edithatogo/conductor-next.git"
+    ]
+  ],
+  "INSTALL.md": [
+    [
+      31,
+      "pip install conductor-core conductor-gemini"
+    ],
+    [
+      37,
+      "npm install -g @conductor/vscode-extension"
+    ],
+    [
+      69,
+      "1. Visit [GitHub Releases](https://github.com/edithatogo/conductor-next/releases)"
+    ],
+    [
+      76,
+      "git clone https://github.com/edithatogo/conductor-next.git"
+    ]
+  ],
+  "install.ps1": [
+    [
+      26,
+      "$script:RepoUrl = \"https://github.com/edithatogo/conductor-next.git\""
+    ]
+  ],
+  "install.sh": [
+    [
+      17,
+      "REPO_URL=\"https://github.com/edithatogo/conductor-next.git\""
+    ]
+  ],
+  "MARKETPLACE_INTEGRATION.md": [
+    [
+      76,
+      "  homepage \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      77,
+      "  url \"https://github.com/edithatogo/conductor-next/archive/v0.2.0.tar.gz\""
+    ]
+  ],
+  "mise.toml": [
+    [
+      35,
+      "install-dev-deps = { run = \"pip install -e conductor-core -e conductor-gemini && npm install --prefix conductor-vscode\" }"
+    ]
+  ],
+  "package.json": [
+    [
+      28,
+      "    \"url\": \"https://github.com/edithatogo/conductor-next.git\""
+    ],
+    [
+      30,
+      "  \"homepage\": \"https://github.com/edithatogo/conductor-next\","
+    ]
+  ],
+  "QUICKSTART.md": [
+    [
+      44,
+      "   git clone https://github.com/edithatogo/conductor-next.git"
+    ],
+    [
+      69,
+      "python -c \"import conductor_core; print('Core installed')\""
+    ]
+  ],
+  "README.md": [
+    [
+      96,
+      "pip install conductor-core conductor-gemini"
+    ],
+    [
+      102,
+      "npm install -g @conductor/cli"
+    ],
+    [
+      110,
+      "gemini extensions install https://github.com/gemini-cli-extensions/conductor --auto-update"
+    ],
+    [
+      129,
+      "git clone https://github.com/gemini-cli-extensions/conductor.git"
+    ],
+    [
+      136,
+      "Download the `conductor.vsix` from the [Releases](https://github.com/gemini-cli-extensions/conductor/releases) page and install it in VS Code."
+    ],
+    [
+      179,
+      "git clone https://github.com/gemini-cli-extensions/conductor.git"
+    ]
+  ],
+  "setup.cfg": [
+    [
+      9,
+      "url = https://github.com/edithatogo/conductor-next"
+    ],
+    [
+      11,
+      "    Bug Tracker = https://github.com/edithatogo/conductor-next/issues"
+    ]
+  ],
+  "TROUBLESHOOTING.md": [
+    [
+      77,
+      "   git clone https://github.com/edithatogo/conductor-next.git"
+    ],
+    [
+      228,
+      "python -c \"import conductor_core; print('Core version:', conductor_core.__version__)\""
+    ],
+    [
+      245,
+      "1. Check the [GitHub Issues](https://github.com/edithatogo/conductor-next/issues) for known issues"
+    ]
+  ],
+  "chocolatey\\conductor.nuspec": [
+    [
+      6,
+      "    <packageSourceUrl>https://github.com/edithatogo/conductor-next</packageSourceUrl>"
+    ],
+    [
+      13,
+      "    <projectUrl>https://github.com/edithatogo/conductor-next</projectUrl>"
+    ],
+    [
+      16,
+      "    <licenseUrl>https://github.com/edithatogo/conductor-next/blob/main/LICENSE</licenseUrl>"
+    ]
+  ],
+  "commands\\conductor-info.md": [
+    [
+      9,
+      "  repository: \"https://github.com/gemini-cli-extensions/conductor\""
+    ],
+    [
+      107,
+      "Projects set up with Gemini CLI's Conductor extension use identical structure."
+    ]
+  ],
+  "conductor\\product.md": [
+    [
+      17,
+      "-   **Reference Implementation:** [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) - Port for claude-cli, opencode, and codex. This will serve as a primary reference for the abstraction layer design."
+    ]
+  ],
+  "conductor\\smithery.toml": [
+    [
+      8,
+      "homepage = \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      9,
+      "repository = \"https://github.com/edithatogo/conductor-next\""
+    ]
+  ],
+  "conductor\\tech-stack.md": [
+    [
+      17,
+      "-   **PR Consolidation:** Merged [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25)."
+    ]
+  ],
+  "conductor-vscode\\package.json": [
+    [
+      12,
+      "    \"url\": \"https://github.com/gemini-cli-extensions/conductor\""
+    ]
+  ],
+  "sample_linear_integration_track\\spec.md": [
+    [
+      11,
+      "- Enable automatic status updates from Conductor to Linear"
+    ],
+    [
+      53,
+      "- Status updates flow from Conductor to Linear"
+    ],
+    [
+      145,
+      "- [ ] Status updates flow from Conductor to Linear"
+    ]
+  ],
+  "scoop\\conductor.json": [
+    [
+      4,
+      "    \"homepage\": \"https://github.com/edithatogo/conductor-next\","
+    ],
+    [
+      13,
+      "            \"url\": \"https://github.com/edithatogo/conductor-next/archive/v0.2.0.zip\","
+    ],
+    [
+      46,
+      "        \"github\": \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      49,
+      "        \"url\": \"https://github.com/edithatogo/conductor-next/archive/v$version.zip\""
+    ]
+  ],
+  "scripts\\conductor_install.py": [
+    [
+      127,
+      "        result = self.run_command([sys.executable, \"-c\", \"import conductor_core\"], check=False)"
+    ],
+    [
+      250,
+      "            [sys.executable, \"-c\", \"import conductor_core; print(conductor_core.__version__)\"],"
+    ],
+    [
+      261,
+      "            [sys.executable, \"-c\", \"import conductor_gemini\"],"
+    ]
+  ],
+  "scripts\\conductor_update.py": [
+    [
+      64,
+      "                [sys.executable, \"-c\", \"import conductor_core; print(conductor_core.__version__)\"]"
+    ],
+    [
+      71,
+      "                [sys.executable, \"-c\", \"import conductor_gemini; print(conductor_gemini.__version__)\"]"
+    ]
+  ],
+  "scripts\\marketplace_integration.ps1": [
+    [
+      92,
+      "homepage = \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      93,
+      "repository = \"https://github.com/edithatogo/conductor-next\""
+    ]
+  ],
+  "scripts\\marketplace_integration.sh": [
+    [
+      76,
+      "homepage = \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      77,
+      "repository = \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      129,
+      "  homepage \"https://github.com/edithatogo/conductor-next\""
+    ],
+    [
+      130,
+      "  url \"https://github.com/edithatogo/conductor-next/archive/v0.2.0.tar.gz\""
+    ],
+    [
+      161,
+      "  \"homepage\": \"https://github.com/edithatogo/conductor-next\","
+    ],
+    [
+      164,
+      "    \"url\": \"https://github.com/edithatogo/conductor-next.git\""
+    ]
+  ],
+  "scripts\\prepare_marketplace.sh": [
+    [
+      35,
+      "REPO_URL=\"https://github.com/edithatogo/conductor-next\""
+    ]
+  ],
+  "scripts\\rename_repo.py": [
+    [
+      2,
+      "\"\"\"Repository Rename Coordinator - Handle repository rename from conductor to conductor-next."
+    ],
+    [
+      154,
+      "            f\"Conductor CLI\": f\"Conductor-Next CLI\","
+    ],
+    [
+      155,
+      "            f\"conductor CLI\": f\"conductor-next CLI\","
+    ],
+    [
+      156,
+      "            f\"conductor tool\": f\"conductor-next tool\","
+    ],
+    [
+      157,
+      "            f\"conductor extension\": f\"conductor-next extension\","
+    ],
+    [
+      446,
+      "        description=\"Coordinate repository rename from conductor to conductor-next\""
+    ]
+  ],
+  "scripts\\validate_platforms.py": [
+    [
+      4,
+      "from conductor_core.validation import ValidationService"
+    ]
+  ],
+  "scripts\\verify_installation.py": [
+    [
+      104,
+      "            [sys.executable, \"-c\", \"import conductor_core; print(conductor_core.__version__)\"]"
+    ],
+    [
+      119,
+      "        code, stdout, stderr = self.run_command([sys.executable, \"-c\", \"import conductor_gemini; print('OK')\"])"
+    ]
+  ],
+  "skills\\conductor\\SKILL.md": [
+    [
+      66,
+      "  repository: \"https://github.com/gemini-cli-extensions/conductor\""
+    ],
+    [
+      164,
+      "Projects set up with Gemini CLI's Conductor extension use identical structure."
+    ]
+  ],
+  "skill\\scripts\\install.sh": [
+    [
+      102,
+      "    echo \"  git clone https://github.com/gemini-cli-extensions/conductor.git\""
+    ]
+  ],
+  "conductor-vscode\\out\\extension.js": [
+    [
+      106,
+      "            throw new Error(`Conductor CLI not found and skill content is missing for /${command}.`);"
+    ]
+  ],
+  "conductor-vscode\\src\\extension.ts": [
+    [
+      99,
+      "            throw new Error(`Conductor CLI not found and skill content is missing for /${command}.`);"
+    ]
+  ],
+  "conductor-vscode\\skills\\conductor\\SKILL.md": [
+    [
+      66,
+      "  repository: \"https://github.com/gemini-cli-extensions/conductor\""
+    ],
+    [
+      164,
+      "Projects set up with Gemini CLI's Conductor extension use identical structure."
+    ]
+  ],
+  "conductor-gemini\\tests\\test_cli.py": [
+    [
+      5,
+      "from conductor_gemini.cli import main"
+    ]
+  ],
+  "conductor-gemini\\tests\\test_cli_backfill.py": [
+    [
+      8,
+      "from conductor_core.errors import ValidationError"
+    ],
+    [
+      9,
+      "from conductor_gemini.cli import main"
+    ],
+    [
+      92,
+      "            from conductor_gemini import cli"
+    ]
+  ],
+  "conductor-gemini\\tests\\test_vscode_contract.py": [
+    [
+      5,
+      "from conductor_gemini.cli import main"
+    ]
+  ],
+  "conductor-gemini\\src\\conductor_gemini\\cli.py": [
+    [
+      5,
+      "from conductor_core.errors import ConductorError"
+    ],
+    [
+      6,
+      "from conductor_core.models import CapabilityContext, PlatformCapability"
+    ],
+    [
+      7,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      8,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\tests\\test_capabilities.py": [
+    [
+      5,
+      "from conductor_core.models import CapabilityContext, PlatformCapability"
+    ],
+    [
+      6,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      7,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\tests\\test_completeness_final.py": [
+    [
+      3,
+      "from conductor_core.errors import ErrorCategory, ProjectError, VCSError"
+    ],
+    [
+      4,
+      "from conductor_core.git_service import GitService"
+    ],
+    [
+      5,
+      "from conductor_core.prompts import PromptProvider"
+    ],
+    [
+      51,
+      "    from conductor_core.lsp import start_lsp"
+    ]
+  ],
+  "conductor-core\\tests\\test_errors.py": [
+    [
+      1,
+      "from conductor_core.errors import ConductorError, ErrorCategory, ValidationError"
+    ]
+  ],
+  "conductor-core\\tests\\test_git_service.py": [
+    [
+      5,
+      "from conductor_core.git_service import GitService"
+    ]
+  ],
+  "conductor-core\\tests\\test_lsp.py": [
+    [
+      1,
+      "from conductor_core.lsp import completions"
+    ]
+  ],
+  "conductor-core\\tests\\test_models.py": [
+    [
+      1,
+      "from conductor_core.models import Phase, Plan, Task, TaskStatus, Track, TrackStatus"
+    ]
+  ],
+  "conductor-core\\tests\\test_project_manager.py": [
+    [
+      4,
+      "from conductor_core.models import TrackStatus"
+    ],
+    [
+      5,
+      "from conductor_core.project_manager import ProjectManager"
+    ]
+  ],
+  "conductor-core\\tests\\test_project_manager_backfill.py": [
+    [
+      4,
+      "from conductor_core.project_manager import ProjectManager"
+    ]
+  ],
+  "conductor-core\\tests\\test_prompts.py": [
+    [
+      2,
+      "from conductor_core.prompts import PromptProvider"
+    ]
+  ],
+  "conductor-core\\tests\\test_skills_manifest.py": [
+    [
+      4,
+      "from conductor_core.models import PlatformCapability, SkillManifest"
+    ]
+  ],
+  "conductor-core\\tests\\test_skill_manifest.py": [
+    [
+      2,
+      "from conductor_core.models import PlatformCapability, SkillManifest"
+    ]
+  ],
+  "conductor-core\\tests\\test_task_runner.py": [
+    [
+      2,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      3,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\tests\\test_task_runner_backfill.py": [
+    [
+      4,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      5,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\tests\\test_task_runner_completeness.py": [
+    [
+      3,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      4,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\tests\\test_validation.py": [
+    [
+      1,
+      "from conductor_core.validation import ValidationService"
+    ]
+  ],
+  "conductor-core\\tests\\test_validation_backfill.py": [
+    [
+      2,
+      "from conductor_core.validation import ValidationService"
+    ]
+  ],
+  "conductor-core\\tests\\contract\\test_core_skills.py": [
+    [
+      4,
+      "from conductor_core.models import CapabilityContext, PlatformCapability"
+    ],
+    [
+      5,
+      "from conductor_core.project_manager import ProjectManager"
+    ],
+    [
+      6,
+      "from conductor_core.task_runner import TaskRunner"
+    ]
+  ],
+  "conductor-core\\src\\conductor_core\\templates\\conductor.j2": [
+    [
+      9,
+      "  repository: \"https://github.com/gemini-cli-extensions/conductor\""
+    ],
+    [
+      107,
+      "Projects set up with Gemini CLI's Conductor extension use identical structure."
+    ]
+  ],
+  "conductor\\tracks\\upstream_sync_bot_20260214\\spec.md": [
+    [
+      77,
+      "  - <https://github.com/gemini-cli-extensions/conductor>"
+    ],
+    [
+      78,
+      "  - <https://github.com/jnorthrup/conductor2>"
+    ]
+  ],
+  "conductor\\archive\\foundation_20251230\\plan.md": [
+    [
+      5,
+      "- [x] Task: Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and resolve any conflicts <!-- id: 1 -->"
+    ],
+    [
+      6,
+      "- [x] Task: Merge [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) and resolve any conflicts <!-- id: 2 -->"
+    ]
+  ],
+  "conductor\\archive\\foundation_20251230\\spec.md": [
+    [
+      7,
+      "1. **PR Integration:** Merge [PR #9](https://github.com/gemini-cli-extensions/conductor/pull/9) and [PR #25](https://github.com/gemini-cli-extensions/conductor/pull/25) into the main branch."
+    ]
+  ],
+  "chocolatey\\tools\\chocolateyinstall.ps1": [
+    [
+      5,
+      "$url        = 'https://github.com/edithatogo/conductor-next/archive/v0.2.0.zip' # download url"
+    ]
+  ],
+  ".agent\\workflows\\conductor.md": [
+    [
+      12,
+      "  repository: \"https://github.com/gemini-cli-extensions/conductor\""
+    ],
+    [
+      110,
+      "Projects set up with Gemini CLI's Conductor extension use identical structure."
+    ]
+  ]
+}

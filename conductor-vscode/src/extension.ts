@@ -96,7 +96,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         const skillContent = await readSkillContent(context.extensionPath, command);
         if (!skillContent) {
-            throw new Error(`Conductor CLI not found and skill content is missing for /${command}.`);
+            throw new Error(`Conductor-Next CLI not found and skill content is missing for /${command}.`);
         }
 
         return formatSkillFallback(command, prompt, skillContent, Boolean(cwd));

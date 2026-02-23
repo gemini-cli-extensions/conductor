@@ -246,7 +246,7 @@ git push origin main
 # Change: conductor → conductor-next
 
 # 5. Update your local clone
-git remote set-url origin https://github.com/edithatogo/conductor-next.git
+git remote set-url origin https://github.com/edithatogo/conductor-next-next.git
 ```
 
 ## Support

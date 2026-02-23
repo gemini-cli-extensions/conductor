@@ -93,7 +93,7 @@ brew install edithatogo/tap/conductor
 #### pip (Python)
 
 ```bash
-pip install conductor-core conductor-gemini
+pip install conductor-next-core conductor-gemini
 ```
 
 #### npm (Node.js)

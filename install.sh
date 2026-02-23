@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="https://github.com/edithatogo/conductor-next.git"
+REPO_URL="https://github.com/edithatogo/conductor-next-next.git"
 INSTALL_DIR="${HOME}/.local/share/conductor-next"
 CONDUCTOR_VERSION="0.2.0"
 

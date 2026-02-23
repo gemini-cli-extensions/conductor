@@ -103,7 +103,7 @@ function activate(context) {
         }
         const skillContent = await (0, skills_1.readSkillContent)(context.extensionPath, command);
         if (!skillContent) {
-            throw new Error(`Conductor CLI not found and skill content is missing for /${command}.`);
+            throw new Error(`Conductor-Next CLI not found and skill content is missing for /${command}.`);
         }
         return formatSkillFallback(command, prompt, skillContent, Boolean(cwd));
     };

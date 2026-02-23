@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'; # stop on all errors
 
 $packageName= 'conductor'
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url        = 'https://github.com/edithatogo/conductor-next/archive/v0.2.0.zip' # download url
+$url        = 'https://github.com/edithatogo/conductor-next-next/archive/v0.2.0.zip' # download url
 $url64      = $url # 64bit URL here or remove this variable if no 64bit version
 
 $packageArgs = @{

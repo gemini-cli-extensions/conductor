@@ -1,7 +1,7 @@
 {
     "version": "0.2.0",
     "description": "Context-Driven Development tool for AI-assisted workflows",
-    "homepage": "https://github.com/edithatogo/conductor-next",
+    "homepage": "https://github.com/edithatogo/conductor-next-next",
     "license": "MIT",
     "depends": [
         "git",
@@ -10,7 +10,7 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/edithatogo/conductor-next/archive/v0.2.0.zip",
+            "url": "https://github.com/edithatogo/conductor-next-next/archive/v0.2.0.zip",
             "hash": "TODO_REPLACE_WITH_ACTUAL_HASH"
         }
     },
@@ -43,9 +43,9 @@
         "scripts"
     ],
     "checkver": {
-        "github": "https://github.com/edithatogo/conductor-next"
+        "github": "https://github.com/edithatogo/conductor-next-next"
     },
     "autoupdate": {
-        "url": "https://github.com/edithatogo/conductor-next/archive/v$version.zip"
+        "url": "https://github.com/edithatogo/conductor-next-next/archive/v$version.zip"
     }
 }

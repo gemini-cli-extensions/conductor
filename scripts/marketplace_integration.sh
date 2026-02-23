@@ -73,8 +73,8 @@ id = "conductor"
 name = "Conductor"
 version = "0.2.0"
 description = "Context-Driven Development tool for AI-assisted workflows"
-homepage = "https://github.com/edithatogo/conductor-next"
-repository = "https://github.com/edithatogo/conductor-next"
+homepage = "https://github.com/edithatogo/conductor-next-next"
+repository = "https://github.com/edithatogo/conductor-next-next"
 license = "MIT"
 
 [installation]
@@ -126,8 +126,8 @@ publish_to_homebrew() {
 
 class Conductor < Formula
   desc "Context-Driven Development tool for AI-assisted workflows"
-  homepage "https://github.com/edithatogo/conductor-next"
-  url "https://github.com/edithatogo/conductor-next/archive/v0.2.0.tar.gz"
+  homepage "https://github.com/edithatogo/conductor-next-next"
+  url "https://github.com/edithatogo/conductor-next-next/archive/v0.2.0.tar.gz"
   sha256 "..."
 
   depends_on "python@3.9"
@@ -158,10 +158,10 @@ publish_to_npm() {
   "name": "@conductor/cli",
   "version": "0.2.0",
   "description": "Context-Driven Development tool for AI-assisted workflows",
-  "homepage": "https://github.com/edithatogo/conductor-next",
+  "homepage": "https://github.com/edithatogo/conductor-next-next",
   "repository": {
     "type": "git",
-    "url": "https://github.com/edithatogo/conductor-next.git"
+    "url": "https://github.com/edithatogo/conductor-next-next.git"
   },
   "license": "MIT",
   "bin": {

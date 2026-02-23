@@ -28,7 +28,7 @@ smithery install conductor
 #### pip (Python)
 
 ```bash
-pip install conductor-core conductor-gemini
+pip install conductor-next-core conductor-gemini
 ```
 
 #### npm (Node.js)
@@ -66,14 +66,14 @@ scoop install conductor
 
 #### GitHub Releases
 
-1. Visit [GitHub Releases](https://github.com/edithatogo/conductor-next/releases)
+1. Visit [GitHub Releases](https://github.com/edithatogo/conductor-next-next/releases)
 2. Download the appropriate binary for your platform
 3. Extract and add to PATH
 
 #### From Source
 
 ```bash
-git clone https://github.com/edithatogo/conductor-next.git
+git clone https://github.com/edithatogo/conductor-next-next.git
 cd conductor-next
 ./install.sh  # Unix/macOS
 # or

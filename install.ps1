@@ -23,7 +23,7 @@ param(
 )
 
 # Configuration
-$script:RepoUrl = "https://github.com/edithatogo/conductor-next.git"
+$script:RepoUrl = "https://github.com/edithatogo/conductor-next-next.git"
 $script:ConductorVersion = "0.2.0"
 $script:ErrorActionPreference = "Stop"
 

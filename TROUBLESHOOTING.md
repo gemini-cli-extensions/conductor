@@ -74,7 +74,7 @@ npm --version
 3. Try cloning the repository manually:
 
    ```bash
-   git clone https://github.com/edithatogo/conductor-next.git
+   git clone https://github.com/edithatogo/conductor-next-next.git
    cd conductor-next
    ./install.sh
    ```
@@ -242,7 +242,7 @@ python scripts/conductor_install.py --verify
 
 If issues persist:
 
-1. Check the [GitHub Issues](https://github.com/edithatogo/conductor-next/issues) for known issues
+1. Check the [GitHub Issues](https://github.com/edithatogo/conductor-next-next/issues) for known issues
 2. Run the installer with verbose output:
 
    ```bash

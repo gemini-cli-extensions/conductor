@@ -64,7 +64,9 @@
 
 ## Phase 4: Repository Rename Coordination
 
-- [ ] Task: Create `scripts/rename_repo.py` rename coordinator
+**Status:** IN PROGRESS
+
+- [~] Task: Create `scripts/rename_repo.py` rename coordinator
   - [ ] Subtask: Scan codebase for old repository references
   - [ ] Subtask: Generate list of files requiring updates
   - [ ] Subtask: Implement URL replacement logic
@@ -80,6 +82,7 @@
   - [ ] Subtask: Git remote update instructions
   - [ ] Subtask: Common issues and troubleshooting
   - [ ] Subtask: Announcement template for users
+- [ ] Task: Execute /conductor:review for Phase 4
 - [ ] Task: Conductor - Automated Verification 'Phase 4: Repository Rename Coordination' (Protocol in workflow.md)
 
 ## Phase 5: Create Tracks for Key Issues
