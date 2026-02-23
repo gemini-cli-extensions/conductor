@@ -84,12 +84,13 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Upstream Sync Bot & Issue Triage**
+- [~] **Track: Upstream Sync Bot & Issue Triage**
 *Link: [./tracks/upstream_sync_bot_20260214/](./tracks/upstream_sync_bot_20260214/)*
 - **Purpose:** Automated sync from upstream repos and GitHub issue triage
 - **Deliverables:** sync_upstream.py, triage_issues.py, GitHub Actions workflow
 - **Key Issues:** #113, #112, #105, #115, #108, #103, #97, #96
 - **Note:** Includes repository rename (conductor → conductor-next)
+- **Status:** IN PROGRESS - Starting Phase 1
 
 ---
 
