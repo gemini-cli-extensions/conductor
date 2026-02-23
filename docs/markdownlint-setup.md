@@ -144,6 +144,7 @@ python scripts/validate_docs.py
 ```
 
 This checks:
+
 - Markdown syntax and style
 - Mermaid diagram syntax
 - CSL-JSON reference format

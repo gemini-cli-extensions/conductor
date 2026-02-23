@@ -2,13 +2,13 @@
 
 ## Phase 1: Upstream Sync Infrastructure
 
-- [~] Task: Create `scripts/sync_upstream.py` core sync script [IN PROGRESS]
-  - [ ] Subtask: Implement GitHub API client for repository access
-  - [ ] Subtask: Add authentication handling (GITHUB_TOKEN)
-  - [ ] Subtask: Implement fetch from gemini-cli-extensions/conductor
-  - [ ] Subtask: Implement fetch from jnorthrup/conductor2
-  - [ ] Subtask: Add branch comparison and merge detection
-- [ ] Task: Implement merge conflict detection and handling
+- [x] Task: Create `scripts/sync_upstream.py` core sync script [3f0b5e3]
+  - [x] Subtask: Implement GitHub API client for repository access
+  - [x] Subtask: Add authentication handling (GITHUB_TOKEN)
+  - [x] Subtask: Implement fetch from gemini-cli-extensions/conductor
+  - [x] Subtask: Implement fetch from jnorthrup/conductor2
+  - [x] Subtask: Add branch comparison and merge detection
+- [~] Task: Implement merge conflict detection and handling
   - [ ] Subtask: Detect automatic mergeability
   - [ ] Subtask: Create draft PRs for conflicts requiring manual resolution
   - [ ] Subtask: Generate diff summaries for review
