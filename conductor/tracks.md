@@ -93,10 +93,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Documentation Standards & Style Guides**
-*Link: [./tracks/documentation_standards_20260214/](./tracks/documentation_standards_20260214/)*
+- [x] **Track: Documentation Standards & Style Guides** [fb5c64e]
+*Link: [./tracks/archive/documentation_standards_20260214/](./tracks/archive/documentation_standards_20260214/)*
 - **Purpose:** Define and enforce consistent documentation standards
 - **Style guides for:** Markdown, Mermaid, D3.js, DOCX, CSL-JSON
 - **CI/CD integration:** Automated doc validation in GitHub Actions
 - **Pre-commit hooks:** Automated checking before commits
 - **Deliverables:** markdownlint config, validation scripts, workflow updates
+- **Archived:** 2026-02-23
