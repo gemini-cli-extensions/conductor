@@ -101,12 +101,18 @@ This file tracks all major tracks for the project. Each track has its own detail
   - Status: COMPLETE - Archived
   - Archived: ./tracks/archive/issue_105_20260223/
 
-- [~] **Track: Auto-create .gitignore for new tracks** (./tracks/issue_113_20260223/)
+- [x] **Track: Auto-create .gitignore for new tracks** [0ca1faf]
   - Priority: P1 (High)
   - Source: gemini-cli-extensions/conductor#113
+  - Status: COMPLETE - Archived
+  - Archived: ./tracks/archive/issue_113_20260223/
+
+- [~] **Track: Add overwrite confirmation for file operations** (./tracks/issue_112_20260223/)
+  - Priority: P1 (High)
+  - Source: gemini-cli-extensions/conductor#112
   - Status: IN PROGRESS - Starting Phase 1
 
-- [ ] **Track: Add overwrite confirmation for file operations** (./tracks/issue_112_20260223/)
+- [ ] **Track: Multi-agent support for parallel track execution** (./tracks/issue_115_20260223/)
   - Priority: P1 (High)
   - Source: gemini-cli-extensions/conductor#112
 
