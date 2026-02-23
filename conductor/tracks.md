@@ -95,13 +95,16 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## Active Tracks (Created from Upstream Issues)
 
-- [ ] **Track: AskUser tool integration for interactive prompts** (./tracks/issue_105_20260223/)
+- [x] **Track: AskUser tool integration for interactive prompts** [5df9ec2]
   - Priority: P0 (Critical)
   - Source: gemini-cli-extensions/conductor#105
+  - Status: COMPLETE - Archived
+  - Archived: ./tracks/archive/issue_105_20260223/
 
-- [ ] **Track: Auto-create .gitignore for new tracks** (./tracks/issue_113_20260223/)
+- [~] **Track: Auto-create .gitignore for new tracks** (./tracks/issue_113_20260223/)
   - Priority: P1 (High)
   - Source: gemini-cli-extensions/conductor#113
+  - Status: IN PROGRESS - Starting Phase 1
 
 - [ ] **Track: Add overwrite confirmation for file operations** (./tracks/issue_112_20260223/)
   - Priority: P1 (High)
