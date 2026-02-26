@@ -1,5 +1,9 @@
 {
   "name": "conductor",
   "version": "0.3.1",
-  "contextFileName": "GEMINI.md"
+  "contextFileName": "GEMINI.md",
+  "policyPaths": ["policies"],
+  "plan": {
+    "directory": "conductor"
+  }
 }
