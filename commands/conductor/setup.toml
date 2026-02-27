@@ -31,19 +31,23 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
     - `tech-stack.md`
     - `code_styleguides/`
     - `workflow.md`
-    - `tracks/`
+    - `index.md`
+    - `tracks/*/` (specifically `plan.md` and `index.md`)
 
-2.  **Determine Entry Point:** Map the project's state to the starting section using the following priority table (highest match wins):
+2.  **Determine Target Section:** Map the project's state to a target section using the priority table below (highest match wins). **DO NOT JUMP YET.** Keep this target in mind.
 
-| Artifact Exists | Resume At | Announcement |
+| Artifact Exists | Target Section | Announcement |
 | :--- | :--- | :--- |
-| `tracks/` | **HALT** | "The project is already initialized. Use `/conductor:newTrack` or `/conductor:implement`." |
-| `workflow.md` | **Section 3.0** | "Resuming setup: Scaffolding is complete. Next: generate the first track." |
+| All files in `tracks/<track_id>/` (`spec`, `plan`, `metadata`, `index`) | **HALT** | "The project is already initialized. Use `/conductor:newTrack` or `/conductor:implement`." |
+| `index.md` (top-level) | **Section 3.0** | "Resuming setup: Scaffolding is complete. Next: generate the first track. (Note: If an incomplete track folder was detected, we will restart this step to ensure a clean, consistent state)." |
+| `workflow.md` | **Section 2.6** | "Resuming setup: Workflow is defined. Next: generate project index." |
 | `code_styleguides/` | **Section 2.5** | "Resuming setup: Guides/Tech Stack configured. Next: define project workflow." |
 | `tech-stack.md` | **Section 2.4** | "Resuming setup: Tech Stack defined. Next: select Code Styleguides." |
 | `product-guidelines.md` | **Section 2.3** | "Resuming setup: Guidelines are complete. Next: define the Technology Stack." |
 | `product.md` | **Section 2.2** | "Resuming setup: Product Guide is complete. Next: create Product Guidelines." |
 | (None) | **Section 2.0** | (None) |
+
+3. **Proceed to Section 2.0:** You MUST proceed to Section 2.0 to establish the Greenfield/Brownfield context before jumping to your target.
 
 ---
 
@@ -55,17 +59,25 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 1.  **Detect Project Maturity:**
     -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
     -   **Brownfield Indicators:**
-        -   Check for existence of version control directories: `.git`, `.svn`, or `.hg`.
-        -   If a `.git` directory exists, execute `git status --porcelain`. If the output is not empty, classify as "Brownfield" (dirty repository).
-        -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`.
-        -   Check for source code directories: `src/`, `app/`, `lib/` containing code files.
-        -   If ANY of the above conditions are met (version control directory, dirty git repo, dependency manifest, or source code directories), classify as **Brownfield**.
+        -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, `Cargo.toml`.
+        -   Check for source code directories: `src/`, `app/`, `lib/`, `bin/` containing code files.
+        -   If a `.git` directory exists, execute `git status --porcelain`. Ignore changes within the `conductor/` directory. If there are *other* uncommitted changes, it may be Brownfield.
+        -   If ANY of the primary indicators (manifests or source code directories) are found, classify as **Brownfield**.
     -   **Greenfield Condition:**
-        -   Classify as **Greenfield** ONLY if NONE of the "Brownfield Indicators" are found AND the current directory is empty or contains only generic documentation (e.g., a single `README.md` file) without functional code or dependencies.
+        -   Classify as **Greenfield** ONLY if:
+            1. NONE of the "Brownfield Indicators" are found.
+            2. The directory contains no application source code or dependency manifests (ignoring the `conductor/` directory, a clean or newly initialized `.git` folder, and a `README.md`).
 
-2.  **Execute Workflow based on Maturity:**
+
+2.  **Resume Fast-Forward Check:**
+    - If the **Target Section** (from 1.2) is anything other than "Section 2.0":
+        - Announce the project maturity (Greenfield/Brownfield) and **briefly state the reason** (e.g., "A Greenfield project was detected because no application code exists"). Then announce the target section.
+        - **IMMEDIATELY JUMP** to the Target Section. Do not execute the rest of Section 2.0.
+    - If the Target Section is "Section 2.0", proceed to step 3.
+
+3.  **Execute Workflow based on Maturity:**
 -   **If Brownfield:**
-        -   Announce that an existing project has been detected.
+        -   Announce that an existing project has been detected, and **briefly state the specific indicator you found** (e.g., "because I found a `package.json` file"). Be concise.
         -   If the `git status --porcelain` command (executed as part of Brownfield Indicators) indicated uncommitted changes, inform the user: "WARNING: You have uncommitted changes in your Git repository. Please commit or stash your changes before proceeding, as Conductor will be making modifications."
         -   **Begin Brownfield Project Initialization Protocol:**
             -   **1.0 Pre-analysis Confirmation:**
@@ -99,13 +111,13 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
                 4.  **Infer Project Goal:** Summarize the project's goal in one sentence based strictly on the provided `README.md` header or `package.json` description.
         -   **Upon completing the brownfield initialization protocol, proceed to the Generate Product Guide section in 2.1.**
     -   **If Greenfield:**
-        -   Announce that a new project will be initialized.
+        -   Announce that new project will be initialized, briefly noting that no existing application code or dependencies were found.
         -   Proceed to the next step in this file.
 
-3.  **Initialize Git Repository (for Greenfield):**
+4.  **Initialize Git Repository (for Greenfield):**
     -   If a `.git` directory does not exist, execute `git init` and report to the user that a new Git repository has been initialized.
 
-4.  **Inquire about Project Goal (for Greenfield):**
+5.  **Inquire about Project Goal (for Greenfield):**
     -   **Ask the user the following question using the `ask_user` tool and wait for their response before proceeding to the next step:**
         - **header:** "Project Goal"
         - **type:** "text"
@@ -116,7 +128,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
         -   Execute `mkdir -p conductor`.
         -   Write the user's response into `conductor/product.md` under a header named `# Initial Concept`.
 
-5.  **Continue:** Immediately proceed to the next section.
+6.  **Continue:** Immediately proceed to the next section.
 
 ### 2.1 Generate Product Guide (Interactive)
 1.  **Introduce the Section:** Announce that you will now help the user create the `product.md`.
@@ -390,6 +402,8 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
 ## 3.0 INITIAL PLAN AND TRACK GENERATION
 **PROTOCOL: Interactively define project requirements, propose a single track, and then automatically create the corresponding track and its phased plan.**
 
+**Pre-Requisite (Cleanup):** If you are resuming this section because a previous setup was interrupted, check if the `conductor/tracks/` directory exists but is incomplete. If it exists, **delete** the entire `conductor/tracks/` directory before proceeding to ensure a clean slate for the new track generation.
+
 ### 3.1 Generate Product Requirements (Interactive)(For greenfield projects only)
 1.  **Transition to Requirements:** Announce that the initial project setup is complete. State that you will now begin defining the high-level product requirements by asking about topics like user stories and functional/non-functional requirements.
 2.  **Analyze Context:** Read and analyze the content of `conductor/product.md` to understand the project's core concept.
@@ -476,6 +490,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - [Implementation Plan](./plan.md)
             - [Metadata](./metadata.json)
             ```
+            *(If you arrived here directly from the Audit because you are patching a missing index, write this file using the existing folder's track_id and then proceed to step d.)*
 
     d. **Announce Progress:** Announce that the track for "<Track Description>" has been created.
 
