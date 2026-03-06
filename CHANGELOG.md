@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.3.1...conductor-v0.4.0) (2026-03-06)
+
+
+### Features
+
+* **setup:** implement shallow artifact inference with state priority table ([68a2a2c](https://github.com/gemini-cli-extensions/conductor/commit/68a2a2ceb24603bf3ecb59a80a44d4551d450671))
+
+
+### Bug Fixes
+
+* **setup:** refine project maturity detection and harden resume edge-cases ([eb9d127](https://github.com/gemini-cli-extensions/conductor/commit/eb9d1277c1e0b29593e3929f902ca0fcbef0b2fc))
+* **setup:** Remove model selection constraint from setup command ([90b583f](https://github.com/gemini-cli-extensions/conductor/commit/90b583fd2f6a3167e436d72778f7d9ab94498263))
+
 ## [0.3.1](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.3.0...conductor-v0.3.1) (2026-02-19)
 
 
