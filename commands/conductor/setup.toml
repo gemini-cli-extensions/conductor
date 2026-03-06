@@ -379,6 +379,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         - [Product Definition](./product.md)
         - [Product Guidelines](./product-guidelines.md)
         - [Tech Stack](./tech-stack.md)
+        - [Architecture](./architecture.md)
 
         ## Workflow
         - [Workflow](./workflow.md)
