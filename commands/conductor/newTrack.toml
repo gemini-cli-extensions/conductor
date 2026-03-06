@@ -130,7 +130,20 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 - Label: "Revise", Description: "I want to modify the implementation steps."
     Await user feedback and revise the `plan.md` content until confirmed.
 
-### 2.4 Create Track Artifacts and Update Main Plan
+### 2.4 Skill Recommendation (Interactive)
+1.  **Analyze Needs:**
+    -   Read `skills/catalog.md` from the directory where the Conductor extension is installed (typically `~/.gemini/extensions/conductor/skills/catalog.md`).
+    -   Analyze the confirmed `spec.md` and `plan.md` against the `Detection Signals` in the loaded `skills/catalog.md`.
+    -   Identify any relevant skills that are NOT yet installed (check `~/.agents/extensions/conductor/skills/` and `.agents/skills/`).
+2.  **Recommendation Loop:**
+    -   **If relevant missing skills are found:**
+        -   **Present:** specific recommendations to the user, explaining WHY they are relevant for this track.
+        -   **Ask:** "Would you like to install these skills now?" (yes/no or select specific).
+        -   **Install:** If confirmed, install them using the same logic as `setup.toml` (download from URL/Git to `.agents/skills/`).
+        -   **Notify:** **CRITICAL:** If you installed any new skills, you MUST explicitly instruct the user: "New skills installed. Please run `/skills reload` to enable them."
+    -   **If no missing skills found:** Skip this section.
+
+### 2.5 Create Track Artifacts and Update Main Plan
 
 1.  **Check for existing track name:** Before generating a new Track ID, resolve the **Tracks Directory** using the **Universal File Resolution Protocol**. List all existing track directories in that resolved path. Extract the short names from these track IDs (e.g., ``shortname_YYYYMMDD`` -> `shortname`). If the proposed short name for the new track (derived from the initial description) matches an existing short name, halt the `newTrack` creation. Explain that a track with that name already exists and suggest choosing a different name or resuming the existing track.
 2.  **Generate Track ID:** Create a unique Track ID (e.g., ``shortname_YYYYMMDD``).
