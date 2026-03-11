@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.4.0...conductor-v0.4.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* update readme ([d1957ae](https://github.com/gemini-cli-extensions/conductor/commit/d1957ae0b965f2aa769331b9d850b7dd93eeb27a))
+
 ## [0.4.0](https://github.com/gemini-cli-extensions/conductor/compare/conductor-v0.3.1...conductor-v0.4.0) (2026-03-10)
 
 
