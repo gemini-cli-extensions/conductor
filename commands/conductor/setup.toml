@@ -372,20 +372,38 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ### 2.6 Select Skills (Interactive)
 1.  **Analyze and Recommend:**
     -   Read `skills/catalog.md` from the directory where the Conductor extension is installed (typically `~/.gemini/extensions/conductor/skills/catalog.md`).
+    -   **Catalog Not Found Handling:** If the skills catalog cannot be found, announce "Skills catalog not found. Skipping skill selection." and **immediately jump** to Section 2.7.
     -   Detect applicable skills based on `detectSignals` matched against project files and `conductor/tech-stack.md`.
     -   Identify "Always Recommended" skills.
-2.  **Present Selection:**
-    -   Present the list of recommended skills to the user, grouped by category (e.g., "Always Recommended", "GCP", etc.).
-    -   Display the Skill Name and Description.
-3.  **Ask for Selection:**
-    -   Ask the user: "How would you like to proceed?"
-        A) Install all recommended skills
-        B) Select specific skills (enter numbers separated by commas)
-        C) Skip skills installation
+2.  **Determine Mode:**
+    - **If no recommended skills are found:** Announce "No additional agent skills were recommended for this project context. Skipping skill installation." and skip to 2.7.
+    - **If recommended skills are found:** Use the `ask_user` tool to present recommendations and choose an installation path.
+    - **questions:**
+        - **header:** "Agent Skills"
+        - **question:**
+            Based on your project context, I recommend the following skills:
+            <List Recommended Skills with Descriptions>
+            How would you like to proceed?"
+        - **type:** "choice"
+        - **options:**
+            - Label: "Install All", Description: "Install all recommended skills."
+            - Label: "Hand-pick", Description: "Select specific skills from the catalog."
+            - Label: "Skip", Description: "Do not install any skills at this time."
+3.  **Gather Selection (Conditional):**
+    - **If user chose "Hand-pick":**
+        - **Batching Strategy:** You MUST split the list of available skills from the catalog into groups of 3-4 items.
+        - **Action:** Announce "I'll present the available skills in groups. Please select all that you wish to install." Then, immediately call the `ask_user` tool with the batched questions.
+        - **Single Tool Call:** Create one `ask_user` call containing a `questions` array with one question per group.
+        - **Question Structure:**
+            - **header:** "Select Skills"
+            - **type:** "choice"
+            - **multiSelect:** true
+            - **question:** "Which skill(s) would you like to install? (Part X/Y):"
+            - **options:** The subset of skills for this group (each with label as the skill name and description as the skill description).
 4.  **Process Selection:**
-    -   If (A): Install all recommended skills.
-    -   If (B): Parse input and install selected skills.
-    -   If (C): Proceed without installation.
+    -   If "Install All": Install all recommended skills.
+    -   If "Hand-pick": Parse the results from the `ask_user` call and install selected skills.
+    -   If "Skip": Proceed without installation.
 5.  **Installation Action:**
     -   For each selected skill:
         -   **Determine Installation Path:**
