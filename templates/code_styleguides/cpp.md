@@ -102,9 +102,8 @@
 - **Sizeof:** Prefer `sizeof(varname)` over `sizeof(type)`.
 - **Friends:** Allowed, usually defined in the same file.
 - **Boost:** Use only approved libraries (e.g., Call Traits, Compressed Pair, BGL, Property Map, Iterator, etc.).
-- **Aliases:** Use `using` instead of `typedef`. Public aliases must be documented.
+- **Aliases:** Use `using` instead of `typedef`. Public aliases must be documented, and intent should be clear. Do not use in public API solely for convenience.
 - **Ownership:** Single fixed owner. Transfer via smart pointers.
-- **Aliases:** Document intent. Don't use in public API for convenience. `using` > `typedef`.
 - **Switch:** Always include `default`. Use `[[fallthrough]]` for explicit fallthrough.
 - **Comments:** Document File, Class, Function (params/return). Use `//` or `/* */`. Implementation comments for tricky code. `TODO(user):` format.
 
