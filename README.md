@@ -43,6 +43,7 @@ When you run `/conductor:setup`, Conductor helps you define the core components 
 - **Workflow**: Set team preferences (e.g. TDD, commit strategy). Uses [workflow.md](templates/workflow.md) as a customizable template.
 
 **Generated Artifacts:**
+- `conductor/index.md`
 - `conductor/product.md`
 - `conductor/product-guidelines.md`
 - `conductor/tech-stack.md`

@@ -27,7 +27,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 2.  **Locate and Parse Tracks Registry:**
     -   Resolve the **Tracks Registry**.
-    -   Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section. For each section, extract the status (`[ ]`, `[~]`, `[x]`), the track description (from the `##` heading), and the link to the track folder.
+    -   Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section.
+    -   **For each section, extract:**
+        -   **Status:** Identify the status (`[ ]`, `[~]`, `[x]`) from the track entry.
+        -   **Track Description:** Identify the description. Look for lines matching either the standard format `- [ ] **Track: <Description>**` OR the heading format `## [ ] Track: <Description>`.
+        -   **Link:** Extract the link to the track folder (e.g., `[./path/](./path/)` or similar).
     -   **CRITICAL:** If no track sections are found after parsing, announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
 
 3.  **Continue:** Immediately proceed to the next step to select a track.
@@ -73,7 +77,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 2.  **Update Status to 'In Progress':**
     -   Before beginning any work, you MUST update the status of the selected track in the **Tracks Registry** file.
-    -   This requires finding the specific heading for the track (e.g., `## [ ] Track: <Description>`) and replacing it with the updated status (e.g., `## [~] Track: <Description>`) in the **Tracks Registry** file you identified earlier.
+    -   This requires finding the specific entry for the track (e.g., `## [ ] Track: <Description>` or `- [ ] **Track: <Description>**`) and replacing it with the updated status (e.g., `## [~] Track: <Description>` or `- [~] **Track: <Description>**`) in the **Tracks Registry** file you identified earlier.
 
 3.  **Load Track Context:**
     a. **Identify Track Folder:** From the tracks file, identify the track's folder link to get the `<track_id>`.
@@ -97,7 +101,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 5.  **Finalize Track:**
     -   After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status in the **Tracks Registry**.
-    -   This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
+    -   This requires finding the specific entry for the track (e.g., `## [~] Track: <Description>` or `- [~] **Track: <Description>**`) and replacing it with the completed status (e.g., `## [x] Track: <Description>` or `- [x] **Track: <Description>**`).
     -   **Commit Changes:** Stage the **Tracks Registry** file and commit with the message `chore(conductor): Mark track '<track_description>' as complete`.
     -   Announce that the track is fully complete and the tracks file has been updated.
 
