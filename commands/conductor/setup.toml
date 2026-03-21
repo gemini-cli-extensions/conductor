@@ -434,6 +434,7 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
         - [Product Definition](./product.md)
         - [Product Guidelines](./product-guidelines.md)
         - [Tech Stack](./tech-stack.md)
+        - [Architecture](./architecture.md)
 
         ## Workflow
         - [Workflow](./workflow.md)
