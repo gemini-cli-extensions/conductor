@@ -1,0 +1,28 @@
+# Allow writing to conductor files
+[[rule]]
+toolName = ["write_file", "replace"]
+priority = 100 # prioritize over other extension policies
+decision = "ask_user"
+modes = ["plan"]
+argsPattern = '"(?:file_path|path)":"conductor/[^"]*"'
+
+# Allow execution of isolation TS backend
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["node conductor_exp_backend/dist/cli.js"]
+decision = "ask_user"
+priority = 100
+
+# Allow worktree file operations
+[[rule]]
+toolName = ["write_file", "replace"]
+priority = 100
+decision = "ask_user"
+argsPattern = '"(?:file_path|path)":".gemini/worktrees/[^"]*"'
+
+# Allow git worktree management commands
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["git worktree add", "git worktree remove", "git merge"]
+decision = "ask_user"
+priority = 100

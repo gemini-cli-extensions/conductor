@@ -1,0 +1,14 @@
+{
+  "name": "spec-management-extension",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/cli.js",
+    "test:local": "npm run build && node ./dist/cli.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
