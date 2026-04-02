@@ -4,5 +4,13 @@
   "contextFileName": "GEMINI.md",
   "plan": {
     "directory": "conductor"
+  },
+  "commands": {
+    "conductor": {
+      "path": "commands/conductor"
+    },
+    "conductor_exp": {
+      "path": "commands/conductor_exp"
+    }
   }
 }
