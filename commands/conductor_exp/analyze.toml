@@ -12,11 +12,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 1.  **Announce Action:** Inform the user you are running the DAG analysis tools.
 
 2.  **Execute Impact Analysis:**
-    - Use the `run_shell_command` tool to execute `node conductor_exp_backend/dist/cli.js analyze`.
+    - Use the `run_shell_command` tool to execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze`.
     - If it fails, report the error.
     
 3.  **Execute Graph Visualization:**
-    - Use the `run_shell_command` tool to execute `node conductor_exp_backend/dist/cli.js graph`.
+    - Use the `run_shell_command` tool to execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js graph`.
     - If it fails, report the error.
 
 4.  **Present Results:**

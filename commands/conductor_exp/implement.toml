@@ -72,13 +72,13 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 1.  **Announce Action:** Announce which track you are beginning to implement.
 
 2.  **SDLC Worktree Isolation Hook:**
-    - You MUST execute `node conductor_exp_backend/dist/cli.js init-session <track_id>` using the `run_shell_command` tool.
+    - You MUST execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js init-session <track_id>` using the `run_shell_command` tool.
     - If the command fails, you MUST halt and inform the user.
     - If it succeeds, it will create an isolated git worktree (e.g., `.gemini/worktrees/<track_id>`).
     - **CRITICAL DIRECTORY PINNING:** For all subsequent implementation tasks, you MUST ensure that your file modifications and shell commands operate inside this isolated worktree directory (`.gemini/worktrees/<track_id>`). Use the `cwd` argument in `run_shell_command` or prepend paths accordingly to avoid mutating the main branch.
 
 3.  **Lock Verification:**
-    - Execute `node conductor_exp_backend/dist/cli.js analyze` using `run_shell_command` and inspect the output.
+    - Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command` and inspect the output.
     - Evaluate if the target track is blocked by an upstream dependency. If it is locked/blocked, inform the user and HALT.
 
 4.  **Update Status to 'In Progress':**
