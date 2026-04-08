@@ -21,48 +21,38 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ---
 
 ## 2.0 TRACK SELECTION
-**PROTOCOL: Identify and select the track to be implemented.**
+**PROTOCOL: Identify and select the track to be implemented using the Spec DAG.**
 
-1.  **Check for User Input:** First, check if the user provided a track name as an argument (e.g., `/conductor:implement <track_description>`).
+1.  **Analyze Project Spec Graph:**
+    -   Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command`.
+    -   **CRITICAL:** If the command fails or reports "No specs found", announce: "The project spec graph is empty. Please run `/conductor_exp:newTrack` to create a feature specification." and halt.
 
-2.  **Locate and Parse Tracks Registry:**
-    -   Resolve the **Tracks Registry**.
-    -   Read and parse this file. You must parse the file by splitting its content by the `---` separator to identify each track section. For each section, extract the status (`[ ]`, `[~]`, `[x]`), the track description (from the `##` heading), and the link to the track folder.
-    -   **CRITICAL:** If no track sections are found after parsing, announce: "The tracks file is empty or malformed. No tracks to implement." and halt.
+2.  **Filter Incomplete Tracks:**
+    -   Read the output of the `analyze` command to see the list of existing track IDs.
+    -   For each track ID listed, read its `spec.md` file located at `conductor/tracks/<track_id>/spec.md`.
+    -   Examine the YAML frontmatter at the top of each `spec.md`. Check the `status` field.
+    -   Consider a track "incomplete" if its status is NOT `completed` or `done` (e.g., `status: unlocked`, `draft`, or `in_progress`). Keep a mental list of only the incomplete tracks.
 
-3.  **Continue:** Immediately proceed to the next step to select a track.
-
-4.  **Select Track:**
-    -   **If a track name was provided:**
-        1.  Perform an exact, case-insensitive match for the provided name against the track descriptions you parsed.
-        2.  If a unique match is found, immediately call the `ask_user` tool to confirm the selection (do not repeat the question in the chat):
-            - **questions:**
-                - **header:** "Confirm"
-                - **question:** "I found track '<track_description>'. Is this correct?"
-                - **type:** "yesno"
-        3.  If no match is found, or if the match is ambiguous, immediately call the `ask_user` tool to inform the user and request the correct track name (do not repeat the question in the chat):
-            - **questions:**
-                - **header:** "Clarify"
-                - **question:** "I couldn't find a unique track matching the name you provided. Did you mean '<next_available_track>'? Or please type the exact track name."
-                - **type:** "text"
-    -   **If no track name was provided (or if the previous step failed):**
-        1.  **Identify Next Track:** Find the first track in the parsed tracks file that is NOT marked as `[x] Completed`.
+3.  **Select Track:**
+    -   **If a track name/ID was provided by the user (e.g., `/conductor_exp:implement CORE-01`):**
+        1. Verify if that specific ID exists in your list of incomplete tracks.
+        2. If yes, select it.
+        3. If it exists but is already completed, announce: "Track '<track_id>' is already completed." and halt.
+        4. If not found, use `ask_user` to clarify the correct ID.
+    -   **If no track name was provided:**
+        1.  **Identify Next Track:** From your filtered list of incomplete tracks, pick the first one that is a "leaf node" or has no pending parent dependencies.
         2.  **If a next track is found:**
-            -   Immediately call the `ask_user` tool to confirm the selection (do not repeat the question in the chat):
+            -   Use `ask_user` to confirm the selection:
                 - **questions:**
                     - **header:** "Next Track"
-                    - **question:** "No track name provided. Would you like to proceed with the next incomplete track: '<track_description>'?"
+                    - **question:** "No track name provided. Would you like to proceed with the incomplete track: '<track_id>'?"
                     - **type:** "yesno"
-            -   If confirmed, proceed with this track. Otherwise, immediately call the `ask_user` tool to request the correct track name (do not repeat the question in the chat):
-                - **questions:**
-                    - **header:** "Clarify"
-                    - **question:** "Please type the exact name of the track you would like to implement."
-                    - **type:** "text"
+            -   If confirmed, proceed with this track. Otherwise, use `ask_user` to request the correct track name.
         3.  **If no incomplete tracks are found:**
-            -   Announce: "No incomplete tracks found in the tracks file. All tasks are completed!"
+            -   Announce: "No incomplete tracks found in the project. All tasks are completed!"
             -   Halt the process and await further user instructions.
 
-5.  **Handle No Selection:** If no track is selected, inform the user and await further instructions.
+4.  **Establish Track ID:** Store the selected ID as `<track_id>`.
 
 ---
 
@@ -82,11 +72,12 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     - Evaluate if the target track is blocked by an upstream dependency. If it is locked/blocked, inform the user and HALT.
 
 4.  **Update Status to 'In Progress':**
-    -   Before beginning any work, you MUST update the status of the selected track in the **Tracks Registry** file.
-    -   This requires finding the specific heading for the track (e.g., `## [ ] Track: <Description>`) and replacing it with the updated status (e.g., `## [~] Track: <Description>`) in the **Tracks Registry** file you identified earlier.
+    -   Before beginning any work, you MUST update the status of the selected track.
+    -   Read the track's `spec.md` file (`conductor/tracks/<track_id>/spec.md`).
+    -   Use the `replace` tool to change the `status: ...` field in the YAML frontmatter to `status: in_progress`.
 
 3.  **Load Track Context:**
-    a. **Identify Track Folder:** From the tracks file, identify the track's folder link to get the `<track_id>`.
+    a. **Identify Track Folder:** The track's folder is `conductor/tracks/<track_id>`.
     b. **Read Files:**
         -   **Track Context:** Using the **Universal File Resolution Protocol**, resolve and read the **Specification** and **Implementation Plan** for the selected track.
         -   **Workflow:** Resolve **Workflow** (via the **Universal File Resolution Protocol** using the project's index file).
@@ -106,17 +97,18 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
            - **CRITICAL:** Every human-in-the-loop interaction, confirmation, or request for feedback mentioned in the **Workflow** (e.g., manual verification plans or guidance on persistent failures) MUST be conducted using the `ask_user` tool.
 
 5.  **Finalize Track:**
-    -   After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status in the **Tracks Registry**.
-    -   This requires finding the specific heading for the track (e.g., `## [~] Track: <Description>`) and replacing it with the completed status (e.g., `## [x] Track: <Description>`).
-    -   **Commit Changes:** Stage the **Tracks Registry** file and commit with the message `chore(conductor): Mark track '<track_description>' as complete`.
-    -   Announce that the track is fully complete and the tracks file has been updated.
+    -   After all tasks in the track's local **Implementation Plan** are completed, you MUST update the track's status.
+    -   Read the track's `spec.md` file (`conductor/tracks/<track_id>/spec.md`).
+    -   Use the `replace` tool to change the `status: in_progress` field in the YAML frontmatter to `status: completed`.
+    -   **Commit Changes:** Stage the updated `spec.md` and commit with the message `chore(conductor): Mark track '<track_id>' as complete`.
+    -   Announce that the track is fully complete and the status has been updated.
 
 ---
 
 ## 4.0 SYNCHRONIZE PROJECT DOCUMENTATION
 **PROTOCOL: Update project-level documentation based on the completed track.**
 
-1.  **Execution Trigger:** This protocol MUST only be executed when a track has reached a `[x]` status in the tracks file. DO NOT execute this protocol for any other track status changes.
+1.  **Execution Trigger:** This protocol MUST only be executed when a track has reached a `completed` status. DO NOT execute this protocol for any other track status changes.
 
 2.  **Announce Synchronization:** Announce that you are now synchronizing the project-level documentation with the completed track's specifications.
 
@@ -202,19 +194,18 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         - **multiSelect:** false
         - **options:**
             - Label: "Review", Description: "Run the review command to verify changes before finalizing."
-            - Label: "Archive", Description: "Move the track's folder to `conductor/archive/` and remove it from the tracks file."
-            - Label: "Delete", Description: "Permanently delete the track's folder and remove it from the tracks file."
-            - Label: "Skip", Description: "Do nothing and leave it in the tracks file."
+            - Label: "Archive", Description: "Move the track's folder to `conductor/archive/`."
+            - Label: "Delete", Description: "Permanently delete the track's folder."
+            - Label: "Skip", Description: "Do nothing and leave it in the tracks folder."
 
 3.  **Handle User Response:**
     *   **If user chooses "Review":**
         *   Announce: "Please run `/conductor:review` to verify your changes. You will be able to archive or delete the track after the review."
     *   **If user chooses "Archive":**
         i.   **Create Archive Directory:** Check for the existence of `conductor/archive/`. If it does not exist, create it.
-        ii.  **Archive Track Folder:** Move the track's folder from its current location (resolved via the **Tracks Directory**) to `conductor/archive/<track_id>`.
-        iii. **Remove from Tracks File:** Read the content of the **Tracks Registry** file, remove the entire section for the completed track (the part that starts with `---` and contains the track description), and write the modified content back to the file.
-        iv.  **Commit Changes:** Stage the **Tracks Registry** file and `conductor/archive/`. Commit with the message `chore(conductor): Archive track '<track_description>'`.
-        v.   **Announce Success:** Announce: "Track '<track_description>' has been successfully archived."
+        ii.  **Archive Track Folder:** Move the track's folder from its current location to `conductor/archive/<track_id>`.
+        iii. **Commit Changes:** Stage the `conductor/archive/` and the original track folder path. Commit with the message `chore(conductor): Archive track '<track_id>'`.
+        iv.  **Announce Success:** Announce: "Track '<track_id>' has been successfully archived."
     *   **If user chooses "Delete":**
         i. **CRITICAL WARNING:** Before proceeding, immediately call the `ask_user` tool to ask for final confirmation (do not repeat the warning in the chat):
             - **questions:**
@@ -223,14 +214,13 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 - **type:** "yesno"
         ii. **Handle Confirmation:**
             - **If 'yes'**:
-                a. **Delete Track Folder:** Resolve the **Tracks Directory** and permanently delete the track's folder from `<Tracks Directory>/<track_id>`.
-                b. **Remove from Tracks File:** Read the content of the **Tracks Registry** file, remove the entire section for the completed track, and write the modified content back to the file.
-                c. **Commit Changes:** Stage the **Tracks Registry** file and the deletion of the track directory. Commit with the message `chore(conductor): Delete track '<track_description>'`.
-                d. **Announce Success:** Announce: "Track '<track_description>' has been permanently deleted."
+                a. **Delete Track Folder:** Permanently delete the track's folder from `<Tracks Directory>/<track_id>`.
+                b. **Commit Changes:** Stage the deletion of the track directory. Commit with the message `chore(conductor): Delete track '<track_id>'`.
+                c. **Announce Success:** Announce: "Track '<track_id>' has been permanently deleted."
             - **If 'no'**:
                 a. **Announce Cancellation:** Announce: "Deletion cancelled. The track has not been changed."
     *   **If user chooses "Skip":**
-        *   Announce: "Okay, the completed track will remain in your tracks file for now."
+        *   Announce: "Okay, the completed track will remain in your tracks directory for now."
 
 4.  **Worktree Cleanup Reminder:**
     *   Regardless of the user's choice above, you MUST explicitly remind them to clean up the isolated git worktree:

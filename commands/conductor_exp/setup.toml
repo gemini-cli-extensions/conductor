@@ -447,7 +447,6 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
         - [Code Style Guides](./code_styleguides/)
 
         ## Management
-        - [Tracks Registry](./tracks.md)
         - [Tracks Directory](./tracks/)
         ```
     -   **Announce:** "Created `conductor/index.md` to serve as the project context index."
@@ -532,19 +531,7 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
 
 ### 3.3 Convert the Initial Track into Artifacts (Automated)
 1.  **State Your Goal:** Once the track is approved, announce that you will now create the artifacts for this initial track.
-2.  **Initialize Tracks File:** Create the `conductor/tracks.md` file with the initial header and the first track:
-    ```markdown
-    # Project Tracks
-
-    This file tracks all major tracks for the project. Each track has its own detailed plan in its respective folder.
-
-    ---
-
-    - [ ] **Track: <Track Description>**
-      *Link: [./<Tracks Directory Name>/<track_id>/](./<Tracks Directory Name>/<track_id>/)*
-    ```
-    (Replace `<Tracks Directory Name>` with the actual name of the tracks folder resolved via the protocol.)
-3.  **Generate Track Artifacts:**
+2.  **Generate Track Artifacts:**
     a. **Define Track:** The approved title is the track description.
     b. **Generate Track-Specific Spec & Plan:**
         i. Automatically generate a detailed `spec.md` for this track.

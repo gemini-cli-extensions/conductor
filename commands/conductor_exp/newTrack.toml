@@ -207,21 +207,10 @@ PLAN MODE PROTOCOL: Parts of this process run within Plan Mode. While in Plan Mo
         ```
 6.  **Exit Plan Mode:** Call the `exit_plan_mode` tool with the path: `<Tracks Directory>/<track_id>/index.md`.
 
-7.  **Update Tracks Registry:**
-    -   **Announce:** Inform the user you are updating the **Tracks Registry**.
-    -   **Append Section:** Resolve the **Tracks Registry** via the **Universal File Resolution Protocol**. Append a new section for the track to the end of this file. The format MUST be:
-        ```markdown
-
-        ---
-
-        - [ ] **Track: <Track Description>**
-        *Link: [./<Relative Track Path>/](./<Relative Track Path>/)*
-        ```
-        (Replace `<Relative Track Path>` with the path to the track directory relative to the **Tracks Registry** file location.)
-8.  **Commit Code Changes:**
-    -   **Announce:** Inform the user you are committing the **Tracks Registry** changes.
-    -   **Commit Changes:** Stage the **Tracks Registry** files and commit with the message `chore(conductor): Add new track '<track_description>'`.
-9.  **Announce Completion:** Inform the user:
-    > "New track '<track_id>' has been created and added to the tracks file. You can now start implementation by running `/conductor:implement`."
+7.  **Commit Code Changes:**
+    -   **Announce:** Inform the user you are committing the new track files.
+    -   **Commit Changes:** Stage the newly created `<Tracks Directory>/<track_id>/` directory and its contents. Commit with the message `chore(conductor): Add new track '<track_description>'`.
+8.  **Announce Completion:** Inform the user:
+    > "New track '<track_id>' has been created. You can now start implementation by running `/conductor_exp:implement`."
 
 """
