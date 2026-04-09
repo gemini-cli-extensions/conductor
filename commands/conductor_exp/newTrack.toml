@@ -91,7 +91,7 @@ PLAN MODE PROTOCOL: Parts of this process run within Plan Mode. While in Plan Mo
         id: <track_id>
         type: <master-spec OR sub-spec>
         parent: <parent_track_id_if_sub_spec>
-        status: unlocked
+        status: new
         ---
         ```
 
