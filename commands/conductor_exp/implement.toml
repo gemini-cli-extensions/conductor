@@ -67,16 +67,12 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     - If it succeeds, it will create an isolated git worktree (e.g., `.gemini/worktrees/<track_id>`).
     - **CRITICAL DIRECTORY PINNING:** For all subsequent implementation tasks, you MUST ensure that your file modifications and shell commands operate inside this isolated worktree directory (`.gemini/worktrees/<track_id>`). Use the `cwd` argument in `run_shell_command` or prepend paths accordingly to avoid mutating the main branch.
 
-3.  **Lock Verification:**
-    - Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command` and inspect the output.
-    - Evaluate if the target track is blocked by an upstream dependency. If it is locked/blocked, inform the user and HALT.
-
-4.  **Update Status to 'In Progress':**
+3.  **Update Status to 'In Progress':**
     -   Before beginning any work, you MUST update the status of the selected track.
     -   Read the track's `spec.md` file (`conductor/tracks/<track_id>/spec.md`).
     -   Use the `replace` tool to change the `status: ...` field in the YAML frontmatter to `status: in_progress`.
 
-3.  **Load Track Context:**
+4.  **Load Track Context:**
     a. **Identify Track Folder:** The track's folder is `conductor/tracks/<track_id>`.
     b. **Read Files:**
         -   **Track Context:** Using the **Universal File Resolution Protocol**, resolve and read the **Specification** and **Implementation Plan** for the selected track.
