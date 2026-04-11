@@ -127,9 +127,11 @@ export async function runImpactAnalysis(): Promise<string> {
         const idMatch = content.match(/^id:\s*(.*)$/m);
         const typeMatch = content.match(/^type:\s*(.*)$/m);
         const parentMatch = content.match(/^parent:\s*(.*)$/m);
+        const statusMatch = content.match(/^status:\s*(.*)$/m);
 
         summary += `- **${idMatch ? idMatch[1].trim() : 'Unknown'}** (${typeMatch ? typeMatch[1].trim() : 'unknown'})\n`;
         summary += `  Title: ${title}\n`;
+        summary += `  Status: ${statusMatch ? statusMatch[1].trim() : 'unknown'}\n`;
         if (parentMatch) {
             summary += `  Parent: ${parentMatch[1].trim()}\n`;
         }
