@@ -102,6 +102,7 @@ ${requirements.map(r => `- ${r}`).join('\n')}
 }
 
 import { readdirSync, readFileSync as readFsFile } from 'fs';
+import { getTrackState } from './stateManager.js';
 
 /**
  * Reads all specs in the specs/ folder to build a relational graph of dependencies.
@@ -120,18 +121,32 @@ export async function runImpactAnalysis(): Promise<string> {
         const filePath = path.resolve(specsDir, file);
         const content = readFsFile(filePath, 'utf-8');
 
-        // Extract Title and metadata manually to avoid external heavy YAML parser dependencies
+        // Extract ID and Title
+        const idMatch = content.match(/^id:\s*(.*)$/m);
+        const trackId = idMatch ? idMatch[1].trim() : 'Unknown';
         const titleMatch = content.match(/^# (.*)$/m);
         const title = titleMatch ? titleMatch[1] : file;
         
-        const idMatch = content.match(/^id:\s*(.*)$/m);
+        // Context Awareness: Check centralized state first
+        const liveState = getTrackState(trackId);
+        
         const typeMatch = content.match(/^type:\s*(.*)$/m);
         const parentMatch = content.match(/^parent:\s*(.*)$/m);
-        const statusMatch = content.match(/^status:\s*(.*)$/m);
+        
+        // Status resolution: Priority to Live State > YAML
+        let status = 'unknown';
+        let statusFlag = '';
+        if (liveState) {
+            status = liveState.status;
+            statusFlag = ` (Locked by ${liveState.locked_by})`;
+        } else {
+            const statusMatch = content.match(/^status:\s*(.*)$/m);
+            status = statusMatch ? statusMatch[1].trim() : 'unknown';
+        }
 
-        summary += `- **${idMatch ? idMatch[1].trim() : 'Unknown'}** (${typeMatch ? typeMatch[1].trim() : 'unknown'})\n`;
+        summary += `- **${trackId}** (${typeMatch ? typeMatch[1].trim() : 'unknown'})\n`;
         summary += `  Title: ${title}\n`;
-        summary += `  Status: ${statusMatch ? statusMatch[1].trim() : 'unknown'}\n`;
+        summary += `  Status: ${status}${statusFlag}\n`;
         if (parentMatch) {
             summary += `  Parent: ${parentMatch[1].trim()}\n`;
         }

@@ -11,21 +11,21 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
 ## 1.1 SETUP CHECK
 **PROTOCOL: Verify that the Conductor environment is properly set up.**
 
-1.  **Verify Core Context:** Using the **Universal File Resolution Protocol**, resolve and verify the existence of: **Tracks Registry**.
+1.  **Verify Core Context:** Using the **Universal File Resolution Protocol**, resolve and verify the existence of: **Product Definition**, **Tech Stack**, **Workflow**.
 2.  **Detect Base Branch:** Run `git branch --show-current` and store as `<base_branch>`.
-3.  **Handle Failure:** If the registry is missing or empty, inform the user to run `/conductor:setup`.
+3.  **Handle Failure:** If ANY are missing, inform the user to run `/conductor_exp:setup`.
 
 ---
 
 ## 2.0 TARGET SELECTION
 **PROTOCOL: Identify the logical unit of work the user wants to revert.**
 
-1.  **Check for User Input:** Check if the user provided a track name/ID as an argument.
-2.  **Guided Selection:** If no input is provided:
-    -   Read the **Tracks Registry**.
-    -   Find tracks marked as `[~] In Progress` or `[x] Completed`.
-    -   Use `ask_user` (choice type) to present up to 4 options.
-3.  **Establish Target:** Store the `<track_id>` and `<track_name>`.
+1.  **Scope Detection (DAG & State Aware):**
+    -   Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command`.
+    -   Check for user input in {{args}}.
+    -   If {{args}} is empty, identify all tracks with status `in_progress`, `in_review`, or `completed` from the analyze output and ask the user to pick one via `ask_user`.
+2.  **Acquire Lock:** Once the track is identified, execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state lock <track_id> revert`. Halt if failed.
+3.  **Establish Target:** Store the `<track_id>`.
 
 ---
 
@@ -39,21 +39,18 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
         -   If `<track_id>` has an active worktree (check for the path `.gemini/worktrees/<track_id>`).
         -   **Analyze History:**
             i. Call `run_shell_command` with `realpath .gemini/worktrees/<track_id>` and store as `<worktree_path>`.
-            ii. Call `run_shell_command` with `git log -n 5 --oneline` setting `dir_path` to `<worktree_path>`. Identify checkpoints (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
+            ii. Call `run_shell_command` with `git log -n 5 --oneline` setting `dir_path` to `<worktree_path>`. Identify checkpoints.
         -   **Formulate Choice:** Use `ask_user` to ask how to proceed:
-            -   Label: "Abort Track", Description: "Permanently destroy the worktree and reset status to [ ]."
+            -   Label: "Abort Track", Description: "Permanently destroy the worktree and reset status to 'new'."
             -   Label: "Rollback last commit", Description: "Undo the very last commit inside the worktree."
-            -   *(If Checkpoint exists)* Label: "Rollback to Checkpoint", Description: "Reset worktree to the end of a completed Phase, undoing any work done after it."
         -   **Halt and Process:** Depending on selection, define the **Action Plan**.
 
     *   **SCENARIO B: POST-MERGE (Undo Integrated Work)**
-        -   If no worktree exists, but the track is marked `[x]` or is in the Archive.
-        -   **Discovery:** Find both the Merge commit AND the Archival commit (if it exists).
-            -   Search Archival: `git log --grep="archive track <track_id>" -n 1 --oneline`
-            -   Search Merge: `git log --grep="Merge track <track_id>" -n 1 --oneline`
-        -   **Action Plan:** "Revert commits in reverse order (Archival first, then Merge) to avoid conflicts, restore the track folder, and reset status to `[ ]`."
+        -   If no worktree exists, but the track is marked `completed` or is in the Archive.
+        -   **Discovery:** Find Merge and Archival commits using `git log --grep`.
+        -   **Action Plan:** "Revert commits in reverse order (Archival first, then Merge), restore the track folder, and reset status to 'new'."
 
-3.  **Confirm Revert:** Use `ask_user` (yesno) to present the finalized Action Plan and get confirmation.
+3.  **Confirm Revert:** Use `ask_user` (yesno) to present the Action Plan and get confirmation.
 
 ---
 
@@ -63,27 +60,24 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
 ### 4.1 Execute Pre-Merge Options (Scenario A)
 
 **If "Abort Track":**
-1.  **Cleanup Rework State:** Check if `review-report.md` exists in the track folder inside the main repo. If it does, delete it.
-2.  **Destroy Worktree:**
-    i. Call `run_shell_command` with `git worktree remove --force .gemini/worktrees/<track_id>`.
-    ii. Call `run_shell_command` with `git branch -D conductor/<track_id>`.
-    iii. Call `run_shell_command` with `git worktree prune`.
-3.  **Reset Status:** Read the main **Tracks Registry**, find the track, and change its status back to `[ ]`.
-4.  **Commit Reset:** Stage the registry and commit: `chore(conductor): Abort isolated work for track '<track_id>'`.
-5.  **Announce:** "Worktree destroyed and track reset to pending."
+1.  **Destroy Worktree:**
+    i. `git worktree remove --force .gemini/worktrees/<track_id>`
+    ii. `git branch -D conductor/<track_id>`
+2.  **Reset DAG Status:** Read the track's `spec.md` in the base branch and set `status: new`.
+3.  **Commit Reset:** `chore(conductor): Abort work for track '<track_id>'`.
+4.  **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+5.  **Announce:** "Worktree destroyed and track reset."
 
-**If "Rollback last commit" or "Rollback to Checkpoint":**
-1.  **Perform Reset:** Run `git reset --hard <target_sha>` inside the worktree directory `<worktree_path>`.
-2.  **Synchronize Plan:** Read the track's `plan.md` inside the worktree. Based on the rollback point, change the status of reverted tasks from `[x]` or `[~]` back to `[ ]`.
-3.  **Commit Plan Update:** Stage the updated `plan.md` inside the worktree and commit: `chore(conductor): Rollback worktree to <target_sha>`.
-4.  **Announce:** "Worktree rolled back. Reverted tasks have been reset in the plan.md."
+**If "Rollback last commit":**
+1.  **Perform Reset:** Run `git reset --hard HEAD^` inside the worktree directory `<worktree_path>`.
+2.  **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+3.  **Announce:** "Worktree rolled back."
 
 ### 4.2 Execute Post-Merge Undo (Scenario B)
-1.  **Step-by-Step Revert (LIFO):** 
-    -   If an Archival Commit was found: Run `git revert --no-edit <archival_sha>`.
-    -   Then, run `git revert -m 1 --no-edit <merge_commit_sha>`.
-2.  **Restore Track Folder:** If the track was in the Archive, move it back to `conductor/tracks/<track_id>`.
-3.  **Reset Registry:** Update the main **Tracks Registry**, changing the status back to `[ ]`.
-4.  **Commit Registry Change:** Stage the registry and commit: `chore(conductor): Mark reverted track '<track_id>' as incomplete`.
-5.  **Announce:** "integrated work reverted and track restored to pending."
+1.  **Revert Commits:** Run `git revert` for Archival and Merge commits in reverse order.
+2.  **Restore Track Folder:** If archived, move back to `conductor/tracks/<track_id>`.
+3.  **Reset DAG Status:** Set status to `new` in `spec.md`.
+4.  **Commit Reset:** `chore(conductor): Mark reverted track '<track_id>' as new`.
+5.  **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+6.  **Announce:** "integrated work reverted and track restored."
 """

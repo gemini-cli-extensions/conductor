@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { initMasterSpec, addSubSpec, runImpactAnalysis } from './manageSpec.js';
 import { initSession, createSessionPlan, createSessionTask, visualizeDAG } from './orchestration.js';
+import { lockTrack, updateTrackState, unlockTrack } from './stateManager.js';
 
 async function run() {
     const command = process.argv[2];
@@ -10,6 +11,22 @@ async function run() {
 
     try {
         switch (command) {
+            case 'state':
+                const subCommand = args[0];
+                const subArgs = args.slice(1);
+                if (subCommand === 'lock') {
+                    const [id, by] = subArgs;
+                    console.log(lockTrack(id, by));
+                } else if (subCommand === 'update') {
+                    const [id, status, mode, path] = subArgs;
+                    console.log(updateTrackState(id, status as any, mode as any, path));
+                } else if (subCommand === 'unlock') {
+                    const [id] = subArgs;
+                    console.log(unlockTrack(id));
+                } else {
+                    throw new Error("Unknown state sub-command. Use lock, update, or unlock.");
+                }
+                break;
             case 'init-session':
                 const [sessId] = args;
                 console.log(await initSession(sessId));
@@ -51,7 +68,7 @@ async function run() {
             default:
                 console.log("Unknown command or missing arguments.");
                 console.log("Usage: node cli.js <command> [args]");
-                console.log("Commands: init-session, init, sub, plan, task, graph, analyze, edit, merge");
+                console.log("Commands: init-session, init, sub, plan, task, graph, analyze, edit, merge, state");
                 break;
         }
         process.exit(0);

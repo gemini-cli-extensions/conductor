@@ -54,6 +54,10 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 
 4.  **Establish Track ID:** Store the selected ID as `<track_id>`.
 
+5.  **Acquire Concurrency Lock:**
+    -   Immediately execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state lock <track_id> implement` using `run_shell_command`.
+    -   **CRITICAL:** If the command fails (e.g., track is already locked), announce the failure and HALT immediately to prevent race conditions.
+
 ---
 
 ## 3.0 TRACK IMPLEMENTATION
@@ -67,6 +71,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **IF IT EXISTS:**
         -   Announce: "Existing worktree detected for track '<track_id>'. Resuming session..."
         -   Extract the absolute path to this worktree from the command output and store it as `<worktree_path>`.
+        -   **Update Live State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state update <track_id> in_progress isolated <worktree_path>` using `run_shell_command`.
     -   **IF IT DOES NOT EXIST:**
         -   Use the `ask_user` tool to determine the implementation mode (do not repeat the question in the chat):
             - **questions:**
@@ -85,9 +90,11 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                 -   If branch exists: `git worktree add .gemini/worktrees/<track_id> conductor/<track_id>`
                 -   If branch DOES NOT exist: `git worktree add -b conductor/<track_id> .gemini/worktrees/<track_id>`
                 -   Store the path `.gemini/worktrees/<track_id>` as `<worktree_path>`.
+                -   **Update Live State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state update <track_id> in_progress isolated <worktree_path>` using `run_shell_command`.
             -   **If "Standard":**
                 -   Inform the user: "Proceeding with standard implementation in the current directory."
                 -   Store the current project root path `.` as `<worktree_path>`.
+                -   **Update Live State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state update <track_id> in_progress standard .` using `run_shell_command`.
 
     -   **CRITICAL DIRECTORY PINNING:** For all subsequent implementation tasks, you MUST ensure that your file modifications and shell commands operate inside `<worktree_path>`. Use the `cwd` argument in `run_shell_command` or prepend paths accordingly.
 
@@ -123,6 +130,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   After all tasks (Plan or Rework) are completed, update the track's status to indicate it is ready for review.
     -   Read the track's `spec.md` file *inside the environment*.
     -   Use the `replace` tool to change the `status: in_progress` field in the YAML frontmatter to `status: in_review`.
+    -   **Update Live State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state update <track_id> in_review isolated <worktree_path>` (using the correct mode and path from the session) using `run_shell_command`.
     -   **Commit Changes:** Stage the updated `spec.md` (inside `<worktree_path>`) and commit with the message `chore(conductor): Mark track '<track_id>' as ready for review`.
 
 ---
