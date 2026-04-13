@@ -30,7 +30,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command`.
     -   Identify the target track from {{args}}.
     -   If {{args}} is empty, identify all tracks with `status: in_review` (Priority) or `in_progress` from the analyze output and ask the user to pick one via `ask_user`.
-    -   **Acquire Lock:** Once the track is identified, execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state lock <track_id> review`. Halt if failed.
+    -   **Acquire Lock:** Once the track is identified, execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state takeover <track_id> review`. Halt if failed.
     -   **ISOLATION CHECK:** Call `run_shell_command` with `git worktree list`. 
     -   **Determine Mode & Path:**
         - **Isolated Mode:** If a worktree exists at `.gemini/worktrees/<track_id>`, set `<worktree_path>` to that path.

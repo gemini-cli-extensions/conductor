@@ -24,7 +24,7 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
     -   Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js analyze` using `run_shell_command`.
     -   Check for user input in {{args}}.
     -   If {{args}} is empty, identify all tracks with status `in_progress`, `in_review`, or `completed` from the analyze output and ask the user to pick one via `ask_user`.
-2.  **Acquire Lock:** Once the track is identified, execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state lock <track_id> revert`. Halt if failed.
+2.  **Acquire Lock:** Once the track is identified, execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state takeover <track_id> revert`. Halt if failed.
 3.  **Establish Target:** Store the `<track_id>`.
 
 ---

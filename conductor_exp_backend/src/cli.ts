@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { initMasterSpec, addSubSpec, runImpactAnalysis } from './manageSpec.js';
 import { initSession, createSessionPlan, createSessionTask, visualizeDAG } from './orchestration.js';
-import { lockTrack, updateTrackState, unlockTrack } from './stateManager.js';
+import { lockTrack, updateTrackState, unlockTrack, takeoverLock } from './stateManager.js';
 
 async function run() {
     const command = process.argv[2];
@@ -17,6 +17,9 @@ async function run() {
                 if (subCommand === 'lock') {
                     const [id, by] = subArgs;
                     console.log(lockTrack(id, by));
+                } else if (subCommand === 'takeover') {
+                    const [id, by] = subArgs;
+                    console.log(takeoverLock(id, by));
                 } else if (subCommand === 'update') {
                     const [id, status, mode, path] = subArgs;
                     console.log(updateTrackState(id, status as any, mode as any, path));

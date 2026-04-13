@@ -65,6 +65,26 @@ export function lockTrack(trackId: string, agentName: string): string {
 }
 
 /**
+ * Takes over an existing lock or creates a new one if it doesn't exist.
+ * Used when transitioning between lifecycle stages (e.g., implement -> review).
+ */
+export function takeoverLock(trackId: string, agentName: string): string {
+    const state = readState();
+    
+    if (!state.tracks[trackId]) {
+        // If not locked, just lock it normally
+        return lockTrack(trackId, agentName);
+    }
+
+    const previousOwner = state.tracks[trackId].locked_by;
+    state.tracks[trackId].locked_by = agentName;
+    state.tracks[trackId].locked_at = new Date().toISOString();
+    
+    writeState(state);
+    return `Track '${trackId}' lock taken over from '${previousOwner}' by '${agentName}'.`;
+}
+
+/**
  * Updates an existing lock with specific implementation details.
  */
 export function updateTrackState(trackId: string, status: 'in_progress' | 'in_review', mode: 'isolated' | 'standard', worktreePath: string): string {
