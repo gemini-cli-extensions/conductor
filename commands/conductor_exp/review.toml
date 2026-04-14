@@ -67,7 +67,7 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   Check for style violations, security risks, or architectural debt.
 
 ### 2.4 High-Signal Review Report
-**Present findings strictly using this format:**
+**Construct your report using the following structure. Conclude with a horizontal divider to signal the end of the formal analysis.**
 
 ---
 # Review Report: [Track Name]
@@ -89,6 +89,9 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 // Concise diff or code snippet
 ```
 ---
+**End of Review Report.**
+
+**Once the report is presented above, transition to the decision logic.**
 
 ## 3.0 DECISION PHASE
 
@@ -126,14 +129,14 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
         - Use `replace` to set `status: completed`.
         - Commit: `chore(conductor): Mark track '<track_id>' as completed`.
     -   **Cleanup (Isolated Only):** `git worktree remove --force .gemini/worktrees/<track_id>` and `git branch -D conductor/<track_id>`.
-    -   **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+    -   **Discard State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state discard <track_id>`.
     -   Proceed to Track Cleanup (3.3).
 
 3.  **If "Discard Work":**
     -   **Cleanup (Isolated Only):** `git worktree remove --force .gemini/worktrees/<track_id>` and `git branch -D conductor/<track_id>`.
     -   **Reset Status:** Read `spec.md` in base branch, set `status: new`.
     -   **Commit:** `chore(conductor): Reset track '<track_id>' status to new`.
-    -   **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+    -   **Discard State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state discard <track_id>`.
     -   Announce: "Work discarded and track reset." and Halt.
 
 ### 3.3 Track Cleanup (Post-Merge)

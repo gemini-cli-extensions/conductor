@@ -28,19 +28,20 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
     -   **CRITICAL:** If the command fails or reports "No specs found", announce: "The project spec graph is empty. Please run `/conductor_exp:newTrack` to create a feature specification." and halt.
 
 2.  **Filter Incomplete Tracks:**
-    -   Read the output of the `analyze` command to see the list of existing track IDs.
-    -   For each track ID listed, read its `spec.md` file located at `conductor/tracks/<track_id>/spec.md`.
+    -   Read the output of the `analyze` command.
+    -   **LOCK CHECK (CRITICAL):** If a track shows `(Locked by ...)` in the analyze output, it is currently owned by another process. Do NOT attempt to implement it.
+    -   For each track ID listed that is NOT locked, read its `spec.md` file located at `conductor/tracks/<track_id>/spec.md`.
     -   Examine the YAML frontmatter at the top of each `spec.md`. Check the `status` field.
     -   Consider a track "incomplete" if its status is NOT `completed` or `done` (e.g., `status: new`, `draft`, or `in_progress`). Keep a mental list of only the incomplete tracks.
 
 3.  **Select Track:**
     -   **If a track name/ID was provided by the user (e.g., `/conductor_exp:implement CORE-01`):**
-        1. Verify if that specific ID exists in your list of incomplete tracks.
-        2. If yes, select it.
+        1. Verify if that specific ID is listed in the analyze output.
+        2. **LOCK CHECK:** If it says `(Locked by ...)` next to the ID, announce: "Track '<track_id>' is already locked by another session. I cannot intervene." and **HALT IMMEDIATELY**.
         3. If it exists but is already completed, announce: "Track '<track_id>' is already completed." and halt.
-        4. If not found, use `ask_user` to clarify the correct ID.
+        4. If not found or incomplete, select it.
     -   **If no track name was provided:**
-        1.  **Identify Next Track:** From your filtered list of incomplete tracks, pick the first one that is a "leaf node" or has no pending parent dependencies.
+        1.  **Identify Next Track:** From your filtered list of incomplete (and unlocked) tracks, pick the first one that is a "leaf node" or has no pending parent dependencies.
         2.  **If a next track is found:**
             -   Use `ask_user` to confirm the selection:
                 - **questions:**
@@ -48,15 +49,15 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
                     - **question:** "No track name provided. Would you like to proceed with the incomplete track: '<track_id>'?"
                     - **type:** "yesno"
             -   If confirmed, proceed with this track. Otherwise, use `ask_user` to request the correct track name.
-        3.  **If no incomplete tracks are found:**
-            -   Announce: "No incomplete tracks found in the project. All tasks are completed!"
+        3.  **If no incomplete/unlocked tracks are found:**
+            -   Announce: "No available incomplete tracks found. They are either all completed or currently locked by another session."
             -   Halt the process and await further user instructions.
 
 4.  **Establish Track ID:** Store the selected ID as `<track_id>`.
 
 5.  **Acquire Concurrency Lock:**
     -   Immediately execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state lock <track_id> implement` using `run_shell_command`.
-    -   **CRITICAL:** If the command fails (e.g., track is already locked), announce the failure and HALT immediately to prevent race conditions.
+    -   **CRITICAL RACE CONDITION GUARD:** If the command fails, it means another agent grabbed the lock right before you. Announce the failure and **HALT IMMEDIATELY** to prevent corruption. Do not proceed to read files.
 
 ---
 
@@ -148,4 +149,5 @@ CRITICAL: You must validate the success of every tool call. If any tool call fai
 ## 5.0 NEXT STEPS
 1. **Announce Completion:** Inform the user that implementation and documentation synchronization are finished.
 2. **Review Instruction:** Instruct the user: "Implementation finished. Please run `/conductor_exp:review` to verify the changes."
+3. **LOCK PERSISTENCE (CRITICAL):** Do NOT execute `state unlock`. The track lock MUST persist in the centralized state file so the `/conductor_exp:review` command can locate the worktree and maintain the concurrency guard.
 """
