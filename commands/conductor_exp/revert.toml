@@ -65,7 +65,7 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
     ii. `git branch -D conductor/<track_id>`
 2.  **Reset DAG Status:** Read the track's `spec.md` in the base branch and set `status: new`.
 3.  **Commit Reset:** `chore(conductor): Abort work for track '<track_id>'`.
-4.  **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
+4.  **Discard State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state discard <track_id>`.
 5.  **Announce:** "Worktree destroyed and track reset."
 
 **If "Rollback last commit":**
@@ -74,10 +74,10 @@ CRITICAL: You must validate the success of every tool call. Destructive Git acti
 3.  **Announce:** "Worktree rolled back."
 
 ### 4.2 Execute Post-Merge Undo (Scenario B)
-1.  **Revert Commits:** Run `git revert` for Archival and Merge commits in reverse order.
+1.  **Revert Commits:** Run `git revert --no-edit` for Archival and Merge commits in reverse chronological order.
 2.  **Restore Track Folder:** If archived, move back to `conductor/tracks/<track_id>`.
 3.  **Reset DAG Status:** Set status to `new` in `spec.md`.
 4.  **Commit Reset:** `chore(conductor): Mark reverted track '<track_id>' as new`.
-5.  **Unlock:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state unlock <track_id>`.
-6.  **Announce:** "integrated work reverted and track restored."
+5.  **Discard State:** Execute `node ~/.gemini/extensions/conductor/conductor_exp_backend/dist/cli.js state discard <track_id>`.
+6.  **Announce:** "Integrated work reverted and track restored."
 """
