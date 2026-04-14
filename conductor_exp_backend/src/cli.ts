@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { initMasterSpec, addSubSpec, runImpactAnalysis } from './manageSpec.js';
 import { initSession, createSessionPlan, createSessionTask, visualizeDAG } from './orchestration.js';
-import { lockTrack, updateTrackState, unlockTrack, takeoverLock } from './stateManager.js';
+import { lockTrack, updateTrackState, unlockTrack, takeoverLock, discardTrack } from './stateManager.js';
 
 async function run() {
     const command = process.argv[2];
@@ -26,8 +26,11 @@ async function run() {
                 } else if (subCommand === 'unlock') {
                     const [id] = subArgs;
                     console.log(unlockTrack(id));
+                } else if (subCommand === 'discard') {
+                    const [id] = subArgs;
+                    console.log(discardTrack(id));
                 } else {
-                    throw new Error("Unknown state sub-command. Use lock, update, or unlock.");
+                    throw new Error("Unknown state sub-command. Use lock, update, unlock, or discard.");
                 }
                 break;
             case 'init-session':
