@@ -138,7 +138,9 @@ export async function runImpactAnalysis(): Promise<string> {
         let statusFlag = '';
         if (liveState) {
             status = liveState.status;
-            statusFlag = ` (Locked by ${liveState.locked_by})`;
+            if (liveState.locked_by) {
+                statusFlag = ` (Locked by ${liveState.locked_by})`;
+            }
         } else {
             const statusMatch = content.match(/^status:\s*(.*)$/m);
             status = statusMatch ? statusMatch[1].trim() : 'unknown';
