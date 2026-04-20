@@ -61,36 +61,37 @@ Skills focused on setting up, managing, and using various Firebase services.
     - **Dependencies**: `firebase`, `firebase-admin`
     - **Keywords**: `Firebase Hosting`, `Static Hosting`
 
-## DevOps Skills
+## CI/CD Skills
 Skills for designing, building, and managing CI/CD pipelines and infrastructure on Google Cloud.
 
-### cloud-deploy-pipelines
+### google-cicd-release-orchestration
 - **Description**: Manage the entire lifecycle of Google Cloud Deploy, from designing and creating delivery pipelines to managing releases and debugging failures.
-- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/devops/main/skills/cloud-deploy-pipelines/
-- **Party**: 1p
-- **Detection Signals**:
-    - **Dependencies**: `skaffold`
-    - **Keywords**: `Cloud Deploy`, `delivery pipeline`, `skaffold.yaml`, `clouddeploy.yaml`
-
-### gcp-cicd-deploy
-- **Description**: Assistant for deploying applications to Google Cloud, supporting Static Sites (GCS), Cloud Run (Buildpacks or Images), and GKE.
-- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/devops/main/skills/gcp-cicd-deploy/
+- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/cicd/main/skills/google-cicd-release-orchestration/
 - **Party**: 1p
 - **Detection Signals**:
     - **Dependencies**: `gcloud`
-    - **Keywords**: `Cloud Run`, `GCS`, `Static Site`, `Deployment`, `Google Cloud`
+    - **Keywords**: `Cloud Deploy`, `delivery pipeline`, `clouddeploy.yaml`, `canary deployment`, `blue-green deployment`, `automatic rollback`
 
-### gcp-cicd-design
+### google-cicd-deploy
+- **Description**: Assistant for deploying applications to Google Cloud, supporting Static Sites (GCS), Cloud Run (Buildpacks or Images), and Google Kubernetes Engine (GKE).
+- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/cicd/main/skills/google-cicd-deploy/
+- **Party**: 1p
+- **Detection Signals**:
+    - **Dependencies**: `gcloud`
+    - **Keywords**: `Cloud Run`, `GCS`,'GKE', `Static Site`, `Deployment`, `Google Cloud`
+
+### google-cicd-pipeline-design
 - **Description**: Assistant for designing, building, and managing CI/CD pipelines on Google Cloud, focusing on architectural design and implementation planning.
-- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/devops/main/skills/gcp-cicd-design/
+- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/cicd/main/skills/google-cicd-pipeline-design/
 - **Party**: 1p
 - **Detection Signals**:
-    - **Keywords**: `CI/CD`, `Pipeline Design`, `Google Cloud`, `Architectural Design`
+    - **Dependencies**: `gcloud`
+    - **Keywords**: `CI/CD`, `Pipeline Design`, `Google Cloud`, `Architectural Design`, `cloudbuild.yaml`, `Cloud Build`, `Artifact Registry`, `Cloud Deploy`
 
-### gcp-cicd-terraform
+### google-cicd-terraform
 - **Description**: Use Terraform to provision Google Cloud resources (GKE, Cloud Run, Cloud SQL) with standard GCS backend state management and IAM least-privilege.
-- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/devops/main/skills/gcp-cicd-terraform/
+- **URL**: https://raw.githubusercontent.com/gemini-cli-extensions/cicd/main/skills/google-cicd-terraform/
 - **Party**: 1p
 - **Detection Signals**:
-    - **Dependencies**: `terraform`
+    - **Dependencies**: `terraform`, `gcloud`
     - **Keywords**: `Terraform`, `GCP`, `GCS Backend`, `Infrastructure as Code`, `IaC`
