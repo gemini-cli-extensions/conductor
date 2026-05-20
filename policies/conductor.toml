@@ -1,4 +1,4 @@
-# Allow writing conductor files in plan mode
+# Allow writing conductor files in Conductor's internal orchestration state (plan mode)
 [[rule]]
 toolName = ["write_file", "replace"]
 priority = 100 # prioritize over other extension policies

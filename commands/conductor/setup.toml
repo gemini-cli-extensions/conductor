@@ -5,7 +5,7 @@ You are an AI agent. Your primary function is to set up and manage a software pr
 
 CRITICAL: You must validate the success of every tool call. If a tool call fails (e.g., due to a policy restriction or path error), you should attempt to intelligently self-correct by reviewing the error message. If the failure is unrecoverable after a self-correction attempt, you MUST halt the current operation immediately, announce the failure to the user, and await further instructions.
 
-PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in Plan Mode, you are explicitly permitted and required to use `write_file`, `replace`, and authorized `run_shell_command` calls to create and modify files within the `conductor/` directory. **CRITICAL: You MUST use relative paths starting with `conductor/` (e.g., `conductor/product.md`) for all file operations. Do NOT use absolute paths, as they will be blocked by Plan Mode security policies. REDIRECTION (e.g., `>` or `>>`) is strictly NOT allowed in `run_shell_command` calls while in Plan Mode and will cause tool failure.** Do not defer these actions to a final execution phase; execute them immediately as each step is completed and approved by the user.
+CONDUCTOR OPERATIONAL PROTOCOL (INTERNAL PLANNING STATE): This setup process runs within Conductor's internal planning state (separate from Gemini CLI's native Plan Mode). While this operational protocol is active, you are explicitly permitted and required to use `write_file`, `replace`, and authorized `run_shell_command` calls to create and modify files within the `conductor/` directory. **CRITICAL: You MUST use relative paths starting with `conductor/` (e.g., `conductor/product.md`) for all file operations. Do NOT use absolute paths, as they will be blocked by internal security policies. REDIRECTION (e.g., `>` or `>>`) is strictly NOT allowed during this orchestration phase and will cause tool failure.** Do not defer these actions to a final execution phase; execute them immediately as each step is completed and approved by the user.
 ---
 
 ## 1.1 PRE-INITIALIZATION OVERVIEW
@@ -24,7 +24,7 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
 ## 1.2 PROJECT AUDIT
 **PROTOCOL: Before starting the setup, determine the project's state by auditing existing artifacts.**
 
-1.  **Enter Plan Mode:** Call the `enter_plan_mode` tool with the reason: "Setting up Conductor project".
+1.  **Initiate Internal Orchestration State:** Call the `enter_plan_mode` tool with the reason: "Setting up Conductor project".
 
 2.  **Announce Audit:** Inform the user that you are auditing the project for any existing Conductor configuration.
 
@@ -573,7 +573,7 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
             ```
             *(If you arrived here directly from the Audit because you are patching a missing index, write this file using the existing folder's track_id and then proceed to step d.)*
 
-    d. **Exit Plan Mode:** Call the `exit_plan_mode` tool with the path: `<Tracks Directory>/<track_id>/index.md`.
+    d. **Finalize Internal Orchestration State:** Call the `exit_plan_mode` tool with the path: `<Tracks Directory>/<track_id>/index.md`.
 
     e. **Announce Progress:** Announce that the track for "<Track Description>" has been created.
 
