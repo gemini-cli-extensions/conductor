@@ -60,10 +60,10 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
 
 ### 2.0 Project Inception
 1.  **Detect Project Maturity:**
-    -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators:
+    -   **Classify Project:** Determine if the project is "Brownfield" (Existing) or "Greenfield" (New) based on the following indicators. **CRITICAL: Limit your search to the root and one level deep (maxdepth 2) to avoid performance issues in large repositories.**
     -   **Brownfield Indicators:**
-        -   Check for dependency manifests: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, `Cargo.toml`.
-        -   Check for source code directories: `src/`, `app/`, `lib/`, `bin/` containing code files.
+        -   Check for dependency manifests at the root or one level deep: `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, `Cargo.toml`.
+        -   Check for common source code directories at the root: `src/`, `app/`, `lib/`, `bin/`.
         -   If a `.git` directory exists, execute `git status --porcelain`. Ignore changes within the `conductor/` directory. If there are *other* uncommitted changes, it may be Brownfield.
         -   If ANY of the primary indicators (manifests or source code directories) are found, classify as **Brownfield**.
     -   **Greenfield Condition:**
@@ -99,10 +99,10 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
 
             -   **2.1 File Size and Relevance Triage:**
                 1.  **Respect Ignore Files:** Before scanning any files, you MUST check for the existence of `.geminiignore` and `.gitignore` files. If either or both exist, you MUST use their combined patterns to exclude files and directories from your analysis. The patterns in `.geminiignore` should take precedence over `.gitignore` if there are conflicts. This is the primary mechanism for avoiding token-heavy, irrelevant files like `node_modules`.
-                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co | xargs -n 1 dirname | sort -u` which lists all relevant directories (tracked by Git, plus other non-ignored files) without listing every single file. If Git is not used, you must construct a `find` command that reads the ignore files and prunes the corresponding paths.
-                3.  **Fallback to Manual Ignores:** ONLY if neither `.geminiignore` nor `.gitignore` exist, you should fall back to manually ignoring common directories. Example command: `ls -lR -I 'node_modules' -I '.m2' -I 'build' -I 'dist' -I 'bin' -I 'target' -I '.git' -I '.idea' -I '.vscode'`.
+                2.  **Efficiently List Relevant Files:** To list the files for analysis, you MUST use a command that respects the ignore files. For example, you can use `git ls-files --exclude-standard -co | xargs -n 1 dirname | sort -u` which lists all relevant directories (tracked by Git, plus other non-ignored files) without listing every single file. If Git is not used, you must construct an efficient `find` command that reads the ignore files and prunes the corresponding paths (limit depth to 3).
+                3.  **Fallback to Manual Ignores:** ONLY if neither `.geminiignore` nor `.gitignore` exist, you should fall back to manually ignoring common directories using an efficient, depth-limited command. **CRITICAL: Avoid recursive listings like `ls -R` or `Get-ChildItem -Recurse` without strict depth limits or pruning in large projects.** Example (PowerShell): `Get-ChildItem -Path . -Depth 2 -Exclude "node_modules", ".git", "build", "dist", "bin", "target", ".idea", ".vscode"`.
                 4.  **Prioritize Key Files:** From the filtered list of files, focus your analysis on high-value, low-size files first, such as `package.json`, `pom.xml`, `requirements.txt`, `go.mod`, and other configuration or manifest files.
-                5.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail`) to infer its purpose.
+                5.  **Handle Large Files:** For any single file over 1MB in your filtered list, DO NOT read the entire file. Instead, read only the first and last 20 lines (using `head` and `tail` or PowerShell equivalents) to infer its purpose.
 
             -   **2.2 Extract and Infer Project Context:**
                 1.  **Strict File Access:** DO NOT ask for more files. Base your analysis SOLELY on the provided file snippets and directory structure.
