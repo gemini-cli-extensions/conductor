@@ -1,0 +1,10 @@
+{
+  "name": "conductor",
+  "version": "0.4.1",
+  "description": "Conductor is a Gemini CLI extension that enables Context-Driven Development.",
+  "author": {
+    "name": "Google"
+  },
+  "repository": "https://github.com/gemini-cli-extensions/conductor",
+  "license": "Apache 2.0"
+}
