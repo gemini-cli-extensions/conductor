@@ -123,7 +123,12 @@ Adhere to this sequence precisely.
         -   **1p (Official):** Present as a verified Conductor skill.
         -   **3p (Community):** Present as a third-party skill. You MUST warn the user: *"Attention: This is a third-party skill. It will be installed as a frozen version (commit <sha>) for your safety."*
     -   **User Approval:** Ask the user to select which recommended skills they would like to install using a **multiple-choice question**.
-    -   **Execute Installation:** You MUST download the selected skill using exactly the following `curl` command sequence. Do not modify the parameters or add flags: `bash mkdir -p .agents/skills/<skill_name> curl -sSL <URL>SKILL.md -o .agents/skills/<skill_name>/SKILL.md`
+    -   **Execute Installation:** You MUST download the selected skill using exactly the following `curl` command sequence. Do not modify the parameters or add flags:
+
+        ```bash
+        mkdir -p .agents/skills/<skill_name>
+        curl -sSL <URL>SKILL.md -o .agents/skills/<skill_name>/SKILL.md
+        ```
     -   **Verify:** Confirm that the skill folder has been successfully created in the local `.agents/skills/` directory.
     -   **If no missing skills found:** Skip this section.
 
