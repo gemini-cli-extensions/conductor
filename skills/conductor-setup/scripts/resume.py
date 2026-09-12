@@ -7,7 +7,12 @@ import sys
 
 def determine_resumption():
   """Checks existing setup artifacts and returns the next unblocked step."""
-  conductor_dir = "conductor"
+  # Accept the project root as argv[1] so this script is correct from any cwd.
+  # SKILL.md invokes it by a path relative to the skill directory while this
+  # resolved conductor/ relative to cwd; no single working directory satisfied
+  # both. Defaults to cwd, so existing callers are unaffected.
+  project_root = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+  conductor_dir = os.path.join(project_root, "conductor")
   files = [
       "product.md",
       "product-guidelines.md",

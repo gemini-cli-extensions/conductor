@@ -47,7 +47,10 @@ Example (for a new project):
 
 ### 1.2 Audit Artifacts & Resumption Check
 
-Run the automated directory resumption script: `python3 scripts/resume.py`
+Run the automated directory resumption script, passing the project root explicitly:
+`python3 "${CLAUDE_PLUGIN_ROOT}/skills/conductor-setup/scripts/resume.py" "$(pwd)"`
+
+If `CLAUDE_PLUGIN_ROOT` is unset in your shell, resolve the script relative to the absolute path of THIS `SKILL.md` file (`<skill-dir>/scripts/resume.py`) instead. Never invoke it by a bare relative path — `scripts/resume.py` does not exist from a project root, and `conductor/` does not exist from the skill directory, so no single working directory satisfies both.
 
 Read the returned JSON object from `stdout`. **Do NOT mention the script name or path to the user.**
 
