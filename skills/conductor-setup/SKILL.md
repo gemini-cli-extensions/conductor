@@ -41,8 +41,9 @@ Example (for a new project):
 > 1. **Project Discovery:** Verifying this directory is ready for a new project.
 > 2. **Product Definition:** Defining the vision and tech stack.
 > 3. **Configuration:** Setting up code style guides and workflow.
-> 4. **Track Generation:** Defining the first actionable track.
-> 
+> 4. **Optional Linear:** Linking tracks to Linear issues (skip to keep file-based specs).
+> 5. **Track Generation:** Defining the first actionable track.
+>
 > Let's get started!"
 
 ### 1.2 Audit Artifacts & Resumption Check
@@ -193,6 +194,28 @@ Configure the operational rules for the project.
     - **Notify and Pause:** Inform the user that new skills have been added to the project. Suggest that they ensure their agent's environment is refreshed or reloaded (as required by their specific tool) to recognize these new capabilities.
     - **Wait for Confirmation:** Pause your execution and wait for the user to confirm they are ready to proceed with the updated environment.
 
+### 2.7 Optional Linear Integration (`linear.md`)
+
+Linear-first is **opt-in**. Default is skip: file-based SDD (`spec.md`, `tracks.md`) stays the default. Do **not** add `linear.md` to the required setup chain used by the resumption script.
+
+1. **Offer Linear:** Ask the user to choose using a **single-choice question**:
+    - **Skip (Recommended for most projects):** *Keep Conductor file-based. You can add Linear later by re-running this step.*
+    - **Enable Linear-first:** Tracks use a Linear issue as the spec. Requires a Linear workspace.
+    - Other (User-defined input)
+2. **If Skip:** Write nothing Linear-related. Continue to the Handshake.
+3. **If Enable:** Collect, **one question at a time**:
+    - Workspace slug (the `linear.app/<workspace>/` segment)
+    - Team name
+    - Team id (from Linear team settings)
+    - Issue prefix (e.g. `ABC-`)
+    - Surface map: at least one Surface label → repo path (recommend inferring from `tech-stack.md` / the brownfield scan)
+    - Optional Domain / Platform / Quality labels (may be empty)
+4. **Write artifacts:**
+    - Copy `assets/linear/linear.md` to `conductor/linear.md` and replace `{{…}}` placeholders. Do not write API keys.
+    - Copy `assets/linear/scripts/linear_cli.py` and `assets/linear/scripts/linear_create_issue.py` to the project `scripts/` directory (create `scripts/` if needed).
+    - Explain the transport ladder: **Linear MCP → `scripts/linear_cli.py` (`LINEAR_API_KEY`) → ask the user**. Do not install or authenticate Linear MCP for the user; document Cursor's Linear plugin and Claude Code's Linear connector.
+5. **Do not** copy plugin `linear-*` skills into `.cursor` / `.claude` / `.agents`. Those skills ship with Conductor and activate when `conductor/linear.md` exists.
+
 ## 3. The Handshake (Index Generation)
 
 Create `conductor/index.md`. This is the **Single Source of Truth** for all tools.
@@ -221,7 +244,13 @@ Create `conductor/index.md`. This is the **Single Source of Truth** for all tool
     -   [Agent Skills](../.agents/skills/)
 ```
 
-3.  **Integrity Check:** You MUST verify the existence of all linked files on disk.
+    If Linear-first was enabled, also include under Definition:
+
+    ```markdown
+    -   [Linear workspace](./linear.md)
+    ```
+
+3.  **Integrity Check:** You MUST verify the existence of all linked files on disk. Skip the Linear link (and do not create a dangling one) if the user skipped Linear.
 
 4.  **Commit Stage:** Stage the entire `conductor/` directory. Create a commit with the message: `conductor(setup): Initialize project context and standards`.
 

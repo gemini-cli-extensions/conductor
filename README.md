@@ -114,6 +114,9 @@ To safely remove Conductor from your environment:
     (Greenfield) and existing (Brownfield) projects.
 -   **Smart revert**: A git-aware revert command that understands logical units
     of work (tracks, phases, tasks) rather than just commit hashes.
+-   **Optional Linear-first**: When a project has `conductor/linear.md`, tracks
+    use a Linear issue as the spec (pointer metadata + `plan.md`). File-based
+    `spec.md` / `tracks.md` remains the default when that file is absent.
 
 --------------------------------------------------------------------------------
 
@@ -177,6 +180,8 @@ components or features by you or anyone on your team.
 -   `conductor/workflow.md`
 -   `conductor/code_styleguides/`
 -   `conductor/tracks.md`
+-   `conductor/linear.md` (only if you opt in to Linear-first)
+-   `scripts/linear_cli.py` and `scripts/linear_create_issue.py` (copied when Linear is enabled)
 
 ```bash
 /conductor:conductor-setup
@@ -192,11 +197,20 @@ unit of work. Conductor helps you generate two critical artifacts:
     building and why?
 -   **Plan**: An actionable to-do list containing phases, tasks, and sub-tasks.
 
-**Generated Artifacts:**
+**Generated Artifacts (file-based default):**
 
 -   `conductor/tracks/<track_id>/spec.md`
 -   `conductor/tracks/<track_id>/plan.md`
 -   `conductor/tracks/<track_id>/metadata.json`
+-   `conductor/tracks.md` entry
+
+**Generated Artifacts (Linear-first, when `conductor/linear.md` exists):**
+
+-   Linear issue (created or linked) — this is the spec
+-   `conductor/tracks/<track_id>/metadata.json` (pointer: `track_id`, `linear`, `linear_url`)
+-   `conductor/tracks/<track_id>/plan.md`
+-   `conductor/tracks/<track_id>/index.md`
+-   No `spec.md`, no `tracks.md` entry
 
 ```bash
 /conductor:conductor-new-track
@@ -247,12 +261,46 @@ following commands:
 
 Command                          | Description                                                                             | Generated Artifacts
 :------------------------------- | :-------------------------------------------------------------------------------------- | :------------------
-`/conductor:conductor-setup`     | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md`
-`/conductor:conductor-new-track` | Starts a new feature or bug track. Generates `spec.md` and `plan.md`.                   | `conductor/tracks/<id>/spec.md`<br>`conductor/tracks/<id>/plan.md`<br>`conductor/tracks.md`
-`/conductor:conductor-implement` | Executes the tasks defined in the current track's plan.                                 | `conductor/tracks.md`<br>`conductor/tracks/<id>/plan.md`
-`/conductor:conductor-status`    | Displays the current progress of the tracks file and active tracks.                     | Reads `conductor/tracks.md`
-`/conductor:conductor-revert`    | Reverts a track, phase, or task by analyzing git history.                               | Reverts git history
-`/conductor:conductor-review`    | Reviews completed work against guidelines and the plan.                                 | Reads `plan.md`, `product-guidelines.md`
+`/conductor:conductor-setup`     | Scaffolds the project and sets up the Conductor environment. Run this once per project. | `conductor/product.md`<br>`conductor/product-guidelines.md`<br>`conductor/tech-stack.md`<br>`conductor/workflow.md`<br>`conductor/tracks.md`<br>optional `conductor/linear.md` + CLI scripts
+`/conductor:conductor-new-track` | Starts a new feature or bug track. File-based: `spec.md` + `plan.md`. Linear-first: issue as spec + pointer track. | File-based: `spec.md`, `plan.md`, `tracks.md`. Linear-first: Linear issue, pointer `metadata.json`, `plan.md`
+`/conductor:conductor-implement` | Executes the tasks defined in the current track's plan.                                 | `plan.md` (and `tracks.md` when file-based; Linear status when Linear-first)
+`/conductor:conductor-status`    | Displays the current progress of tracks.                                                | Reads `tracks.md` and/or `tracks/*/metadata.json` + Linear status
+`/conductor:conductor-revert`    | Reverts a track, phase, or task by analyzing git history.                               | Reverts git history (optional Linear comment; no auto-cancel)
+`/conductor:conductor-review`    | Reviews completed work against guidelines and the plan (or Linear AC).                  | Reads `plan.md`, styleguides; Linear-first also runs label review
+
+--------------------------------------------------------------------------------
+
+## 🔗 Optional Linear-first
+
+Conductor stays file-based unless the project has `conductor/linear.md`.
+
+During setup, you can **skip** Linear (default) or **enable** it. Enabling writes
+team identity and a label taxonomy into `conductor/linear.md` and copies:
+
+- `scripts/linear_cli.py` — `get-issue`, `list-sub-issues`, `set-state`, `comment`
+- `scripts/linear_create_issue.py` — create issues when MCP is unavailable
+
+**Transport ladder:** Linear MCP (Cursor plugin / Claude Linear connector) →
+CLI (`LINEAR_API_KEY`) → ask the user. Conductor does not bundle or authenticate
+MCP.
+
+When Linear-first is on:
+
+- New tracks **create or link** a Linear issue. The issue description is the spec.
+- Track folders hold pointer `metadata.json` + `plan.md` only.
+- Implement/review/status use Linear acceptance criteria and Linear issue status.
+- **In Review** only when work is complete; **Done** only on explicit instruction.
+- Label review reads Class / Surface (and optional Domain / Platform / Quality)
+  from `linear.md`, not from a built-in product taxonomy.
+
+Plugin skills `linear-issues`, `linear-review`, `linear-handoff`, and
+`linear-label-review` activate only when `linear.md` exists.
+
+CLI tests (no network):
+
+```bash
+uv run --with pytest pytest skills/conductor-setup/assets/linear/tests/
+```
 
 --------------------------------------------------------------------------------
 
@@ -298,7 +346,8 @@ corresponding Conductor protocol in the background:
 
 ## 📂 Repository Structure
 
--   `/skills`: The protocol logic (`SKILL.md`) for each command.
+-   `/skills`: The protocol logic (`SKILL.md`) for each command, including optional `linear-*` skills.
+-   `/skills/conductor-setup/assets/linear`: `linear.md` template and CLI scripts copied into projects that opt in.
 -   `/rules`: Platform-specific operational rules files.
 
 --------------------------------------------------------------------------------

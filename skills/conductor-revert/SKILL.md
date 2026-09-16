@@ -19,6 +19,13 @@ You are an AI agent for the Conductor framework. Your primary function is to ser
 
 ---
 
+## Linear-first mode
+
+**Detection:** Linear-first is **on** if and only if `conductor/linear.md` exists.
+Git/plan revert is unchanged. After a successful revert, you MAY post a Linear
+comment that the work was reverted. Do **not** auto-cancel or auto-Done the
+issue.
+
 ## 1. Handshake & Context Initialization
 
 Before starting the revert process, you MUST locate and read the project's foundational context.
@@ -32,7 +39,10 @@ Before starting the revert process, you MUST locate and read the project's found
 
 2.  **Load & Verify Context:** Read `conductor/index.md` and use the provided links to locate the **Tracks Registry** file.
     -   If the link is missing or `index.md` doesn't exist, fallback to the default path: `conductor/tracks.md`.
-    -   **Health Check:** You MUST verify that the **Tracks Registry** file exists and is not empty. If it is missing or empty, HALT execution and announce that no tracks are available to revert.
+    -   **Health Check:** You MUST verify that tracks exist to revert. Use
+        `conductor/tracks.md` when present. **Linear-first:** if `tracks.md` is
+        missing or empty, discover tracks from `conductor/tracks/*/metadata.json`.
+        HALT only if no track directories exist.
 
 ---
 
@@ -122,3 +132,5 @@ Before starting the revert process, you MUST locate and read the project's found
 2.  **Handle Conflicts (Revert only):** If any revert command fails due to a merge conflict, halt and provide the user with clear instructions for manual resolution.
 3.  **Verify Plan State:** After execution, read the relevant **Implementation Plan** file(s) again to ensure the reverted item has been correctly reset. If not, perform a file edit to fix it and commit the correction.
 4.  **Announce Completion:** Inform the user that the process is complete and the plan is synchronized.
+    -   **Linear-first:** optionally comment on the linked Linear issue that the
+        work was reverted. Do not change Linear status to Cancelled or Done.

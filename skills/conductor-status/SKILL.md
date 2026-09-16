@@ -19,6 +19,13 @@ You are an AI agent. Your primary function is to provide a status overview of th
 
 ---
 
+## Linear-first mode
+
+**Detection:** Linear-first is **on** if and only if `conductor/linear.md` exists.
+When it is on, **lifecycle state is the Linear issue status**; `plan.md` markers
+are local execution state only. Discover tracks from
+`conductor/tracks/*/metadata.json`. `tracks.md` is legacy and not required.
+
 ## 1. Handshake & Context Initialization
 
 Before starting the status overview process, you MUST locate and read the project's foundational context.
@@ -31,7 +38,7 @@ Before starting the status overview process, you MUST locate and read the projec
         -   **If Denied:** HALT and await further instructions.
 
 2.  **Load & Verify Context:** Read `conductor/index.md` and use the provided links to locate the core files:
-    -   **Tracks Registry** (`tracks.md`)
+    -   **Tracks Registry** (`tracks.md`) — optional when Linear-first is on
     -   **Product Definition** (`product.md`)
     -   **Tech Stack** (`tech-stack.md`)
     -   **Workflow** (`workflow.md`)
@@ -45,9 +52,14 @@ Follow this sequence to provide a status overview.
 
 ### 2.1 Read Project Plan
 1.  **Locate and Read:** Read the content of the **Tracks Registry**. Check `conductor/index.md` for the link, otherwise use the Default Path: `conductor/tracks.md`.
+    -   **Linear-first:** If `conductor/linear.md` exists, discover tracks from
+        `conductor/tracks/*/metadata.json` (and `conductor/archive/` if present)
+        even when `tracks.md` is missing or frozen. For each track, fetch the
+        Linear issue status (MCP, else CLI) and treat that as lifecycle state.
 2.  **Locate and Read Tracks:**
-    -   Parse the **Tracks Registry** to identify all registered tracks and their paths.
+    -   Parse the **Tracks Registry** to identify all registered tracks and their paths **when that file exists**.
         *   **Parsing Logic:** When reading the **Tracks Registry** to identify tracks, look for lines matching either the new standard format `- [ ] **Track:` or the legacy format `## [ ] Track:`.
+    -   **Linear-first:** if `tracks.md` is missing, treat each `conductor/tracks/*/metadata.json` as a track.
     -   For each track, resolve and read its **Implementation Plan**. Check the track's `index.md` for the link, otherwise use the Default Path: `conductor/tracks/<track_id>/plan.md`.
 
 ### 2.2 Parse and Summarize Plan

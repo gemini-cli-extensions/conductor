@@ -21,6 +21,18 @@ You are the **Conductor Planner**. Your goal is to guide the user through defini
     -   Other (User-defined input)
 -   **Sequential Questioning (CRITICAL):** When gathering information or asking the user questions, if a native tool is available to present multiple questions for structured answering (e.g., a modal or form tool), you may use it to group questions. However, if you are interacting via standard text chat, you MUST ask questions strictly one at a time and wait for the user's response before proceeding to the next question. Do NOT output multiple questions in a single chat response.
 
+## Linear-first mode
+
+**Detection:** Linear-first is **on** if and only if `conductor/linear.md` exists.
+Do not infer it from Linear MCP being connected. If the file is absent, follow
+the file-based path in this skill (`spec.md`, `tracks.md`).
+
+When Linear-first is on:
+
+- Follow **linear-issues**. The Linear issue is the spec.
+- Do **not** write `spec.md`. Do **not** register the track in `tracks.md`.
+- Read prefix, team, and URL pattern from `conductor/linear.md`.
+
 ## 1. Handshake & Context Initialization
 
 Before starting the planning process, you MUST locate and read the project's foundational context.
@@ -56,6 +68,12 @@ Adhere to this sequence precisely.
     type (e.g., MVP, Feature, Bug, Chore, Refactor). Ask the user for
     confirmation using a **Yes/No question**.
 
+### 2.1a Linear-first branch
+
+If `conductor/linear.md` exists, skip §2.2 (`spec.md`) and follow **§2.2-L**
+instead. Then continue at §2.3 for `plan.md` (the plan is still local). If
+`linear.md` is absent, follow §2.2 as written.
+
 ### 2.2 Interactive Specification Generation (`spec.md`)
 
 1.  **State Your Goal:** Announce:
@@ -88,6 +106,41 @@ Adhere to this sequence precisely.
     -   Ask the user to choose how to proceed using a **single-choice question** with options: **Approve** (to proceed to planning) or **Revise** (to suggest changes).
     -   Await user feedback and revise the `spec.md` content until confirmed.
 
+### 2.2-L Linear specification (Linear-first only)
+
+Use this section **instead of §2.2** when `conductor/linear.md` exists.
+
+1.  **State Your Goal:** Announce that the Linear issue is the spec. You will
+    gather the same details as a `spec.md`, write them onto the issue
+    description, and keep only a local `plan.md`.
+
+2.  **Create or link:** Ask using a **single-choice question**:
+    - **Create a new Linear issue (Recommended)** when this work has no ticket yet.
+    - **Link an existing issue** when the user already has PREFIX-XXX / a URL.
+    - Other (User-defined input)
+
+3.  **If Create:**
+    - Ask whether this is a **top-level issue** or a **sub-issue** (parent PREFIX-XXX).
+    - Run the **epic track check** if it is a sub-issue: the parent must have an
+      epic track (`metadata.json.linear` = parent id) with one plan phase per
+      sub-issue. Create that epic track first if it is missing.
+    - Draft Overview, Functional Requirements, Acceptance Criteria, and Out of
+      Scope using the same questioning rules as §2.2 (one question at a time).
+    - Present the draft; **Approve** or **Revise**.
+    - Create the issue via Linear MCP (`save_issue`), else
+      `scripts/linear_create_issue.py`. Defaults: top-level **Triage**; sub-issue
+      **Backlog** + `parentId`. Map track type → Class label from `linear.md`.
+    - Record `linear` id and `linear_url`.
+
+4.  **If Link:**
+    - Resolve PREFIX-XXX from the prompt, URL, or user. Fetch the issue (MCP,
+      else CLI, else paste). Restate title, status, and acceptance criteria.
+    - If the issue has a parent, run the epic track check.
+    - If the description is too thin to implement, ask whether to add
+      acceptance criteria on the issue before planning.
+
+5.  **Confirm** the issue is the source of truth. Do not write `spec.md`.
+
 ### 2.3 Interactive Plan Generation (`plan.md`)
 
 1.  **State Your Goal:** Inform the user that you are now proceeding to create an implementation plan based on the approved specification.
@@ -95,7 +148,8 @@ Adhere to this sequence precisely.
 2.  **Strategic Action:** Explain that the `plan.md` is the execution roadmap. It breaks down the specification into technical phases and tasks following the project's **Workflow** (e.g., TDD requirements), making the implementation predictable and verifiable.
 
 3.  **Generate Plan:**
-    *   Read the confirmed `spec.md` content for this track.
+    *   Read the confirmed specification: `spec.md` when file-based, or the
+        Linear issue description when Linear-first is on.
     *   Locate and read the **Workflow** document as linked in `conductor/index.md`.
     *   Generate a `plan.md` featuring a hierarchical list of Phases, Tasks, and Sub-tasks.
     *   **CRITICAL:** The plan structure MUST strictly follow the methodology defined in the **Workflow** (e.g., ensuring TDD tasks like "Write Tests" precede "Implementation").
@@ -113,7 +167,7 @@ Adhere to this sequence precisely.
 
 1.  **Analyze Needs & Trust Model:**
     -   Read the skill catalog from `assets/catalog.md` (relative to this skill's directory).
-    -   Analyze the confirmed `spec.md` and `plan.md` against the `Detection Signals` in the loaded `catalog.md`.
+    -   Analyze the confirmed specification (`spec.md` or the Linear issue) and `plan.md` against the `Detection Signals` in the loaded `catalog.md`.
     -   Identify any relevant skills that are NOT yet installed.
     -   **Trust Assessment:** Note the `Party` status (1p or 3p) for each identified skill.
 
@@ -138,6 +192,11 @@ Adhere to this sequence precisely.
     -   **Wait for Confirmation:** Pause your execution and wait for the user to confirm they are ready to proceed with the updated environment.
 
 ### 2.5 Create Track Artifacts and Registry Update
+
+**If Linear-first is on**, follow **§2.5-L** instead of steps 4–6 below (pointer
+metadata, no `spec.md`, no `tracks.md` entry). Still create the track directory
+and `plan.md`. Then skip to step 7 (commit) / 8 (next steps), posting a
+track-opened comment on the Linear issue.
 
 1.  **Strategic Action:** Explain that you are about to "commit the track to history." This involves creating a dedicated workspace for the track, initializing its metadata, and updating the central registry so that your progress is trackable by any tool or collaborator.
 
@@ -175,3 +234,23 @@ Adhere to this sequence precisely.
     -   Inform the user that the track creation is complete and the registry has been updated.
     -   Ask the user if they would like to start the implementation right now using a **Yes/No question**.
     -   **Internal Handoff:** If the user agrees, you MUST use the `conductor-implement` skill to begin work. Present the transition as a natural progression without mentioning the skill name.
+
+### 2.5-L Linear-first track artifacts
+
+Replace §2.5 steps 4–6 when `conductor/linear.md` exists.
+
+1.  **Write pointer artifacts only:**
+    -   `metadata.json`: `{ "track_id", "linear", "linear_url" }` — no `status`,
+        no spec copy, no `parent_linear`.
+    -   `plan.md`: the confirmed plan, with a header linking the Linear issue.
+    -   `index.md`: one-line pointer to the Linear issue URL and `plan.md`.
+    -   Do **not** write `spec.md`.
+2.  **Do not** append `conductor/tracks.md`. That registry is file-based /
+    legacy only. Discover Linear-first tracks from
+    `conductor/tracks/*/metadata.json`.
+3.  **Handshake:** Ensure `conductor/index.md` links the Tracks Directory
+    (`./tracks/`). A Tracks Registry link is optional when Linear-first is on.
+4.  **Track-opened comment:** Post a short comment on the Linear issue with the
+    track id, `plan.md` path, and that the issue description is the spec.
+5.  **Commit:** Stage `conductor/` (and copied CLI scripts only if this session
+    created them). Message: `chore(conductor): initialize track '<track_id>'`.

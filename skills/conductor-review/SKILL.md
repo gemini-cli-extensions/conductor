@@ -25,6 +25,14 @@ You are an AI agent acting as a **Principal Software Engineer** and **Code Revie
 
 ---
 
+## Linear-first mode
+
+**Detection:** Linear-first is **on** if and only if `conductor/linear.md` exists.
+When it is on, review intent is the Linear issue's acceptance criteria — follow
+**linear-review** (which sequences **linear-label-review**) after the diff
+analysis in this skill. Do not require `spec.md`. Never set Linear **Done**
+unless the user explicitly instructs it in the current session.
+
 ## 1. Handshake & Context Initialization
 
 Before starting the review process, you MUST locate and read the project's foundational context.
@@ -37,7 +45,9 @@ Before starting the review process, you MUST locate and read the project's found
         -   **If Denied:** HALT and await further instructions.
 
 2.  **Load & Verify Context:** Read `conductor/index.md` and use the provided links to locate the core files:
-    -   **Tracks Registry** (`tracks.md`)
+    -   **Tracks Registry** (`tracks.md`) — optional when Linear-first is on
+        (`conductor/linear.md` exists); then discover tracks from
+        `conductor/tracks/*/metadata.json`.
     -   **Product Definition** (`product.md`)
     -   **Tech Stack** (`tech-stack.md`)
     -   **Workflow** (`workflow.md`)
@@ -58,6 +68,8 @@ Before starting the review process, you MUST locate and read the project's found
 2.  **Auto-Detect Scope:**
     -   If no input was provided, read the **Tracks Registry**.
     -   Look for a track marked as `[~]` (In Progress).
+    -   **Linear-first:** also consider tracks whose Linear issue is In Progress
+        (from `metadata.json` + MCP/CLI).
     -   **If one exists:** Ask the user for confirmation using a **Yes/No question** to proceed with reviewing that specific track.
     -   **If no track is in progress, or the user declines:** Ask the user to clarify what they would like to review by asking an **open question**, suggesting options like entering a specific track name or 'current' for uncommitted changes.
 
@@ -94,7 +106,7 @@ Before starting the review process, you MUST locate and read the project's found
 ### 2.3 Analyze and Verify
 **Perform the following checks on the retrieved diff:**
 
-1.  **Intent Verification:** Does the code actually implement what the `plan.md` (and `spec.md` if available) asked for?
+1.  **Intent Verification:** Does the code actually implement what the `plan.md` (and `spec.md` if available, or the Linear issue acceptance criteria when Linear-first is on) asked for?
 2.  **Style Compliance:**
     -   Does it follow `product-guidelines.md`?
     -   Does it strictly follow `conductor/code_styleguides/*.md`?
@@ -107,6 +119,10 @@ Before starting the review process, you MUST locate and read the project's found
     -   *Action:* **Execute the test suite automatically.** Infer the test command based on the codebase languages and structure (e.g., `npm test`, `pytest`, `go test`). Run it. Analyze the output for failures.
 5.  **Skill-Specific Checks:**
     -   If specific skills are installed (e.g. GCP), verify compliance with their best practices.
+    -   **Linear-first:** after the diff review, run **linear-review** close-out
+        (finish comment, labels via **linear-label-review**, In Review when
+        complete). Do not mark the Linear issue Done unless the user explicitly
+        instructs it.
 
 ### 2.4 Output Findings
 **Format your output strictly as follows:**
