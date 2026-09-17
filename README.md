@@ -87,6 +87,40 @@ your Claude Code session:
 
 --------------------------------------------------------------------------------
 
+### 3. Cursor
+
+Cursor is a first-class install target. Linear MCP is separate (see
+[Optional Linear-first](#-optional-linear-first)); installing the plugin does
+not authenticate Linear, and authenticating Linear does not install Conductor.
+
+#### End-User / Developer Installation (Recommended)
+
+There is no Cursor marketplace listing yet. Clone the repository and link it
+into Cursor's local plugins directory (live-sync: edits on your branch load
+without reinstalling):
+
+1.  Clone the repository:
+
+    ```bash
+    git clone https://github.com/gemini-cli-extensions/conductor.git
+    cd conductor
+    ```
+
+2.  Link into Cursor local plugins:
+
+    ```bash
+    mkdir -p ~/.cursor/plugins/local
+    ln -sfn "$(pwd)" ~/.cursor/plugins/local/conductor
+    ```
+
+3.  Reload Cursor (or restart) so it picks up `~/.cursor/plugins/local/conductor`.
+
+*Why this method?* Cursor loads plugins from `~/.cursor/plugins/local/<name>/`.
+A symlink is a live development link, the same idea as Antigravity's global
+link.
+
+--------------------------------------------------------------------------------
+
 ## 🔄 Uninstallation
 
 To safely remove Conductor from your environment:
@@ -97,6 +131,7 @@ To safely remove Conductor from your environment:
     *   **Workspace Link:** Run `rm -f .agents/plugins/conductor`
 *   **Claude Code:** Run `/plugin remove conductor` and `/plugin marketplace
     remove gemini-cli-extensions/conductor`
+*   **Cursor:** Run `rm -f ~/.cursor/plugins/local/conductor`
 
 --------------------------------------------------------------------------------
 

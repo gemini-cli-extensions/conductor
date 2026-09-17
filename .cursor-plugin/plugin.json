@@ -1,0 +1,21 @@
+{
+  "name": "conductor",
+  "displayName": "Conductor",
+  "version": "0.3.0",
+  "description": "Spec-Driven Development for AI coding agents: specify, plan, and implement software features.",
+  "author": {
+    "name": "Gemini CLI Extensions"
+  },
+  "homepage": "https://github.com/gemini-cli-extensions/conductor",
+  "repository": "https://github.com/gemini-cli-extensions/conductor",
+  "license": "Apache-2.0",
+  "keywords": [
+    "conductor",
+    "spec-driven-development",
+    "planning",
+    "sdd"
+  ],
+  "category": "developer-tools",
+  "skills": "./skills/",
+  "rules": "./rules/"
+}
