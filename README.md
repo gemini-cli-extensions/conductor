@@ -317,6 +317,8 @@ corresponding Conductor protocol in the background:
 
 --------------------------------------------------------------------------------
 
+- [MySpec](https://myspec.dev) — Spec-driven development platform compiling guided developer interviews into structured 4-file bundles (`constitution.md`, `requirements.md`, `solution.md`, `tasks.md`) with built-in MCP server integration.
+
 ## ⚖ License
 
 -   License: [Apache License 2.0](LICENSE)
