@@ -38,6 +38,7 @@ To find a file (e.g., "**Product Definition**") within a specific context (Proje
 - **Specification**: `conductor/tracks/<track_id>/spec.md`
 - **Implementation Plan**: `conductor/tracks/<track_id>/plan.md`
 - **Metadata**: `conductor/tracks/<track_id>/metadata.json`
+- **Verification Images**: `conductor/tracks/<track_id>/images/` (按需动态创建)
 
 ## Conductor Spec-First & SDD/TDD Safeguard (规范驱动开发铁律)
 
@@ -50,4 +51,6 @@ To find a file (e.g., "**Product Definition**") within a specific context (Proje
      - **交互顺序状态机锁定**：在代码审查（Review）或方案推演阶段，一旦收到用户“认可方案/同意修复/开始执行”指令，状态机的第一动作强制锁定为：先更新 `spec.md` 与 `plan.md`，第二动作才允许执行代码修改。
   3. **母语化表达规约**：在编写 Conductor 相关文档（`spec.md`、`plan.md`、`index.md` 等）时，严格遵循**“技术术语保留原生英文，正文使用流畅规范的简体中文”**，杜绝纯英文输出，贴合母语沉浸式审阅体验。
   4. **隐式防泄与工作区隔离**：Conductor 的轨道元数据与工作流文件必须严格登记在本地 Git 的 `.git/info/exclude` 中，严禁污染公共 `.gitignore` 或误提入代码仓库。
+  5. **生产环境防呆防线**：对于仅用于现场排障或临时调试的代码变更（如高频日志、打桩插桩），严禁直接物理删除原有逻辑，必须使用 `#if 0 ... #endif` 预编译指令包裹并标注醒目的 `TODO(Debug)` 注释，确保排障后一键还原，誓死防范高负载调试代码误合入生产分支。
+  6. **GUI 桌面端视觉验证与动态对账防线（GUI Screenshot Verification & Lazy Directory Creation）**：对于涉及图形界面、Qt/QML 或桌面端视觉渲染的任务，验收必须包含物理截图对账。在执行阶段按需动态创建 `conductor/tracks/<track_id>/images/` 目录；捕获渲染截图存入该目录并关联至 `plan.md` 或验证报告中，若存在截图则同步在 `index.md` 中挂载 `- [Verification Images](./images/)` 索引；对于无界面的纯后端/底层服务任务，严禁预先创建空 `images/` 目录，以捍卫工作区纯净。
 

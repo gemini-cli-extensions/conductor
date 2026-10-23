@@ -111,6 +111,21 @@ All tasks follow a strict lifecycle:
         3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
         ```
 
+        **For GUI / Desktop Application Changes (Qt/QML, HMI, Desktop GUI):**
+        ```
+        The automated tests have passed. For desktop GUI verification and screenshot evidence, please follow these steps:
+
+        **GUI Manual Verification & Screenshot Steps:**
+        1.  **Launch the target application:** Run the GUI application executable or launch via test harness.
+        2.  **Verify visual rendering & interactions:** Confirm UI components, layout, and smooth 60 FPS rendering without visual artifacts.
+        3.  **Dynamic Directory Creation & Screenshot Capture:**
+            - Ensure the track images directory exists (on-demand): `mkdir -p conductor/tracks/<track_id>/images/`
+            - Capture physical screenshot(s) of the target window or screen states.
+            - Save image(s) to: `conductor/tracks/<track_id>/images/<phase_name>_<state_description>.png` (or `.webp`).
+            - If `<track_id>/index.md` does not already list `- [Verification Images](./images/)`, dynamically append it.
+        4.  **Confirm that you see:** The expected UI state matches the design specification.
+        ```
+
 5.  **Await Explicit User Feedback:**
     -   After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
     -   **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
@@ -145,6 +160,7 @@ Before marking any task complete, verify:
 - [ ] Type safety is enforced (e.g., type hints, TypeScript types, Go types)
 - [ ] No linting or static analysis errors (using the project's configured tools)
 - [ ] Works correctly on mobile (if applicable)
+- [ ] For GUI/Desktop tasks: Physical verification screenshot(s) captured and saved in `conductor/tracks/<track_id>/images/`
 - [ ] Documentation updated if needed
 - [ ] No security vulnerabilities introduced
 
